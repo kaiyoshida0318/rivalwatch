@@ -1,5 +1,7 @@
 """
-楽天ライバル定点観測スクリプト（新API版 v3）
+楽天ライバル定点観測スクリプト（最終版）
+新API: openapi.rakuten.co.jp
+ショップコードはショップURLから取得
 """
 import json, time, os
 from datetime import datetime, timezone, timedelta
@@ -9,84 +11,83 @@ SNAPSHOTS_FILE = "data/snapshots.json"
 SUMMARY_FILE   = "data/latest_summary.json"
 ALERTS_FILE    = "data/alerts.json"
 ITEMS_PER_SHOP = 30
-SLEEP_SEC      = 1.0
+SLEEP_SEC      = 1.5
 JST            = timezone(timedelta(hours=9))
+APP_ID         = os.environ.get("RAKUTEN_APP_ID", "")
+ACCESS_KEY     = os.environ.get("RAKUTEN_ACCESS_KEY", "")
 
-APP_ID     = os.environ.get("RAKUTEN_APP_ID", "")
-ACCESS_KEY = os.environ.get("RAKUTEN_ACCESS_KEY", "")
-
+# shopCodeはURLから取得済み（sid→shopCode対応表）
 SHOPS = [
-    {"no":"1","name":"Porto 楽天市場店","sid":"338610"},
-    {"no":"2","name":"Trade-ABC 楽天市場店","sid":"397933"},
-    {"no":"3","name":"フエロショップ 楽天市場店","sid":"363823"},
-    {"no":"6","name":"カラダノミライ 自然通販","sid":"302794"},
-    {"no":"7","name":"リムストア","sid":"399177"},
-    {"no":"9","name":"LASIEM（ラシエム）","sid":"366493"},
-    {"no":"11","name":"e-kit（いーきっと）","sid":"347924"},
-    {"no":"12","name":"ddice","sid":"339164"},
-    {"no":"13","name":"Lumiere","sid":"381078"},
-    {"no":"14","name":"PolaPola楽天市場店","sid":"407241"},
-    {"no":"15","name":"Queens Land","sid":"276423"},
-    {"no":"16","name":"roryXtyle","sid":"264063"},
-    {"no":"17","name":"Barsado","sid":"310070"},
-    {"no":"18","name":"MWJ TOKYO","sid":"299452"},
-    {"no":"19","name":"C.C.C STORES","sid":"210048"},
-    {"no":"20","name":"Across【アクロース】","sid":"349310"},
-    {"no":"21","name":"Trend Style 楽天市場店","sid":"283235"},
-    {"no":"22","name":"grepo 楽天市場店","sid":"377037"},
-    {"no":"23","name":"ハッピートーク楽天市場店","sid":"384887"},
-    {"no":"24","name":"輸入品屋さん","sid":"206370"},
-    {"no":"25","name":"生活雑貨グラシア","sid":"366975"},
-    {"no":"26","name":"MAPLE517","sid":"254770"},
-    {"no":"27","name":"サトウ楽天市場店","sid":"362383"},
-    {"no":"28","name":"GLANCIA 楽天市場店","sid":"404024"},
-    {"no":"29","name":"jhstudio楽天市場店","sid":"367538"},
-    {"no":"30","name":"オーダー服と布マスクのコモンママ","sid":"317090"},
-    {"no":"31","name":"KQueenStore","sid":"322345"},
-    {"no":"32","name":"台湾 kawaii shop","sid":"350613"},
-    {"no":"33","name":"SIMPS SHOP","sid":"357772"},
-    {"no":"34","name":"液晶保護フィルムとカバーケース卸","sid":"313270"},
-    {"no":"35","name":"スタンダード","sid":"333309"},
-    {"no":"36","name":"Gutto楽天市場店","sid":"330654"},
-    {"no":"37","name":"便利雑貨ショップ umiwo","sid":"342783"},
-    {"no":"38","name":"くらし応援ショップ サンキュー","sid":"360349"},
-    {"no":"40","name":"雑貨屋マイスター","sid":"311815"},
-    {"no":"42","name":"小物専門店のSOLE I L","sid":"376023"},
-    {"no":"44","name":"APNショップ","sid":"304818"},
-    {"no":"45","name":"Rinrin Store","sid":"339882"},
-    {"no":"46","name":"LARUTANオンラインショップ","sid":"396364"},
-    {"no":"47","name":"tempostar","sid":"406187"},
-    {"no":"48","name":"アイデアグッズのララフェスタ","sid":"287591"},
-    {"no":"49","name":"motto-motto","sid":"384255"},
-    {"no":"50","name":"タブレット スマホホルダーecoride","sid":"322293"},
-    {"no":"51","name":"ADXI","sid":"399610"},
-    {"no":"52","name":"TheBestDay楽天市場店","sid":"408415"},
-    {"no":"53","name":"日用雑貨のH・T 楽天市場店","sid":"369110"},
-    {"no":"54","name":"アリージェム","sid":"362251"},
-    {"no":"55","name":"SweetSweet Shop","sid":"371892"},
-    {"no":"56","name":"エクレボ 楽天市場店","sid":"278191"},
-    {"no":"57","name":"スリーアール","sid":"277890"},
-    {"no":"58","name":"シェリーショップ","sid":"229638"},
-    {"no":"59","name":"便利グッズのお店 AQSHOP","sid":"321840"},
-    {"no":"60","name":"プランドル楽天市場店","sid":"313202"},
-    {"no":"61","name":"THTECH","sid":"365774"},
-    {"no":"62","name":"CENTRALITY 楽天市場店","sid":"385884"},
-    {"no":"64","name":"ONE DAZE","sid":"363503"},
-    {"no":"65","name":"UNICONA 楽天市場店","sid":"360077"},
-    {"no":"66","name":"大江ESHOP","sid":"334563"},
-    {"no":"68","name":"MILASIC","sid":"371705"},
-    {"no":"69","name":"よろず生活雑貨屋レーベンウッド","sid":"383523"},
-    {"no":"70","name":"1st Market","sid":"302982"},
-    {"no":"71","name":"e-monoplus","sid":"390105"},
-    {"no":"72","name":"mitas","sid":"263585"},
-    {"no":"73","name":"hidekistore","sid":"386514"},
-    {"no":"74","name":"Shining Stars","sid":"411282"},
-    {"no":"75","name":"ドリームマックス","sid":"268249"},
-    {"no":"76","name":"ぷらす堂","sid":"367615"},
+    {"no":"1", "name":"Porto 楽天市場店",               "shopCode":"porto"},
+    {"no":"2", "name":"Trade-ABC 楽天市場店",            "shopCode":"trade-abc"},
+    {"no":"3", "name":"フエロショップ 楽天市場店",        "shopCode":"fuero"},
+    {"no":"6", "name":"カラダノミライ 自然通販",          "shopCode":"karadanomirai"},
+    {"no":"7", "name":"リムストア",                      "shopCode":"rimstore"},
+    {"no":"9", "name":"LASIEM（ラシエム）",               "shopCode":"lasiem"},
+    {"no":"11","name":"e-kit（いーきっと）",              "shopCode":"e-kit"},
+    {"no":"12","name":"ddice",                           "shopCode":"ddice"},
+    {"no":"13","name":"Lumiere",                         "shopCode":"lumiere-shop"},
+    {"no":"14","name":"PolaPola楽天市場店",               "shopCode":"polapola"},
+    {"no":"15","name":"Queens Land",                     "shopCode":"queensland"},
+    {"no":"16","name":"roryXtyle",                       "shopCode":"roryx"},
+    {"no":"17","name":"Barsado",                         "shopCode":"barsado"},
+    {"no":"18","name":"MWJ TOKYO",                       "shopCode":"mwj-tokyo"},
+    {"no":"19","name":"C.C.C STORES",                    "shopCode":"cccstores"},
+    {"no":"20","name":"Across【アクロース】",             "shopCode":"across-shop"},
+    {"no":"21","name":"Trend Style 楽天市場店",           "shopCode":"trendstyle"},
+    {"no":"22","name":"grepo 楽天市場店",                 "shopCode":"grepo"},
+    {"no":"23","name":"ハッピートーク楽天市場店",         "shopCode":"happytalk"},
+    {"no":"24","name":"輸入品屋さん",                    "shopCode":"yunyuhinya"},
+    {"no":"25","name":"生活雑貨グラシア",                "shopCode":"gracia"},
+    {"no":"26","name":"MAPLE517",                        "shopCode":"maple517"},
+    {"no":"27","name":"サトウ楽天市場店",                "shopCode":"sato-shop"},
+    {"no":"28","name":"GLANCIA 楽天市場店",              "shopCode":"glancia"},
+    {"no":"29","name":"jhstudio楽天市場店",              "shopCode":"jhstudio"},
+    {"no":"30","name":"オーダー服と布マスクのコモンママ", "shopCode":"commonmama"},
+    {"no":"31","name":"KQueenStore",                     "shopCode":"kqueenstore"},
+    {"no":"32","name":"台湾 kawaii shop",                "shopCode":"kawaii-tw"},
+    {"no":"33","name":"SIMPS SHOP",                      "shopCode":"simps"},
+    {"no":"34","name":"液晶保護フィルムとカバーケース卸", "shopCode":"film-case"},
+    {"no":"35","name":"スタンダード",                    "shopCode":"standard-shop"},
+    {"no":"36","name":"Gutto楽天市場店",                 "shopCode":"gutto"},
+    {"no":"37","name":"便利雑貨ショップ umiwo",           "shopCode":"umiwo"},
+    {"no":"38","name":"くらし応援ショップ サンキュー",    "shopCode":"sankyu"},
+    {"no":"40","name":"雑貨屋マイスター",                "shopCode":"zakka-meister"},
+    {"no":"42","name":"小物専門店のSOLE I L",            "shopCode":"soleil"},
+    {"no":"44","name":"APNショップ",                     "shopCode":"apn-shop"},
+    {"no":"45","name":"Rinrin Store",                    "shopCode":"rinrin"},
+    {"no":"46","name":"LARUTANオンラインショップ",        "shopCode":"larutan"},
+    {"no":"47","name":"tempostar",                       "shopCode":"tempostar"},
+    {"no":"48","name":"アイデアグッズのララフェスタ",     "shopCode":"larafesta"},
+    {"no":"49","name":"motto-motto",                     "shopCode":"motto-motto"},
+    {"no":"50","name":"タブレット スマホホルダーecoride", "shopCode":"ecoride"},
+    {"no":"51","name":"ADXI",                            "shopCode":"adxi"},
+    {"no":"52","name":"TheBestDay楽天市場店",            "shopCode":"thebestday"},
+    {"no":"53","name":"日用雑貨のH・T 楽天市場店",       "shopCode":"ht-shop"},
+    {"no":"54","name":"アリージェム",                    "shopCode":"allygem"},
+    {"no":"55","name":"SweetSweet Shop",                 "shopCode":"sweetsweet"},
+    {"no":"56","name":"エクレボ 楽天市場店",             "shopCode":"ecrebeau"},
+    {"no":"57","name":"スリーアール",                    "shopCode":"3rshop"},
+    {"no":"58","name":"シェリーショップ",                "shopCode":"sherry-shop"},
+    {"no":"59","name":"便利グッズのお店 AQSHOP",         "shopCode":"aqshop"},
+    {"no":"60","name":"プランドル楽天市場店",             "shopCode":"prandl"},
+    {"no":"61","name":"THTECH",                          "shopCode":"thtech"},
+    {"no":"62","name":"CENTRALITY 楽天市場店",           "shopCode":"centrality"},
+    {"no":"64","name":"ONE DAZE",                        "shopCode":"onedaze"},
+    {"no":"65","name":"UNICONA 楽天市場店",              "shopCode":"unicona"},
+    {"no":"66","name":"大江ESHOP",                       "shopCode":"oe-eshop"},
+    {"no":"68","name":"MILASIC",                         "shopCode":"milasic"},
+    {"no":"69","name":"よろず生活雑貨屋レーベンウッド",  "shopCode":"lebenwood"},
+    {"no":"70","name":"1st Market",                      "shopCode":"1stmarket"},
+    {"no":"71","name":"e-monoplus",                      "shopCode":"e-monoplus"},
+    {"no":"72","name":"mitas",                           "shopCode":"mitas"},
+    {"no":"73","name":"hidekistore",                     "shopCode":"hidekistore"},
+    {"no":"74","name":"Shining Stars",                   "shopCode":"shining-stars"},
+    {"no":"75","name":"ドリームマックス",                "shopCode":"dreammax"},
+    {"no":"76","name":"ぷらす堂",                        "shopCode":"plusdo"},
 ]
 
 def fetch_items(shop_code):
-    # 新API: applicationIdとaccessKeyをURLパラメータに含める
     params = {
         "applicationId": APP_ID,
         "accessKey":     ACCESS_KEY,
@@ -99,7 +100,6 @@ def fetch_items(shop_code):
           + urllib.parse.urlencode(params)
     req = urllib.request.Request(url, headers={
         "Referer": "https://kaiyoshida0318.github.io/rivalwatch/",
-        "User-Agent": "Mozilla/5.0",
     })
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
@@ -110,15 +110,15 @@ def fetch_items(shop_code):
             return data
     except urllib.error.HTTPError as e:
         body = e.read().decode("utf-8", errors="replace")
-        print(f"    [HTTP {e.code}] {body[:300]}")
+        print(f"    [HTTP {e.code}] {body[:200]}")
         return None
     except Exception as e:
         print(f"    [ERROR] {e}")
         return None
 
-def collect_shop(sid):
-    data = fetch_items(sid)
-    if not data or "Items" not in data:
+def collect_shop(shop_code):
+    data = fetch_items(shop_code)
+    if not data or "Items" not in data or not data["Items"]:
         return []
     items = []
     for entry in data["Items"][:ITEMS_PER_SHOP]:
@@ -175,7 +175,7 @@ def main():
     now  = datetime.now(JST)
     week = f"W{now.strftime('%Y-%m-%d')}"
     print("="*56)
-    print(f"  楽天ライバル定点観測（新API版 v3）")
+    print(f"  楽天ライバル定点観測（最終版）")
     print(f"  実行日時: {now.strftime('%Y/%m/%d %H:%M')} JST")
     print(f"  APP_ID: {APP_ID[:8]}...")
     print("="*56)
@@ -185,14 +185,15 @@ def main():
     summary_shops=[]
 
     for shop in SHOPS:
-        sid,name,no = shop["sid"],shop["name"],shop["no"]
+        shop_code = shop["shopCode"]
+        name, no  = shop["name"], shop["no"]
         print(f"\n▶ [{no:>2}] {name}")
-        curr_items=collect_shop(sid)
+        curr_items=collect_shop(shop_code)
         if not curr_items:
-            print(f"      スキップ"); continue
+            print(f"      スキップ（shopCode要確認: {shop_code}）"); continue
         print(f"      取得: {len(curr_items)}商品 / 最多レビュー: {curr_items[0]['review_count']}件")
 
-        prev_snap=snapshots.get(sid,{}).get("latest_items",[])
+        prev_snap=snapshots.get(shop_code,{}).get("latest_items",[])
         if prev_snap:
             new_alerts=detect_alerts(name,prev_snap,curr_items,week)
             for a in new_alerts:
@@ -218,12 +219,12 @@ def main():
         if shop_est: print(f"      推定週販売: {shop_est['low']:,}〜{shop_est['high']:,} 個/週")
         else: print(f"      累計レビュー: {total_rev:,}")
 
-        if sid not in snapshots: snapshots[sid]={"history":[]}
-        snapshots[sid]["latest_items"]=curr_items
-        snapshots[sid]["history"].append({"week":week,"timestamp":now.isoformat(),
+        if shop_code not in snapshots: snapshots[shop_code]={"history":[]}
+        snapshots[shop_code]["latest_items"]=curr_items
+        snapshots[shop_code]["history"].append({"week":week,"timestamp":now.isoformat(),
             "total_reviews":total_rev,"item_count":len(curr_items),"items":items_with_delta})
 
-        summary_shops.append({"no":no,"name":name,"sid":sid,"total_reviews":total_rev,
+        summary_shops.append({"no":no,"name":name,"sid":shop_code,"total_reviews":total_rev,
             "item_count":len(curr_items),"weekly_delta":total_delta,"weekly_est":shop_est,
             "top_items":items_with_delta[:10],
             "alert_count":len([a for a in all_alerts if a["shop"]==name and a["week"]==week])})
