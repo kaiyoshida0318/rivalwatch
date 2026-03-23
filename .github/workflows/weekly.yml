@@ -24,13 +24,15 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install requests beautifulsoup4 --quiet
+        run: pip install requests --quiet
 
       - name: Prepare data dir
         run: mkdir -p data
 
       - name: Run collection
         run: python collect.py
+        env:
+          RAKUTEN_APP_ID: ${{ secrets.RAKUTEN_APP_ID }}
 
       - name: Commit results
         run: |
