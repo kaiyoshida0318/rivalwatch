@@ -97,8 +97,12 @@ def fetch_items(shop_code):
     }
     url = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20220601?" \
           + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, headers={
+        "Referer": "https://kaiyoshida0318.github.io/rivalwatch/",
+        "User-Agent": "Mozilla/5.0",
+    })
     try:
-        with urllib.request.urlopen(url, timeout=15) as resp:
+        with urllib.request.urlopen(req, timeout=15) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             if "errors" in data:
                 print(f"    [API ERROR] {data['errors']}")
