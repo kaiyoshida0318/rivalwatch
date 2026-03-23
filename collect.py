@@ -1,7 +1,7 @@
 """
-楽天ライバル定点観測スクリプト（新API版 openapi.rakuten.co.jp）
+楽天ライバル定点観測スクリプト（新API版 v3）
 """
-import json, time, os, base64
+import json, time, os
 from datetime import datetime, timezone, timedelta
 import urllib.request, urllib.parse
 
@@ -86,25 +86,22 @@ SHOPS = [
 ]
 
 def fetch_items(shop_code):
+    # 新API: applicationIdとaccessKeyをURLパラメータに含める
     params = {
-        "format":    "json",
-        "keyword":   "",
-        "shopCode":  shop_code,
-        "hits":      30,
-        "sort":      "-reviewCount",
+        "applicationId": APP_ID,
+        "accessKey":     ACCESS_KEY,
+        "format":        "json",
+        "shopCode":      shop_code,
+        "hits":          30,
+        "sort":          "-reviewCount",
     }
     url = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20220601?" \
           + urllib.parse.urlencode(params)
-    credentials = base64.b64encode(f"{APP_ID}:{ACCESS_KEY}".encode()).decode()
-    req = urllib.request.Request(url, headers={
-        "Authorization": f"Basic {credentials}",
-        "Content-Type":  "application/json",
-    })
     try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
+        with urllib.request.urlopen(url, timeout=15) as resp:
             data = json.loads(resp.read().decode("utf-8"))
-            if "error" in data:
-                print(f"    [API ERROR] {data.get('error')}: {data.get('error_description','')}")
+            if "errors" in data:
+                print(f"    [API ERROR] {data['errors']}")
                 return None
             return data
     except urllib.error.HTTPError as e:
@@ -174,7 +171,7 @@ def main():
     now  = datetime.now(JST)
     week = f"W{now.strftime('%Y-%m-%d')}"
     print("="*56)
-    print(f"  楽天ライバル定点観測（新API版）")
+    print(f"  楽天ライバル定点観測（新API版 v3）")
     print(f"  実行日時: {now.strftime('%Y/%m/%d %H:%M')} JST")
     print(f"  APP_ID: {APP_ID[:8]}...")
     print("="*56)
