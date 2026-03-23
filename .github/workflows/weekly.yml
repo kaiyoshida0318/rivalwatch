@@ -30,7 +30,7 @@ jobs:
         run: mkdir -p data
 
       - name: Run collection
-        run: python collect.py
+        run: python find_shopcodes.py
         env:
           RAKUTEN_APP_ID: ${{ secrets.RAKUTEN_APP_ID }}
           RAKUTEN_ACCESS_KEY: ${{ secrets.RAKUTEN_ACCESS_KEY }}
