@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>楽天ライバル定点観測</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f4f0;--surface:#fff;--border:#e2e0d8;--accent:#1a1a2e;--up:#2ecc8a;--down:#e84545;--warn:#f0a500;--text:#1a1a2e;--muted:#8c8a82;--mono:'DM Mono',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:13px}
+header{background:var(--accent);color:#fff;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.logo{font-family:var(--mono);font-size:15px;letter-spacing:.1em}
+.logo span{color:#555}
+.hdr-meta{font-family:var(--mono);font-size:11px;color:#777;display:flex;gap:16px;align-items:center}
+.live{width:7px;height:7px;border-radius:50%;background:var(--up);display:inline-block;margin-right:5px;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border)}
+.kpi{background:var(--surface);padding:12px 18px}
+.kpi-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.kpi-val{font-family:var(--mono);font-size:20px;font-weight:500}
+.kpi-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.tabs{display:flex;border-bottom:2px solid var(--border);background:var(--surface);padding:0 28px}
+.tab{padding:10px 18px;font-size:12px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--muted);transition:all .15s;display:flex;align-items:center;gap:6px}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.controls{padding:12px 28px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.search{flex:1;min-width:180px;padding:7px 12px;border:1px solid var(--border);border-radius:6px;font-family:'Noto Sans JP',sans-serif;font-size:12px;background:var(--bg);outline:none}
+.search:focus{border-color:var(--accent)}
+.sort-btn{padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);font-size:11px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all .15s}
+.sort-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.cnt{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto}
+main{padding:20px 28px}
+.tbl-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead{background:#f9f8f5}
+th{padding:9px 14px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:var(--text)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr.shop-row:hover td{background:#fafaf8}
+tr:last-child td{border-bottom:none}
+.shop-name-cell{display:flex;align-items:center;gap:7px}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dot-hi{background:var(--up)}.dot-md{background:var(--warn)}.dot-lo{background:#ccc}
+.mono{font-family:var(--mono);font-size:12px}
+.bar-wrap{width:64px;height:5px;background:var(--border);border-radius:3px;display:inline-block;overflow:hidden;vertical-align:middle}
+.bar-fill{height:100%;border-radius:3px;background:var(--up)}
+.est-hi{color:var(--up);font-weight:500}.est-md{color:var(--warn)}.est-lo{color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;font-size:10px;font-family:var(--mono)}
+.pill-d{background:#fde8e8;color:#c0392b}
+.pill-w{background:#fff3cd;color:#856a00}
+.pill-i{background:#e8f5ef;color:#1a7a50}
+.expand-btn{padding:4px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);font-size:11px;cursor:pointer;font-family:var(--mono);transition:all .15s;white-space:nowrap}
+.expand-btn:hover,.expand-btn.open{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ── Product panel ── */
+.prod-panel{background:#f5f4f0;border-top:1px solid var(--border)}
+.panel-inner{padding:16px 20px 20px}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.panel-title{font-size:12px;font-weight:500;color:var(--accent)}
+.panel-controls{display:flex;gap:6px;align-items:center}
+.vt-btn{padding:3px 9px;border-radius:5px;border:1px solid var(--border);background:var(--surface);font-size:10px;cursor:pointer;font-family:var(--mono);transition:all .15s}
+.vt-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.item-search{padding:4px 9px;border:1px solid var(--border);border-radius:5px;font-family:'Noto Sans JP',sans-serif;font-size:11px;background:var(--surface);outline:none;width:160px}
+.item-search:focus{border-color:var(--accent)}
+
+/* LIST view */
+.item-table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.item-table th{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);font-weight:500;background:#f9f8f5;white-space:nowrap}
+.item-table td{padding:8px 10px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:middle}
+.item-table tr:last-child td{border-bottom:none}
+.item-table tr:hover td{background:#fafaf8}
+.rank-n{font-family:var(--mono);font-size:11px;color:var(--muted);width:32px;text-align:right}
+.item-name-col{max-width:260px}
+.item-name-txt{font-size:12px;font-weight:500;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.item-name-txt a{color:var(--text);text-decoration:none}
+.item-name-txt a:hover{color:var(--accent);text-decoration:underline}
+.price-col{font-family:var(--mono);font-size:12px;white-space:nowrap}
+.rev-col{font-family:var(--mono);font-size:12px}
+.delta-up{color:var(--up);font-family:var(--mono);font-size:11px}
+.delta-dn{color:var(--down);font-family:var(--mono);font-size:11px}
+.delta-na{color:#ccc;font-family:var(--mono);font-size:11px}
+.est-col{font-family:var(--mono);font-size:11px}
+.est-val{display:inline-block;padding:1px 6px;border-radius:3px;background:#e8f5ef;color:#1a7a50;font-weight:500}
+.new-badge{display:inline-block;padding:1px 5px;border-radius:3px;background:#fff3cd;color:#856a00;font-size:10px;font-family:var(--mono);margin-left:4px}
+.price-drop{display:inline-block;padding:1px 5px;border-radius:3px;background:#fde8e8;color:#c0392b;font-size:10px;font-family:var(--mono);margin-left:4px}
+.item-link-btn{font-size:10px;color:var(--muted);text-decoration:none;padding:2px 6px;border:1px solid var(--border);border-radius:4px;font-family:var(--mono);transition:all .15s}
+.item-link-btn:hover{color:var(--accent);border-color:var(--accent)}
+
+/* CARD view */
+.item-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.item-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:11px 13px;display:flex;flex-direction:column;gap:5px;transition:border-color .15s}
+.item-card:hover{border-color:var(--accent)}
+.card-rank{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.card-name{font-size:12px;font-weight:500;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card-price{font-family:var(--mono);font-size:12px;color:var(--text)}
+.card-stats{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:2px}
+.card-stat{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+/* Pagination inside panel */
+.item-pagination{display:flex;gap:4px;justify-content:flex-end;margin-top:10px;align-items:center}
+.ipg-btn{padding:3px 8px;border:1px solid var(--border);border-radius:4px;background:var(--surface);cursor:pointer;font-family:var(--mono);font-size:11px;transition:all .15s}
+.ipg-btn:hover{border-color:var(--accent)}
+.ipg-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.ipg-info{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+/* Alerts */
+.alert-list{display:flex;flex-direction:column;gap:8px}
+.alert-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;display:flex;gap:12px;align-items:flex-start}
+.alert-card.danger{border-left:3px solid var(--down)}
+.alert-card.warn{border-left:3px solid var(--warn)}
+.alert-card.info{border-left:3px solid var(--up)}
+.al-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+.al-msg{font-size:12px;font-weight:500;margin-bottom:3px}
+.al-meta{font-size:11px;color:var(--muted);font-family:var(--mono)}
+
+.notice{background:#fff9e6;border:1px solid #f0d888;border-radius:8px;padding:11px 15px;margin-bottom:14px;font-size:12px;color:#856a00;display:flex;gap:8px}
+.pagination{display:flex;gap:5px;justify-content:flex-end;padding:10px 0 0;align-items:center}
+.pg-btn{padding:4px 9px;border:1px solid var(--border);border-radius:5px;background:var(--surface);cursor:pointer;font-family:var(--mono);font-size:11px}
+.pg-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.pg-info{font-family:var(--mono);font-size:11px;color:var(--muted)}
+@media(max-width:780px){.kpi-strip{grid-template-columns:repeat(2,1fr)}.hide-sp{display:none}main,header,.controls,.tabs{padding-left:14px;padding-right:14px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">rival<span>watch</span></div>
+  <div class="hdr-meta">
+    <span><span class="live"></span>商品単位 観測中</span>
+    <span id="hdrDate"></span>
+  </div>
+</header>
+
+<div class="kpi-strip">
+  <div class="kpi"><div class="kpi-lbl">登録ショップ</div><div class="kpi-val">67</div><div class="kpi-sub">全ショップ追跡</div></div>
+  <div class="kpi"><div class="kpi-lbl">追跡商品数</div><div class="kpi-val" id="kpiItems">2,010</div><div class="kpi-sub">上位30商品/店</div></div>
+  <div class="kpi"><div class="kpi-lbl">今週のアラート</div><div class="kpi-val" id="kpiAlerts" style="color:var(--down)">—</div><div class="kpi-sub">値下げ・急増・新商品</div></div>
+  <div class="kpi"><div class="kpi-lbl">週販売推定（合計）</div><div class="kpi-val" id="kpiSales">—</div><div class="kpi-sub">レビュー速度法</div></div>
+  <div class="kpi"><div class="kpi-lbl">観測ステータス</div><div class="kpi-val" id="kpiWeek" style="color:var(--warn)">W0</div><div class="kpi-sub">4週後に精度↑</div></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('shops',this)">ショップ一覧</div>
+  <div class="tab" onclick="switchTab('alerts',this)">アラート <span id="alertBadge"></span></div>
+  <div class="tab" onclick="switchTab('highrev',this)">💰 月商15万以上 <span id="highrevBadge"></span></div>
+</div>
+
+<div class="controls">
+  <input class="search" id="searchInput" placeholder="ショップ名で検索..." oninput="onSearch()">
+  <button class="sort-btn active" onclick="sortBy('reviews',this)">レビュー数順</button>
+  <button class="sort-btn" onclick="sortBy('alerts',this)">アラート順</button>
+  <button class="sort-btn" onclick="sortBy('no',this)">No順</button>
+  <span class="cnt" id="cntLabel">67件</span>
+</div>
+
+<main>
+  <div id="tabShops">
+    <div class="notice">⏱ <div><strong>Week 0 表示中 — 初回スナップショット</strong>。GitHub Actionsで週次収集を開始すると、2〜4週後から商品ごとの販売推定・アラートが自動更新されます。「▼ 商品を見る」で各ショップの商品一覧（最大30件）を確認できます。</div></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>ショップ名</th>
+            <th>累計レビュー</th>
+            <th class="hide-sp">週次増加</th>
+            <th>週販売推定</th>
+            <th class="hide-sp">アラート</th>
+            <th>商品一覧</th>
+          </tr>
+        </thead>
+        <tbody id="shopTbody"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+  <div id="tabAlerts" style="display:none">
+    <div class="alert-list" id="alertList"></div>
+  </div>
+
+  <div id="tabHighrev" style="display:none">
+    <div class="notice">💰 <div><strong>月商15万円以上と推定される商品</strong>を全ショップから横断抽出しています。計算式：週販売推定（中央値）× 価格 × 4.3週 ≥ 150,000円。週次収集開始後に精度が上がります。</div></div>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+      <input class="search" id="highrevSearch" placeholder="商品名・ショップ名で絞り込み..." oninput="renderHighrev()" style="max-width:320px">
+      <span style="font-family:var(--mono);font-size:11px;color:var(--muted)" id="highrevCount"></span>
+      <select id="highrevSort" onchange="renderHighrev()" style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:11px;background:var(--bg);font-family:'Noto Sans JP',sans-serif;outline:none;cursor:pointer">
+        <option value="monthly">月商推定（高い順）</option>
+        <option value="price">価格（高い順）</option>
+        <option value="delta">週次増加（多い順）</option>
+      </select>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>商品名</th>
+            <th>ショップ</th>
+            <th>価格</th>
+            <th>週販売推定</th>
+            <th style="color:var(--accent)">月商推定</th>
+            <th>週次増加</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="highrevTbody"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="highrevPagination"></div>
+  </div>
+</main>
+
+<script>
+// ── Shop data ─────────────────────────────────────
+const SHOPS_BASE = [
+  {no:"72",name:"mitas",sid:"263585",reviews:113476,latestProduct:""},
+  {no:"34",name:"液晶保護フィルムとカバーケース卸",sid:"313270",reviews:19824,latestProduct:"Xiaomi 12T Pro"},
+  {no:"6",name:"カラダノミライ 自然通販",sid:"302794",reviews:15793,latestProduct:"しもやけクリーム"},
+  {no:"70",name:"1st Market",sid:"302982",reviews:14871,latestProduct:""},
+  {no:"9",name:"LASIEM（ラシエム）",sid:"366493",reviews:12852,latestProduct:"定期ケース"},
+  {no:"48",name:"アイデアグッズのララフェスタ",sid:"287591",reviews:12308,latestProduct:""},
+  {no:"36",name:"Gutto楽天市場店",sid:"330654",reviews:11492,latestProduct:""},
+  {no:"11",name:"e-kit（いーきっと）",sid:"347924",reviews:11349,latestProduct:"ランドリーバスケット"},
+  {no:"56",name:"エクレボ 楽天市場店",sid:"278191",reviews:12024,latestProduct:""},
+  {no:"15",name:"Queens Land",sid:"276423",reviews:8686,latestProduct:""},
+  {no:"21",name:"Trend Style 楽天市場店",sid:"283235",reviews:8607,latestProduct:""},
+  {no:"37",name:"便利雑貨ショップ umiwo",sid:"342783",reviews:8421,latestProduct:""},
+  {no:"12",name:"ddice",sid:"339164",reviews:7827,latestProduct:"カメラレンズ　キラキラ"},
+  {no:"65",name:"UNICONA 楽天市場店",sid:"360077",reviews:7200,latestProduct:""},
+  {no:"16",name:"roryXtyle",sid:"264063",reviews:6622,latestProduct:""},
+  {no:"58",name:"シェリーショップ",sid:"229638",reviews:6123,latestProduct:""},
+  {no:"2",name:"Trade-ABC 楽天市場店",sid:"397933",reviews:5142,latestProduct:"スマホスタンド"},
+  {no:"17",name:"Barsado",sid:"310070",reviews:4755,latestProduct:""},
+  {no:"60",name:"プランドル楽天市場店",sid:"313202",reviews:4865,latestProduct:""},
+  {no:"61",name:"THTECH",sid:"365774",reviews:4598,latestProduct:""},
+  {no:"69",name:"よろず生活雑貨屋レーベンウッド",sid:"383523",reviews:4571,latestProduct:""},
+  {no:"24",name:"輸入品屋さん",sid:"206370",reviews:4029,latestProduct:""},
+  {no:"19",name:"C.C.C STORES",sid:"210048",reviews:3620,latestProduct:""},
+  {no:"55",name:"SweetSweet Shop",sid:"371892",reviews:3370,latestProduct:""},
+  {no:"50",name:"タブレット スマホホルダーecoride",sid:"322293",reviews:3498,latestProduct:""},
+  {no:"62",name:"CENTRALITY 楽天市場店",sid:"385884",reviews:3048,latestProduct:""},
+  {no:"68",name:"MILASIC",sid:"371705",reviews:3034,latestProduct:""},
+  {no:"18",name:"MWJ TOKYO",sid:"299452",reviews:3228,latestProduct:""},
+  {no:"57",name:"スリーアール",sid:"277890",reviews:2859,latestProduct:""},
+  {no:"44",name:"APNショップ",sid:"304818",reviews:2327,latestProduct:""},
+  {no:"46",name:"LARUTANオンラインショップ",sid:"396364",reviews:2176,latestProduct:""},
+  {no:"35",name:"スタンダード",sid:"333309",reviews:2123,latestProduct:""},
+  {no:"31",name:"KQueenStore",sid:"322345",reviews:2039,latestProduct:"膝サポーター"},
+  {no:"22",name:"grepo 楽天市場店",sid:"377037",reviews:1970,latestProduct:""},
+  {no:"23",name:"ハッピートーク楽天市場店",sid:"384887",reviews:1775,latestProduct:""},
+  {no:"66",name:"大江ESHOP",sid:"334563",reviews:1747,latestProduct:""},
+  {no:"59",name:"便利グッズのお店 AQSHOP",sid:"321840",reviews:1720,latestProduct:""},
+  {no:"73",name:"hidekistore",sid:"386514",reviews:1559,latestProduct:""},
+  {no:"47",name:"tempostar",sid:"406187",reviews:1611,latestProduct:""},
+  {no:"49",name:"motto-motto",sid:"384255",reviews:1690,latestProduct:""},
+  {no:"1",name:"Porto 楽天市場店",sid:"338610",reviews:1439,latestProduct:"おむつカバー"},
+  {no:"29",name:"jhstudio楽天市場店",sid:"367538",reviews:1428,latestProduct:"カトラリーセット"},
+  {no:"26",name:"MAPLE517",sid:"254770",reviews:1500,latestProduct:""},
+  {no:"54",name:"アリージェム",sid:"362251",reviews:1043,latestProduct:""},
+  {no:"40",name:"雑貨屋マイスター",sid:"311815",reviews:1017,latestProduct:""},
+  {no:"20",name:"Across【アクロース】",sid:"349310",reviews:1234,latestProduct:""},
+  {no:"42",name:"小物専門店のSOLE I L",sid:"376023",reviews:3110,latestProduct:""},
+  {no:"25",name:"生活雑貨グラシア",sid:"366975",reviews:926,latestProduct:""},
+  {no:"3",name:"フエロショップ 楽天市場店",sid:"363823",reviews:931,latestProduct:"コンパクトデスククリーナー"},
+  {no:"33",name:"SIMPS SHOP",sid:"357772",reviews:858,latestProduct:""},
+  {no:"7",name:"リムストア",sid:"399177",reviews:767,latestProduct:"足首サポーター"},
+  {no:"64",name:"ONE DAZE",sid:"363503",reviews:623,latestProduct:""},
+  {no:"71",name:"e-monoplus",sid:"390105",reviews:578,latestProduct:""},
+  {no:"14",name:"PolaPola楽天市場店",sid:"407241",reviews:532,latestProduct:"ニップレス　男性用"},
+  {no:"53",name:"日用雑貨のH・T 楽天市場店",sid:"369110",reviews:509,latestProduct:""},
+  {no:"13",name:"Lumiere",sid:"381078",reviews:509,latestProduct:""},
+  {no:"52",name:"TheBestDay楽天市場店",sid:"408415",reviews:499,latestProduct:""},
+  {no:"45",name:"Rinrin Store",sid:"339882",reviews:449,latestProduct:""},
+  {no:"38",name:"くらし応援ショップ サンキュー",sid:"360349",reviews:377,latestProduct:""},
+  {no:"32",name:"台湾 kawaii shop",sid:"350613",reviews:274,latestProduct:""},
+  {no:"30",name:"オーダー服と布マスクのコモンママ",sid:"317090",reviews:245,latestProduct:""},
+  {no:"28",name:"GLANCIA 楽天市場店",sid:"404024",reviews:254,latestProduct:"ネイルニッパー"},
+  {no:"27",name:"サトウ楽天市場店",sid:"362383",reviews:154,latestProduct:""},
+  {no:"51",name:"ADXI",sid:"399610",reviews:20,latestProduct:""},
+  {no:"74",name:"Shining Stars",sid:"411282",reviews:0,latestProduct:""},
+  {no:"75",name:"ドリームマックス",sid:"268249",reviews:0,latestProduct:""},
+  {no:"76",name:"ぷらす堂",sid:"367615",reviews:0,latestProduct:""},
+];
+
+// モックの商品データを生成（週次収集前のプレビュー）
+function makeMockItems(shop, count) {
+  const names = [
+    shop.latestProduct || null,
+    "人気商品A（収集後に商品名が入ります）",
+    "人気商品B（収集後に商品名が入ります）",
+    "人気商品C",
+    "人気商品D",
+    "人気商品E",
+    "人気商品F",
+    "人気商品G",
+    "人気商品H",
+    "人気商品I",
+  ];
+  const baseRev = Math.floor(shop.reviews / 30);
+  return Array.from({length: count}, (_, i) => ({
+    item_id: `mock_${i}`,
+    rank: i + 1,
+    name: names[i % names.length] || `商品${i+1}`,
+    price: [980,1280,1480,1980,2480,3280,4980][i % 7],
+    review_count: Math.max(0, Math.floor(baseRev * Math.pow(0.75, i) + Math.random() * 20)),
+    review_delta: null,
+    price_delta: null,
+    est_sales: null,
+    url: `https://search.rakuten.co.jp/search/mall/?sid=${shop.sid}`,
+    is_mock: true,
+  }));
+}
+
+// ── State ─────────────────────────────────────────
+let SUMMARY = null;
+let currentSort = 'reviews';
+let currentQ = '';
+let currentPage = 1;
+const PAGE_SIZE = 20;
+
+// expanded panel state per shop: { sid -> { open, view, page, q } }
+const panelState = {};
+
+function getPState(sid) {
+  if (!panelState[sid]) panelState[sid] = {open:false, view:'list', page:1, q:''};
+  return panelState[sid];
+}
+
+async function tryLoadSummary() {
+  try {
+    const r = await fetch('data/latest_summary.json');
+    if (r.ok) SUMMARY = await r.json();
+  } catch(e) {}
+}
+
+// ── Helpers ──────────────────────────────────────
+function estWeeklySales(reviews) {
+  if (!reviews) return null;
+  const mid = Math.round(reviews / (3*52) / 0.04);
+  return {low: Math.round(mid*0.67), high: Math.round(mid*1.33), mid};
+}
+function dotCls(r){ return r>=5000?'dot-hi':r>=1000?'dot-md':'dot-lo'; }
+function estCls(e){ if(!e) return 'est-lo'; return e.mid>=500?'est-hi':e.mid>=100?'est-md':'est-lo'; }
+
+function getShopList() {
+  let shops = SUMMARY
+    ? SUMMARY.shops.map(s => ({
+        no:s.no, name:s.name, sid:s.sid,
+        reviews:s.total_reviews,
+        weeklyDelta:s.weekly_delta,
+        weeklyEst:s.weekly_est,
+        alertCount:s.alert_count||0,
+        topItems:s.top_items||[],
+      }))
+    : SHOPS_BASE.map(s => ({
+        no:s.no, name:s.name, sid:s.sid,
+        reviews:s.reviews,
+        weeklyDelta:null, weeklyEst:null, alertCount:0,
+        topItems:[], latestProduct:s.latestProduct,
+      }));
+
+  if (currentQ) {
+    const q = currentQ.toLowerCase();
+    shops = shops.filter(s => s.name.toLowerCase().includes(q));
+  }
+  if (currentSort==='reviews') shops.sort((a,b)=>b.reviews-a.reviews);
+  else if (currentSort==='alerts') shops.sort((a,b)=>b.alertCount-a.alertCount);
+  else shops.sort((a,b)=>parseInt(a.no)-parseInt(b.no));
+  return shops;
+}
+
+// ── Product panel HTML ────────────────────────────
+const ITEMS_PER_PAGE = 10;
+
+function buildProductPanel(shop, ps) {
+  // items: either real data or mock
+  let allItems = shop.topItems && shop.topItems.length > 0
+    ? shop.topItems
+    : makeMockItems(shop, 30);
+
+  // filter by search
+  const q = ps.q.toLowerCase();
+  const filtered = q
+    ? allItems.filter(it => it.name.toLowerCase().includes(q))
+    : allItems;
+
+  const totalItems = filtered.length;
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+  const startIdx = (ps.page - 1) * ITEMS_PER_PAGE;
+  const pageItems = filtered.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+
+  const isMock = !shop.topItems || shop.topItems.length === 0;
+
+  const paginationHtml = totalPages > 1 ? `
+    <div class="item-pagination">
+      <span class="ipg-info">${startIdx+1}〜${Math.min(startIdx+ITEMS_PER_PAGE,totalItems)} / ${totalItems}件</span>
+      ${Array.from({length:totalPages},(_,i)=>`
+        <button class="ipg-btn ${i+1===ps.page?'active':''}"
+          onclick="itemGoPage('${shop.sid}',${i+1})">${i+1}</button>
+      `).join('')}
+    </div>` : '';
+
+  const listHtml = `
+    <table class="item-table">
+      <thead>
+        <tr>
+          <th class="rank-n">#</th>
+          <th>商品名</th>
+          <th>価格</th>
+          <th>累計レビュー</th>
+          <th>週次増加</th>
+          <th>週販売推定</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        ${pageItems.map((item, i) => {
+          const rank = startIdx + i + 1;
+          const deltaHtml = item.review_delta != null
+            ? (item.review_delta > 0
+                ? `<span class="delta-up">▲+${item.review_delta}</span>`
+                : item.review_delta < 0
+                  ? `<span class="delta-dn">▼${item.review_delta}</span>`
+                  : `<span class="delta-na">±0</span>`)
+            : `<span class="delta-na">—</span>`;
+          const estHtml = item.est_sales
+            ? `<span class="est-val">${item.est_sales.low.toLocaleString()}〜${item.est_sales.high.toLocaleString()}</span>`
+            : `<span style="color:var(--muted);font-family:var(--mono);font-size:11px">収集待ち</span>`;
+          const priceDrop = item.price_delta != null && item.price_delta < 0
+            ? `<span class="price-drop">▼¥${Math.abs(item.price_delta).toLocaleString()}</span>` : '';
+          const newBadge = item.is_new ? `<span class="new-badge">NEW</span>` : '';
+          const linkHtml = item.url
+            ? `<a class="item-link-btn" href="${item.url}" target="_blank">開く</a>` : '';
+          return `<tr>
+            <td class="rank-n">${rank}</td>
+            <td class="item-name-col">
+              <div class="item-name-txt">
+                ${item.url ? `<a href="${item.url}" target="_blank">${item.name}</a>` : item.name}
+              </div>
+              ${newBadge}
+            </td>
+            <td class="price-col">${item.price ? '¥'+item.price.toLocaleString() : '—'} ${priceDrop}</td>
+            <td class="rev-col">${item.review_count.toLocaleString()}</td>
+            <td>${deltaHtml}</td>
+            <td class="est-col">${estHtml}</td>
+            <td>${linkHtml}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    ${paginationHtml}`;
+
+  const cardHtml = `
+    <div class="item-cards">
+      ${pageItems.map((item, i) => {
+        const rank = startIdx + i + 1;
+        const deltaHtml = item.review_delta != null
+          ? (item.review_delta > 0
+              ? `<span class="delta-up">▲+${item.review_delta}</span>`
+              : `<span class="delta-dn">▼${item.review_delta}</span>`)
+          : `<span class="delta-na">—</span>`;
+        const estHtml = item.est_sales
+          ? `<span class="est-val">${item.est_sales.low.toLocaleString()}〜${item.est_sales.high.toLocaleString()}</span>`
+          : '';
+        return `<div class="item-card">
+          <div class="card-rank">#${rank}${item.is_new?' <span class="new-badge">NEW</span>':''}</div>
+          <div class="card-name">${item.url?`<a href="${item.url}" target="_blank" style="color:var(--text);text-decoration:none">${item.name}</a>`:item.name}</div>
+          ${item.price ? `<div class="card-price">¥${item.price.toLocaleString()}</div>` : ''}
+          <div class="card-stats">
+            <span class="card-stat">レビュー ${item.review_count.toLocaleString()}件</span>
+            ${deltaHtml}
+            ${estHtml}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    ${paginationHtml}`;
+
+  return `
+    <div class="prod-panel">
+      <div class="panel-inner">
+        <div class="panel-head">
+          <div class="panel-title">
+            商品一覧 — ${shop.name}
+            <span style="font-weight:400;color:var(--muted);margin-left:8px;font-size:11px;font-family:var(--mono)">${totalItems}件${isMock?' (プレビュー)':''}</span>
+          </div>
+          <div class="panel-controls">
+            <input class="item-search" placeholder="商品名を絞り込み..." value="${ps.q}"
+              oninput="itemSearch('${shop.sid}', this.value)">
+            <button class="vt-btn ${ps.view==='list'?'active':''}"
+              onclick="itemView('${shop.sid}','list')">リスト</button>
+            <button class="vt-btn ${ps.view==='card'?'active':''}"
+              onclick="itemView('${shop.sid}','card')">カード</button>
+          </div>
+        </div>
+        ${ps.view==='list' ? listHtml : cardHtml}
+        ${isMock ? `<div style="margin-top:10px;font-size:11px;color:var(--muted);font-family:var(--mono)">⚠ 価格・商品名は仮データです。週次収集開始後に実データに置き換わります。</div>` : ''}
+      </div>
+    </div>`;
+}
+
+// ── Render shops ──────────────────────────────────
+function renderShops() {
+  const all = getShopList();
+  const total = all.length;
+  const start = (currentPage-1)*PAGE_SIZE;
+  const page = all.slice(start, start+PAGE_SIZE);
+  document.getElementById('cntLabel').textContent = total + '件';
+
+  const tbody = document.getElementById('shopTbody');
+  tbody.innerHTML = '';
+
+  page.forEach((s, idx) => {
+    const rank = start + idx + 1;
+    const est  = s.weeklyEst || estWeeklySales(s.reviews);
+    const ec   = estCls(est);
+    const estStr = est ? `${est.low.toLocaleString()}〜${est.high.toLocaleString()}` : '—';
+    const barPct = Math.min(100, (s.reviews/113476)*100).toFixed(1);
+    const ps = getPState(s.sid);
+
+    // Main row
+    const tr = document.createElement('tr');
+    tr.className = 'shop-row';
+    tr.innerHTML = `
+      <td><span class="mono" style="color:var(--muted)">${rank}</span></td>
+      <td>
+        <div class="shop-name-cell">
+          <span class="dot ${dotCls(s.reviews)}"></span>
+          <span style="font-size:12px;font-weight:500">${s.name}</span>
+        </div>
+      </td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="bar-wrap"><div class="bar-fill" style="width:${barPct}%"></div></div>
+          <span class="mono">${s.reviews.toLocaleString()}</span>
+        </div>
+      </td>
+      <td class="hide-sp mono" style="color:${s.weeklyDelta>0?'var(--up)':'var(--muted)'}">
+        ${s.weeklyDelta!=null?'+'+s.weeklyDelta.toLocaleString():'観測待ち'}
+      </td>
+      <td><span class="mono ${ec}">${estStr}</span></td>
+      <td class="hide-sp">
+        ${s.alertCount>0
+          ? `<span class="pill pill-d">🔴 ${s.alertCount}</span>`
+          : `<span style="color:var(--muted);font-size:11px">—</span>`}
+      </td>
+      <td>
+        <button class="expand-btn ${ps.open?'open':''}" onclick="togglePanel('${s.sid}')">
+          ${ps.open?'▲ 閉じる':'▼ 商品を見る'}
+        </button>
+      </td>`;
+    tbody.appendChild(tr);
+
+    // Product panel row
+    if (ps.open) {
+      const pr = document.createElement('tr');
+      pr.id = `panel-${s.sid}`;
+      const panelTd = document.createElement('td');
+      panelTd.colSpan = 7;
+      panelTd.style.padding = '0';
+      panelTd.innerHTML = buildProductPanel(s, ps);
+      pr.appendChild(panelTd);
+      tbody.appendChild(pr);
+    }
+  });
+
+  // Outer pagination
+  const pages = Math.ceil(total/PAGE_SIZE);
+  const pg = document.getElementById('pagination');
+  if (pages<=1){pg.innerHTML='';return;}
+  let html = `<span class="pg-info">${start+1}〜${Math.min(start+PAGE_SIZE,total)} / ${total}件</span>`;
+  for(let i=1;i<=pages;i++){
+    html += `<button class="pg-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  pg.innerHTML = html;
+}
+
+// ── Panel actions ────────────────────────────────
+function togglePanel(sid) {
+  const ps = getPState(sid);
+  ps.open = !ps.open;
+  renderShops();
+  if (ps.open) {
+    // scroll to panel
+    setTimeout(()=>{
+      const el = document.getElementById(`panel-${sid}`);
+      if (el) el.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }, 50);
+  }
+}
+function itemView(sid, view) {
+  getPState(sid).view = view;
+  getPState(sid).page = 1;
+  renderShops();
+}
+function itemSearch(sid, q) {
+  getPState(sid).q = q;
+  getPState(sid).page = 1;
+  renderShops();
+}
+function itemGoPage(sid, p) {
+  getPState(sid).page = p;
+  renderShops();
+}
+
+// ── Outer actions ─────────────────────────────────
+function sortBy(key, btn) {
+  currentSort = key; currentPage = 1;
+  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderShops();
+}
+function onSearch() {
+  currentQ = document.getElementById('searchInput').value;
+  currentPage = 1;
+  renderShops();
+}
+function goPage(p) {
+  currentPage = p;
+  renderShops();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tabShops').style.display   = name==='shops'   ?'':'none';
+  document.getElementById('tabAlerts').style.display  = name==='alerts'  ?'':'none';
+  document.getElementById('tabHighrev').style.display = name==='highrev' ?'':'none';
+  if (name==='alerts')  renderAlerts();
+  if (name==='highrev') renderHighrev();
+}
+function renderAlerts() {
+  const alerts = SUMMARY?.alerts || [{level:'info',message:'収集開始後に値下げ・レビュー急増・新商品追加が自動検知されます',shop:'システム',week:'—'}];
+  document.getElementById('alertList').innerHTML = alerts.map(a=>{
+    const icon = {danger:'🔴',warn:'⚠️',info:'✅'}[a.level]||'•';
+    return `<div class="alert-card ${a.level}"><div class="al-icon">${icon}</div><div><div class="al-msg">${a.message}</div><div class="al-meta">${a.shop} ／ ${a.week}</div></div></div>`;
+  }).join('');
+}
+
+// ── 月商計算 ──────────────────────────────────────
+const MONTHLY_THRESHOLD = 150000;
+let highrevPage = 1;
+const HIGHREV_PAGE_SIZE = 20;
+
+function calcMonthly(item) {
+  // 週販売推定（中央値）× 価格 × 4.3週
+  if (!item.price || item.price <= 0) return null;
+  let salesMid = null;
+  if (item.est_sales) {
+    salesMid = item.est_sales.mid;
+  } else if (item.review_delta != null && item.review_delta > 0) {
+    salesMid = Math.round(item.review_delta / 0.04);
+  } else if (item.review_count > 0) {
+    // フォールバック: 累計レビューから週次を推計
+    salesMid = Math.round(item.review_count / (3*52) / 0.04);
+  }
+  if (!salesMid) return null;
+  return Math.round(salesMid * item.price * 4.3);
+}
+
+function getHighrevItems() {
+  // 全ショップの全商品をフラットに展開して月商計算
+  const shopList = SUMMARY
+    ? SUMMARY.shops.map(s => ({
+        name: s.name, sid: s.sid,
+        items: s.top_items || [],
+      }))
+    : SHOPS_BASE.map(s => ({
+        name: s.name, sid: s.sid,
+        items: makeMockItems(s, 30),
+      }));
+
+  const candidates = [];
+  for (const shop of shopList) {
+    for (const item of shop.items) {
+      const monthly = calcMonthly(item);
+      if (monthly === null || monthly < MONTHLY_THRESHOLD) continue;
+      candidates.push({
+        ...item,
+        shopName: shop.name,
+        shopSid:  shop.sid,
+        monthly,
+      });
+    }
+  }
+
+  // フィルタ
+  const q = (document.getElementById('highrevSearch')?.value || '').toLowerCase();
+  let filtered = q
+    ? candidates.filter(it =>
+        it.name.toLowerCase().includes(q) ||
+        it.shopName.toLowerCase().includes(q))
+    : candidates;
+
+  // ソート
+  const sortKey = document.getElementById('highrevSort')?.value || 'monthly';
+  if (sortKey === 'monthly') filtered.sort((a,b) => b.monthly - a.monthly);
+  else if (sortKey === 'price') filtered.sort((a,b) => b.price - a.price);
+  else if (sortKey === 'delta') filtered.sort((a,b) => (b.review_delta||0) - (a.review_delta||0));
+
+  return filtered;
+}
+
+function renderHighrev() {
+  const all = getHighrevItems();
+  const total = all.length;
+  const start = (highrevPage - 1) * HIGHREV_PAGE_SIZE;
+  const page  = all.slice(start, start + HIGHREV_PAGE_SIZE);
+
+  document.getElementById('highrevCount').textContent = `${total}件該当`;
+
+  // バッジ更新
+  document.getElementById('highrevBadge').innerHTML = total > 0
+    ? `<span class="pill pill-i" style="margin-left:4px">${total}</span>` : '';
+
+  const tbody = document.getElementById('highrevTbody');
+  tbody.innerHTML = page.map((item, i) => {
+    const rank = start + i + 1;
+    const monthlyCls = item.monthly >= 500000 ? 'est-hi'
+                     : item.monthly >= 300000 ? 'est-md' : '';
+    const deltaHtml = item.review_delta != null
+      ? (item.review_delta > 0
+          ? `<span class="delta-up">▲+${item.review_delta}</span>`
+          : `<span class="delta-na">±0</span>`)
+      : `<span class="delta-na">—</span>`;
+    const weekSales = item.est_sales
+      ? `${item.est_sales.low.toLocaleString()}〜${item.est_sales.high.toLocaleString()}`
+      : item.review_count > 0
+        ? (() => { const m=Math.round(item.review_count/(3*52)/0.04); return `${Math.round(m*0.67).toLocaleString()}〜${Math.round(m*1.33).toLocaleString()}`; })()
+        : '—';
+    const linkHtml = item.url
+      ? `<a class="item-link-btn" href="${item.url}" target="_blank">開く</a>` : '';
+    const mockNote = item.is_mock ? `<span style="font-size:9px;color:var(--muted);font-family:var(--mono)"> (推計)</span>` : '';
+    return `<tr>
+      <td class="rank-n">${rank}</td>
+      <td class="item-name-col">
+        <div class="item-name-txt">
+          ${item.url ? `<a href="${item.url}" target="_blank">${item.name}</a>` : item.name}
+        </div>
+        ${item.is_new ? '<span class="new-badge">NEW</span>' : ''}
+      </td>
+      <td style="font-size:11px;color:var(--muted)">${item.shopName}</td>
+      <td class="price-col">¥${item.price.toLocaleString()}</td>
+      <td class="est-col"><span class="est-val">${weekSales}</span></td>
+      <td>
+        <span class="mono ${monthlyCls}" style="font-weight:700;font-size:13px">
+          ¥${item.monthly.toLocaleString()}
+        </span>${mockNote}
+      </td>
+      <td>${deltaHtml}</td>
+      <td>${linkHtml}</td>
+    </tr>`;
+  }).join('');
+
+  // Pagination
+  const pages = Math.ceil(total / HIGHREV_PAGE_SIZE);
+  const pg = document.getElementById('highrevPagination');
+  if (pages <= 1) { pg.innerHTML = ''; return; }
+  let html = `<span class="pg-info">${start+1}〜${Math.min(start+HIGHREV_PAGE_SIZE,total)} / ${total}件</span>`;
+  for (let i=1; i<=pages; i++) {
+    html += `<button class="pg-btn ${i===highrevPage?'active':''}" onclick="highrevGoPage(${i})">${i}</button>`;
+  }
+  pg.innerHTML = html;
+}
+
+function highrevGoPage(p) {
+  highrevPage = p;
+  renderHighrev();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ── Init ─────────────────────────────────────────
+(async () => {
+  document.getElementById('hdrDate').textContent = new Date().toLocaleDateString('ja-JP');
+  await tryLoadSummary();
+  if (SUMMARY) {
+    document.getElementById('kpiAlerts').textContent = SUMMARY.alert_count ?? '—';
+    const totalSales = SUMMARY.shops.reduce((s,x)=>s+(x.weekly_est?.mid||0),0);
+    document.getElementById('kpiSales').textContent = totalSales.toLocaleString()+'/週';
+  }
+  renderShops();
+  // 月商15万以上バッジをロード時にも計算
+  const highrevCount = getHighrevItems().length;
+  if (highrevCount > 0) {
+    document.getElementById('highrevBadge').innerHTML =
+      `<span class="pill pill-i" style="margin-left:4px">${highrevCount}</span>`;
+  }
+})();
+</script>
+</body>
+</html>
