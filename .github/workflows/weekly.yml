@@ -1,100 +1,41 @@
-# .github/workflows/weekly.yml
-#
-# 毎週月曜日 AM 3:00 (JST) に自動実行される定点観測ワークフロー
-# PC を開かなくても GitHub のサーバーが代わりに動かしてくれます
-#
-# セットアップ手順:
-#   1. このファイルを .github/workflows/weekly.yml として保存
-#   2. GitHub にリポジトリを作成して push
-#   3. 以上！毎週自動で collect.py が動き、data/ に結果が保存されます
-#
-# ダッシュボードの確認:
-#   GitHub Pages を有効にすると dashboard.html をブラウザで閲覧できます
-#   Settings → Pages → Source: Deploy from a branch → main / root
-
 name: 週次ライバル観測
 
 on:
-  # 毎週月曜 AM 3:00 JST (= UTC 18:00 日曜)
   schedule:
     - cron: "0 18 * * 0"
-
-  # 手動実行ボタン（GitHub Actions 画面から "Run workflow" を押せる）
   workflow_dispatch:
-    inputs:
-      dry_run:
-        description: "ドライラン（データ保存なし）"
-        required: false
-        default: "false"
 
 jobs:
   collect:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-
     permissions:
-      contents: write   # data/*.json を commit するために必要
+      contents: write
 
     steps:
-      # 1. リポジトリをチェックアウト
       - name: Checkout
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # 2. Python セットアップ
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: "pip"
 
-      # 3. 依存パッケージのインストール（標準ライブラリのみ使うので最小限）
       - name: Install dependencies
-        run: |
-          pip install requests beautifulsoup4 --quiet
+        run: pip install requests beautifulsoup4 --quiet
 
-      # 4. データディレクトリを準備
       - name: Prepare data dir
         run: mkdir -p data
 
-      # 5. 収集スクリプト実行
       - name: Run collection
         run: python collect.py
-        env:
-          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
 
-      # 6. 結果を Git にコミット・プッシュ
       - name: Commit results
         run: |
-          git config user.name  "RivalWatch Bot"
+          git config user.name "RivalWatch Bot"
           git config user.email "bot@rivalwatch"
           git add data/
-          # 変更があった場合のみコミット
-          git diff --staged --quiet || \
-            git commit -m "📊 週次観測 $(date '+%Y/%m/%d') JST"
+          git diff --staged --quiet || git commit -m "週次観測 $(date '+%Y/%m/%d')"
           git push
-
-      # 7. サマリーをジョブのサマリーに表示（GitHub Actions 画面で確認できる）
-      - name: Print summary
-        if: always()
-        run: |
-          echo "## 観測完了" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          if [ -f data/latest_summary.json ]; then
-            python3 - << 'EOF'
-import json, os
-with open("data/latest_summary.json") as f:
-    d = json.load(f)
-shops = d.get("shops", [])
-ranked = sorted([s for s in shops if s.get("weekly_sales_est")],
-                key=lambda x: x["weekly_sales_est"]["mid"], reverse=True)
-print(f"| ショップ名 | 週販売推定 |")
-print(f"|---|---|")
-for r in ranked[:15]:
-    e = r["weekly_sales_est"]
-    print(f"| {r['name']} | {e['low']:,}〜{e['high']:,} 個/週 |")
-no_est = len([s for s in shops if not s.get("weekly_sales_est")])
-print(f"\n> 推定算出待ち: {no_est}ショップ（観測2週目以降に自動算出）")
-EOF
-          fi >> $GITHUB_STEP_SUMMARY
