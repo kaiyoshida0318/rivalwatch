@@ -1,44 +1,25 @@
 """
-楽天ライバル定点観測スクリプト（商品単位版）
-=============================================
-毎週実行して、各ショップの上位30商品を個別に追跡。
-- 商品ごとのレビュー数・価格・週次変化を記録
-- 新商品追加を自動検知
-- 価格値下げをアラート
-
-使い方:
-  pip install requests beautifulsoup4
-  python collect.py
-
-GitHub Actions で自動実行 → .github/workflows/weekly.yml を使用
+楽天ライバル定点観測スクリプト（楽天市場API版）
+================================================
+スクレイピングではなく公式APIを使用するため安定して動作します。
 """
 
 import json
 import time
-import re
 import os
 from datetime import datetime, timezone, timedelta
 import urllib.request
-from urllib.error import URLError
+import urllib.parse
 
 # ── 設定 ────────────────────────────────────────────
-DATA_DIR       = "data"
 SNAPSHOTS_FILE = "data/snapshots.json"
 SUMMARY_FILE   = "data/latest_summary.json"
 ALERTS_FILE    = "data/alerts.json"
 ITEMS_PER_SHOP = 30
-SLEEP_SEC      = 2.5
+SLEEP_SEC      = 1.0
 JST            = timezone(timedelta(hours=9))
 
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/122.0.0.0 Safari/537.36"
-    ),
-    "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-}
+APP_ID = os.environ.get("RAKUTEN_APP_ID", "")
 
 # ── 67ショップ一覧 ────────────────────────────────────
 SHOPS = [
@@ -112,86 +93,46 @@ SHOPS = [
 ]
 
 
-# ── データ取得 ────────────────────────────────────────
-def fetch_url(url):
-    req = urllib.request.Request(url, headers=HEADERS)
+# ── API呼び出し ──────────────────────────────────────
+def fetch_items(shop_code, page=1):
+    """楽天市場APIでショップの商品一覧を取得"""
+    params = {
+        "applicationId": APP_ID,
+        "shopCode":      shop_code,
+        "hits":          30,
+        "page":          page,
+        "sort":          "-reviewCount",  # レビュー数順
+        "formatVersion": 2,
+    }
+    url = "https://app.rakuten.co.jp/services/api/IchibaItem/Search/20170706?" \
+          + urllib.parse.urlencode(params)
     try:
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            raw = resp.read()
-            ct = resp.headers.get("Content-Type", "")
-            m = re.search(r"charset=([^\s;]+)", ct, re.I)
-            charset = m.group(1).lower().replace("shift_jis", "cp932") if m else "utf-8"
-            return raw.decode(charset, errors="replace")
+        req = urllib.request.Request(url)
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return json.loads(resp.read().decode("utf-8"))
     except Exception as e:
         print(f"    [ERROR] {e}")
         return None
 
 
-def parse_items(html):
-    """楽天検索結果ページから商品リストを抽出"""
-    items = []
-
-    # 方法1: JSON-LD または data 属性から商品情報を取得
-    # 楽天は data-item-id, data-review-count などを持つことが多い
-    review_counts = re.findall(r'data-review-count="(\d+)"', html)
-    review_avgs   = re.findall(r'data-review-average="([0-9.]+)"', html)
-    item_ids      = re.findall(r'data-item-id="(\d+)"', html)
-
-    # 商品名: <a> タグの title 属性または content class
-    names = re.findall(
-        r'<a[^>]+title="([^"]{4,100})"[^>]*class="[^"]*content[^"]*"', html
-    )
-    if not names:
-        names = re.findall(
-            r'class="[^"]*content[^"]*"[^>]*title="([^"]{4,100})"', html
-        )
-    if not names:
-        # フォールバック: h2 や product タイトルクラス
-        names = re.findall(r'<a[^>]+class="[^"]*title[^"]*"[^>]*>([^<]{4,100})</a>', html)
-
-    # 価格
-    prices = []
-    for p in re.findall(r'"price"\s*:\s*(\d+)', html):
-        try:
-            v = int(p)
-            if 100 <= v <= 1000000:
-                prices.append(v)
-        except ValueError:
-            pass
-    if not prices:
-        for p in re.findall(r'(\d{1,3}(?:,\d{3})+)円', html):
-            try:
-                v = int(p.replace(",", ""))
-                if 100 <= v <= 1000000:
-                    prices.append(v)
-            except ValueError:
-                pass
-
-    # 商品URL
-    urls = re.findall(r'href="(https://item\.rakuten\.co\.jp/[^"?]+)"', html)
-
-    count = max(len(review_counts), len(names))
-    for i in range(min(count, ITEMS_PER_SHOP)):
-        item = {
-            "item_id":      item_ids[i] if i < len(item_ids) else f"idx_{i}",
-            "name":         names[i].strip() if i < len(names) else f"商品{i+1}",
-            "price":        prices[i] if i < len(prices) else 0,
-            "review_count": int(review_counts[i]) if i < len(review_counts) else 0,
-            "review_avg":   float(review_avgs[i]) if i < len(review_avgs) else 0.0,
-            "url":          urls[i] if i < len(urls) else "",
-        }
-        if item["name"]:
-            items.append(item)
-
-    return items
-
-
 def collect_shop(sid):
-    url = f"https://search.rakuten.co.jp/search/mall/?sid={sid}&p=1"
-    html = fetch_url(url)
-    if not html:
+    """ショップの上位商品リストを取得して整形"""
+    data = fetch_items(sid)
+    if not data or "Items" not in data:
         return []
-    return parse_items(html)
+
+    items = []
+    for item in data["Items"][:ITEMS_PER_SHOP]:
+        it = item if isinstance(item, dict) and "itemName" in item else item.get("Item", item)
+        items.append({
+            "item_id":      str(it.get("itemCode", "")),
+            "name":         it.get("itemName", "")[:80],
+            "price":        int(it.get("itemPrice", 0)),
+            "review_count": int(it.get("reviewCount", 0)),
+            "review_avg":   float(it.get("reviewAverage", 0)),
+            "url":          it.get("itemUrl", ""),
+        })
+    return items
 
 
 # ── 分析 ─────────────────────────────────────────────
@@ -229,23 +170,18 @@ def detect_alerts(shop_name, prev_items, curr_items, week):
                     "type": "price_drop", "level": "danger",
                     "shop": shop_name, "week": week,
                     "message": f"値下げ {pct:.1f}%：{curr['name'][:40]}",
-                    "detail": {
-                        "prev": prev["price"], "curr": curr["price"],
-                        "diff": curr["price"] - prev["price"],
-                    },
+                    "detail": {"prev": prev["price"], "curr": curr["price"]},
                 })
 
         # レビュー急増（週20件以上）
         delta = curr["review_count"] - prev["review_count"]
         if delta >= 20:
-            est = estimate_weekly_sales(delta)
             alerts.append({
                 "type": "review_spike", "level": "warn",
                 "shop": shop_name, "week": week,
                 "message": f"レビュー急増 +{delta}件：{curr['name'][:40]}",
-                "detail": {"delta": delta, "est": est},
+                "detail": {"delta": delta, "est": estimate_weekly_sales(delta)},
             })
-
     return alerts
 
 
@@ -265,10 +201,14 @@ def save_json(path, data):
 
 # ── メイン ────────────────────────────────────────────
 def main():
+    if not APP_ID:
+        print("ERROR: RAKUTEN_APP_ID が設定されていません")
+        return
+
     now  = datetime.now(JST)
     week = f"W{now.strftime('%Y-%m-%d')}"
     print("=" * 56)
-    print(f"  楽天ライバル定点観測（商品単位版）")
+    print(f"  楽天ライバル定点観測（API版）")
     print(f"  実行日時: {now.strftime('%Y/%m/%d %H:%M')} JST")
     print(f"  対象: {len(SHOPS)}店舗 × 上位{ITEMS_PER_SHOP}商品")
     print("=" * 56)
@@ -283,7 +223,7 @@ def main():
 
         curr_items = collect_shop(sid)
         if not curr_items:
-            print(f"      取得失敗")
+            print(f"      取得失敗またはデータなし")
             continue
         print(f"      取得: {len(curr_items)}商品")
 
@@ -293,7 +233,7 @@ def main():
         if prev_snap:
             new_alerts = detect_alerts(name, prev_snap, curr_items, week)
             for a in new_alerts:
-                icon = {"danger": "🔴", "warn": "⚠️", "info": "✅"}.get(a["level"], "•")
+                icon = {"danger":"🔴","warn":"⚠️","info":"✅"}.get(a["level"],"•")
                 print(f"      {icon} {a['message']}")
             all_alerts.extend(new_alerts)
 
@@ -313,20 +253,15 @@ def main():
                 d["est_sales"]    = None
             items_with_delta.append(d)
 
-        # ショップ合計
         total_rev   = sum(it["review_count"] for it in curr_items)
-        total_delta = sum(
-            it["review_delta"] for it in items_with_delta
-            if it["review_delta"] is not None
-        )
-        shop_est = estimate_weekly_sales(total_delta) if total_delta > 0 else None
+        total_delta = sum(it["review_delta"] for it in items_with_delta if it["review_delta"] is not None)
+        shop_est    = estimate_weekly_sales(total_delta) if total_delta > 0 else None
 
         if shop_est:
             print(f"      推定週販売: {shop_est['low']:,}〜{shop_est['high']:,} 個/週")
         else:
-            print(f"      累計レビュー: {total_rev:,}（次週より差分算出）")
+            print(f"      累計レビュー: {total_rev:,}")
 
-        # スナップショット蓄積
         if sid not in snapshots:
             snapshots[sid] = {"history": []}
         snapshots[sid]["latest_items"] = curr_items
@@ -345,24 +280,21 @@ def main():
             "weekly_delta": total_delta,
             "weekly_est": shop_est,
             "top_items": items_with_delta[:10],
-            "alert_count": len([a for a in all_alerts
-                                 if a["shop"] == name and a["week"] == week]),
+            "alert_count": len([a for a in all_alerts if a["shop"]==name and a["week"]==week]),
         })
 
         time.sleep(SLEEP_SEC)
 
-    # 保存
     save_json(SNAPSHOTS_FILE, snapshots)
     save_json(ALERTS_FILE, all_alerts[-500:])
     save_json(SUMMARY_FILE, {
         "generated_at": now.isoformat(),
         "week": week,
         "shop_count": len(summary_shops),
-        "alert_count": len([a for a in all_alerts if a["week"] == week]),
+        "alert_count": len([a for a in all_alerts if a["week"]==week]),
         "shops": summary_shops,
     })
 
-    # 完了サマリー
     print("\n" + "=" * 56)
     print("  完了（週販売推定 上位10）")
     print("=" * 56)
@@ -374,13 +306,9 @@ def main():
         e = r["weekly_est"]
         print(f"  {r['name'][:24]:<26} {e['low']:>5,}〜{e['high']:>6,} 個/週")
 
-    week_alerts = [a for a in all_alerts if a["week"] == week]
+    week_alerts = [a for a in all_alerts if a["week"]==week]
     print(f"\n  🔔 今週のアラート: {len(week_alerts)}件")
-    for a in week_alerts[:5]:
-        print(f"     [{a['level'].upper()}] {a['message']}")
-    if len(week_alerts) > 5:
-        print(f"     ...他 {len(week_alerts)-5}件")
-    print(f"\n  ✅ 保存: {SNAPSHOTS_FILE}, {SUMMARY_FILE}, {ALERTS_FILE}")
+    print(f"  ✅ 保存完了: {SNAPSHOTS_FILE}, {SUMMARY_FILE}")
 
 
 if __name__ == "__main__":
