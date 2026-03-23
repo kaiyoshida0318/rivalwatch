@@ -1,7 +1,7 @@
 """
-楽天ライバル定点観測スクリプト（楽天市場API版 v2）
+楽天ライバル定点観測スクリプト（新API版 openapi.rakuten.co.jp）
 """
-import json, time, os
+import json, time, os, base64
 from datetime import datetime, timezone, timedelta
 import urllib.request, urllib.parse
 
@@ -11,7 +11,9 @@ ALERTS_FILE    = "data/alerts.json"
 ITEMS_PER_SHOP = 30
 SLEEP_SEC      = 1.0
 JST            = timezone(timedelta(hours=9))
-APP_ID         = os.environ.get("RAKUTEN_APP_ID", "")
+
+APP_ID     = os.environ.get("RAKUTEN_APP_ID", "")
+ACCESS_KEY = os.environ.get("RAKUTEN_ACCESS_KEY", "")
 
 SHOPS = [
     {"no":"1","name":"Porto 楽天市場店","sid":"338610"},
@@ -84,27 +86,30 @@ SHOPS = [
 ]
 
 def fetch_items(shop_code):
-    """楽天市場APIでショップの商品一覧を取得"""
     params = {
-        "applicationId": APP_ID,
-        "hits":          30,
-        "sort":          "-reviewCount",
-        "formatVersion": 2,
-        "shopCode":      shop_code,
+        "format":    "json",
+        "keyword":   "",
+        "shopCode":  shop_code,
+        "hits":      30,
+        "sort":      "-reviewCount",
     }
-    url = "https://app.rakuten.co.jp/services/api/IchibaItem/Search/20170706?" \
+    url = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20220601?" \
           + urllib.parse.urlencode(params)
+    credentials = base64.b64encode(f"{APP_ID}:{ACCESS_KEY}".encode()).decode()
+    req = urllib.request.Request(url, headers={
+        "Authorization": f"Basic {credentials}",
+        "Content-Type":  "application/json",
+    })
     try:
-        with urllib.request.urlopen(url, timeout=15) as resp:
+        with urllib.request.urlopen(req, timeout=15) as resp:
             data = json.loads(resp.read().decode("utf-8"))
-            # エラーレスポンス確認
             if "error" in data:
                 print(f"    [API ERROR] {data.get('error')}: {data.get('error_description','')}")
                 return None
             return data
     except urllib.error.HTTPError as e:
         body = e.read().decode("utf-8", errors="replace")
-        print(f"    [HTTP {e.code}] {body[:200]}")
+        print(f"    [HTTP {e.code}] {body[:300]}")
         return None
     except Exception as e:
         print(f"    [ERROR] {e}")
@@ -163,15 +168,15 @@ def save_json(path, data):
     with open(path,"w",encoding="utf-8") as f: json.dump(data,f,ensure_ascii=False,indent=2)
 
 def main():
-    if not APP_ID:
-        print("ERROR: RAKUTEN_APP_ID が設定されていません"); return
+    if not APP_ID or not ACCESS_KEY:
+        print("ERROR: RAKUTEN_APP_ID または RAKUTEN_ACCESS_KEY が未設定"); return
 
     now  = datetime.now(JST)
     week = f"W{now.strftime('%Y-%m-%d')}"
     print("="*56)
-    print(f"  楽天ライバル定点観測（API版 v2）")
+    print(f"  楽天ライバル定点観測（新API版）")
     print(f"  実行日時: {now.strftime('%Y/%m/%d %H:%M')} JST")
-    print(f"  APP_ID: {APP_ID[:8]}...（確認用）")
+    print(f"  APP_ID: {APP_ID[:8]}...")
     print("="*56)
 
     snapshots=load_json(SNAPSHOTS_FILE,{})
