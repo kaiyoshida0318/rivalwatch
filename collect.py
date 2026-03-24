@@ -7,15 +7,16 @@ import json, time, os
 from datetime import datetime, timezone, timedelta
 import urllib.request, urllib.parse
 
-SNAPSHOTS_FILE = "data/snapshots.json"
-SUMMARY_FILE   = "data/latest_summary.json"
-ALERTS_FILE    = "data/alerts.json"
-ITEM_COUNTS_FILE = "data/item_counts.json"  # ショップ別測定数
-DEFAULT_ITEMS  = 15   # デフォルト測定数
-SLEEP_SEC      = 1.5
-JST            = timezone(timedelta(hours=9))
-APP_ID         = os.environ.get("RAKUTEN_APP_ID", "")
-ACCESS_KEY     = os.environ.get("RAKUTEN_ACCESS_KEY", "")
+SNAPSHOTS_FILE   = "data/snapshots.json"
+SUMMARY_FILE     = "data/latest_summary.json"
+ALERTS_FILE      = "data/alerts.json"
+ITEM_COUNTS_FILE = "data/item_counts.json"
+USER_STATE_FILE  = "data/user_state.json"   # ダッシュボードの状態ファイル
+DEFAULT_ITEMS    = 15
+SLEEP_SEC        = 1.5
+JST              = timezone(timedelta(hours=9))
+APP_ID           = os.environ.get("RAKUTEN_APP_ID", "")
+ACCESS_KEY       = os.environ.get("RAKUTEN_ACCESS_KEY", "")
 
 # shopCodeは実際に取得成功したもののみ（未確認は除外）
 SHOPS = [
@@ -176,12 +177,30 @@ def main():
     print(f"  APP_ID: {APP_ID[:8]}...")
     print("="*56)
 
+    # ダッシュボードから追加したショップを読み込む（user_state.jsonのextra_shopsフィールド）
+    state = load_json(USER_STATE_FILE, {})
+    extra = state.get("extra_shops", [])
+    all_shops = list(SHOPS)
+    base_codes = {s["shopCode"] for s in SHOPS}
+    added = 0
+    for s in extra:
+        code = s.get("shopCode") or s.get("sid","")
+        name = s.get("name", code)
+        if code and code not in base_codes:
+            all_shops.append({"no":"追", "name":name, "shopCode":code})
+            base_codes.add(code)
+            added += 1
+    if added:
+        print(f"  追加ショップ: {added}件 読み込み済み")
+    print(f"  合計: {len(all_shops)}店舗")
+    print("="*56)
+
     snapshots=load_json(SNAPSHOTS_FILE,{})
     all_alerts=load_json(ALERTS_FILE,[])
-    item_counts=load_item_counts()  # ショップ別測定数
+    item_counts=load_item_counts()
     summary_shops=[]
 
-    for shop in SHOPS:
+    for shop in all_shops:
         shop_code = shop["shopCode"]
         name, no  = shop["name"], shop["no"]
         hits = item_counts.get(shop_code, DEFAULT_ITEMS)
