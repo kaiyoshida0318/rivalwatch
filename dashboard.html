@@ -72,6 +72,8 @@ tr:last-child td{border-bottom:none}
 .check-btn{width:100%;padding:5px;border-radius:5px;font-size:11px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-weight:500;transition:all .15s;border:1px solid var(--border);background:var(--bg);color:var(--text)}
 .check-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
 .check-btn.is-checked{background:var(--up);color:#fff;border-color:var(--up)}
+.product-card.out-of-rank{opacity:.75;border-style:dashed}
+.product-card.out-of-rank:hover{opacity:1}
 .checked-badge{position:absolute;top:6px;right:6px;background:var(--up);color:#fff;border-radius:4px;font-size:9px;font-family:var(--mono);padding:2px 5px}
 
 /* Global product grid */
@@ -152,7 +154,7 @@ tr:last-child td{border-bottom:none}
     <div class="notice">⏱ <div><strong>Week 0 — 初回スナップショット</strong>。週次収集後に商品データ・画像・販売推定が自動更新されます。</div></div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>#</th><th>ショップ名</th><th>累計レビュー</th><th class="hide-sp">週販売推定</th><th>商品一覧</th><th></th></tr></thead>
+        <thead><tr><th>#</th><th>ショップ名</th><th>累計レビュー</th><th class="hide-sp">週販売推定</th><th>測定数</th><th>商品一覧</th><th></th></tr></thead>
         <tbody id="shopTbody"></tbody>
       </table>
     </div>
@@ -349,7 +351,63 @@ function estWeeklySales(r){
 }
 function dotCls(r){return r>=5000?'dot-hi':r>=1000?'dot-md':'dot-lo';}
 
-// ── ショップ一覧 ──────────────────────────────────────
+// ── ショップ別測定数 ──────────────────────────────────
+const DEFAULT_ITEM_COUNT = 15;
+function loadItemCounts() { try{return JSON.parse(localStorage.getItem('rw_item_counts')||'{}')}catch{return{}} }
+function saveItemCounts(o) { try{localStorage.setItem('rw_item_counts',JSON.stringify(o))}catch{} }
+let itemCounts = loadItemCounts();
+
+function getItemCount(key) {
+  return itemCounts[key] || DEFAULT_ITEM_COUNT;
+}
+function setItemCount(key, val) {
+  const n = Math.max(1, Math.min(50, parseInt(val)||DEFAULT_ITEM_COUNT));
+  itemCounts[key] = n;
+  saveItemCounts(itemCounts);
+  // data/item_counts.jsonにも書き出し（collect.pyが参照）
+  exportItemCountsJson();
+}
+
+function exportItemCountsJson() {
+  // GitHubへの保存は別途PAT設定が必要。現状はlocalStorageのみ。
+  // 将来的にGitHub API経由で data/item_counts.json に書き込む予定
+}
+
+// ── 永続商品リスト ────────────────────────────────────
+// 一度取得した商品はローカルに保存し、順位外になっても消えない
+function loadPersistentItems() { try{return JSON.parse(localStorage.getItem('rw_persistent_items')||'{}')}catch{return{}} }
+function savePersistentItems(o) { try{localStorage.setItem('rw_persistent_items',JSON.stringify(o))}catch{} }
+let persistentItems = loadPersistentItems();
+
+function mergeIntoPersistent(shopKey, newItems) {
+  if (!persistentItems[shopKey]) persistentItems[shopKey] = {};
+  newItems.forEach(it => {
+    persistentItems[shopKey][it.item_id] = {
+      ...persistentItems[shopKey][it.item_id],
+      ...it,
+      last_seen: new Date().toISOString(),
+    };
+  });
+  savePersistentItems(persistentItems);
+}
+
+function getShopAllItems(shopKey, currentItems) {
+  // 現在の商品 + 過去に取得した商品（順位外になったもの含む）をマージ
+  const persistent = persistentItems[shopKey] || {};
+  const currentMap = {};
+  currentItems.forEach(it => { currentMap[it.item_id] = it; });
+
+  // 永続リストに現在の商品を反映
+  if (currentItems.length > 0) mergeIntoPersistent(shopKey, currentItems);
+
+  // 全商品（現在の情報で上書き、なければ過去データを使用）
+  const allItems = Object.values({...persistent, ...currentMap});
+  // 現在ランキング内のものを先に、その後過去のもの
+  const inCurrent = allItems.filter(it => currentMap[it.item_id]);
+  const outOfRank = allItems.filter(it => !currentMap[it.item_id])
+    .map(it => ({...it, out_of_rank: true}));
+  return [...inCurrent, ...outOfRank];
+}
 let currentSort='reviews', currentQ='', currentPage=1;
 const PAGE_SIZE=20;
 const panelState={};
@@ -399,6 +457,14 @@ function renderShops(){
         <span class="mono">${rev.toLocaleString()}</span>
       </div></td>
       <td class="hide-sp"><span class="mono ${estCls}">${estStr}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:4px">
+          <input type="number" min="1" max="50" value="${getItemCount(key)}"
+            style="width:52px;padding:4px 6px;border:1px solid var(--border);border-radius:5px;font-family:var(--mono);font-size:12px;text-align:center;background:var(--bg)"
+            onchange="setItemCount('${key}',this.value)" title="測定する商品数（1〜50）">
+          <span style="font-size:10px;color:var(--muted)">件</span>
+        </div>
+      </td>
       <td><button class="expand-btn ${ps.open?'open':''}" onclick="togglePanel('${key}')">▼ 商品を見る</button></td>
       <td>${isNew?`<button class="del-btn" onclick="deleteShop('${key}')">削除</button>`:''}`;
     tbody.appendChild(tr);
@@ -406,11 +472,16 @@ function renderShops(){
     if(ps.open){
       const pr=document.createElement('tr');
       const td=document.createElement('td');
-      td.colSpan=6; td.style.padding='0';
-      const items=(s.topItems&&s.topItems.length>0)?s.topItems:makeMockItems(s,20);
+      td.colSpan=7; td.style.padding='0';
+      const currentItems=(s.topItems&&s.topItems.length>0)?s.topItems:makeMockItems(s,getItemCount(key));
+      const allItems = getShopAllItems(key, currentItems);
+      const outCount = allItems.filter(it=>it.out_of_rank).length;
       td.innerHTML=`<div class="prod-panel"><div class="panel-inner">
-        <div class="panel-head"><div class="panel-title">${s.name} — 上位20商品</div></div>
-        <div class="product-grid">${items.slice(0,20).map((it,i)=>productCard(it,i+1)).join('')}</div>
+        <div class="panel-head">
+          <div class="panel-title">${s.name} — 上位${getItemCount(key)}商品${outCount>0?` <span style="font-size:11px;color:var(--muted);font-weight:400">（順位外 ${outCount}件を含む）</span>`:''}
+          </div>
+        </div>
+        <div class="product-grid">${allItems.slice(0,getItemCount(key)*2).map((it,i)=>productCard(it,i+1)).join('')}</div>
       </div></div>`;
       pr.appendChild(td);
       tbody.appendChild(pr);
@@ -486,9 +557,13 @@ function productCard(item, rank){
        </div>`
     : '';
 
+  const outOfRank = item.out_of_rank
+    ? `<div style="position:absolute;top:6px;left:6px;background:#f0ede8;color:var(--muted);border-radius:4px;font-size:9px;font-family:var(--mono);padding:2px 5px">圏外</div>`
+    : '';
   const mock=item.is_mock?`<span style="font-size:9px;color:var(--muted)"> 仮</span>`:'';
-  return `<div class="product-card ${isChecked?'checked':''}" id="card-${key}">
+  return `<div class="product-card ${isChecked?'checked':''} ${item.out_of_rank?'out-of-rank':''}" id="card-${key}">
     ${isChecked?'<div class="checked-badge">✓済み</div>':''}
+    ${outOfRank}
     ${imgHtml}
     <div class="product-body">
       <div class="product-rank">#${rank}${mock}</div>
