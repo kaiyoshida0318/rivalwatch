@@ -450,6 +450,7 @@ function getAllShops() {
         shopCode:s.sid,
         reviews:s.total_reviews||0,
         weeklyEst:s.weekly_est||null,
+        total_item_count:s.total_item_count||null,
         isBase:true,
         topItems:(s.top_items||[]).map(it=>({...it,shop_name:s.name,shop_sid:s.sid}))}))
     : BASE_SHOPS.map(s=>({...s,topItems:[]}));
@@ -599,7 +600,7 @@ function renderShops(){
           <input type="number" min="1" max="50" value="${getItemCount(key)}"
             style="width:52px;padding:4px 6px;border:1px solid var(--border);border-radius:5px;font-family:var(--mono);font-size:12px;text-align:center;background:var(--bg)"
             onchange="setItemCount('${key}',this.value)" title="測定する商品数（1〜50）">
-          <span style="font-size:10px;color:var(--muted)">件</span>
+          <span style="font-size:10px;color:var(--muted)">件${s.total_item_count?`<span style="color:var(--muted)">/${s.total_item_count.toLocaleString()}</span>`:''}</span>
         </div>
       </td>
       <td><button class="expand-btn ${ps.open?'open':''}" onclick="togglePanel('${key}')">▼ 商品を見る</button></td>
