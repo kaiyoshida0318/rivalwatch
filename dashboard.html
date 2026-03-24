@@ -80,6 +80,19 @@ tr:last-child td{border-bottom:none}
 /* Global product grid */
 .global-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px}
 .global-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px}
+
+/* サイドバー付きレイアウト */
+.sidebar-layout{display:flex;gap:14px;align-items:flex-start}
+.shop-sidebar{width:160px;flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;position:sticky;top:70px;max-height:calc(100vh - 100px);display:flex;flex-direction:column}
+.sidebar-title{padding:10px 12px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:500;border-bottom:1px solid var(--border);flex-shrink:0}
+.sidebar-list{overflow-y:auto;flex:1}
+.sidebar-item{padding:8px 12px;font-size:11px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;justify-content:space-between;align-items:center;gap:4px}
+.sidebar-item:last-child{border-bottom:none}
+.sidebar-item:hover{background:var(--bg)}
+.sidebar-item.active{background:var(--accent);color:#fff}
+.sidebar-item .s-cnt{font-family:var(--mono);font-size:9px;opacity:.7;flex-shrink:0}
+.sidebar-content{flex:1;min-width:0}
+@media(max-width:780px){.shop-sidebar{display:none}}
 .empty-state{padding:48px;text-align:center;color:var(--muted);font-size:13px;line-height:2}
 
 /* Modal */
@@ -175,29 +188,61 @@ tr:last-child td{border-bottom:none}
 
   <div id="tabAllProducts" style="display:none">
     <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <input class="search" id="allSearch" placeholder="商品名・ショップ名で絞り込み..." oninput="renderAllProducts()" style="max-width:320px">
+      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=1;renderAllProducts()" style="max-width:280px">
       <span class="cnt" id="allCnt"></span>
     </div>
-    <div class="global-wrap"><div class="global-grid" id="allGrid"></div></div>
-    <div class="pagination" id="allPagination"></div>
+    <div class="sidebar-layout">
+      <div class="shop-sidebar">
+        <div class="sidebar-title">ショップ</div>
+        <div class="sidebar-list" id="allShopSidebar"></div>
+      </div>
+      <div class="sidebar-content">
+        <div class="global-wrap"><div class="global-grid" id="allGrid"></div></div>
+        <div class="pagination" id="allPagination"></div>
+      </div>
+    </div>
   </div>
 
   <div id="tabUnchecked" style="display:none">
     <div style="margin-bottom:14px;font-size:12px;color:var(--muted)">まだ評価していない商品です。「👍 Good」か「👎 微妙」を押して仕分けしてください。</div>
-    <div class="global-wrap"><div class="global-grid" id="uncheckedGrid"></div></div>
-    <div class="pagination" id="uncheckedPagination"></div>
+    <div class="sidebar-layout">
+      <div class="shop-sidebar">
+        <div class="sidebar-title">ショップ</div>
+        <div class="sidebar-list" id="uncheckedShopSidebar"></div>
+      </div>
+      <div class="sidebar-content">
+        <div class="global-wrap"><div class="global-grid" id="uncheckedGrid"></div></div>
+        <div class="pagination" id="uncheckedPagination"></div>
+      </div>
+    </div>
   </div>
 
   <div id="tabGood" style="display:none">
     <div style="margin-bottom:14px;font-size:12px;color:var(--muted)">👍 Good評価をつけた商品です。</div>
-    <div class="global-wrap"><div class="global-grid" id="goodGrid"></div></div>
-    <div class="pagination" id="goodPagination"></div>
+    <div class="sidebar-layout">
+      <div class="shop-sidebar">
+        <div class="sidebar-title">ショップ</div>
+        <div class="sidebar-list" id="goodShopSidebar"></div>
+      </div>
+      <div class="sidebar-content">
+        <div class="global-wrap"><div class="global-grid" id="goodGrid"></div></div>
+        <div class="pagination" id="goodPagination"></div>
+      </div>
+    </div>
   </div>
 
   <div id="tabBad" style="display:none">
     <div style="margin-bottom:14px;font-size:12px;color:var(--muted)">👎 微妙評価をつけた商品です。</div>
-    <div class="global-wrap"><div class="global-grid" id="badGrid"></div></div>
-    <div class="pagination" id="badPagination"></div>
+    <div class="sidebar-layout">
+      <div class="shop-sidebar">
+        <div class="sidebar-title">ショップ</div>
+        <div class="sidebar-list" id="badShopSidebar"></div>
+      </div>
+      <div class="sidebar-content">
+        <div class="global-wrap"><div class="global-grid" id="badGrid"></div></div>
+        <div class="pagination" id="badPagination"></div>
+      </div>
+    </div>
   </div>
 
   <!-- ショップ追加タブ -->
@@ -806,50 +851,87 @@ function refreshCard(key){
 const GPAGE=40;
 let allPage=1,uncPage=1;
 
+// サイドバーフィルター状態
+let allShopFilter=null, uncShopFilter=null, goodShopFilter=null, badShopFilter=null;
+
+// サイドバー描画ヘルパー
+function buildSidebar(elId, items, currentFilter, onSelect) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  // ショップ別件数集計
+  const counts = {};
+  items.forEach(it => {
+    const key = it.shop_name||it.shop_sid||'';
+    counts[key] = (counts[key]||0) + 1;
+  });
+  const shops = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const total = items.length;
+  let html = `<div class="sidebar-item ${!currentFilter?'active':''}" onclick="(${onSelect.toString()})(null)">
+    <span>全ショップ</span><span class="s-cnt">${total}</span>
+  </div>`;
+  shops.forEach(([name, cnt]) => {
+    const active = currentFilter===name ? 'active' : '';
+    html += `<div class="sidebar-item ${active}" onclick="(${onSelect.toString()})('${name.replace(/'/g,"\\'")}')">
+      <span style="overflow:hidden;text-overflow:ellipsis">${name}</span><span class="s-cnt">${cnt}</span>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
 function renderAllProducts(){
   const q=(document.getElementById('allSearch')?.value||'').toLowerCase();
   let items=getAllItems();
   if(q)items=items.filter(it=>it.name.toLowerCase().includes(q)||it.shop_name.toLowerCase().includes(q));
   items=sortItemsByWeeklyDelta(items);
-  document.getElementById('allCnt').textContent=items.length+'件';
+  // サイドバー
+  buildSidebar('allShopSidebar', items, allShopFilter, (s)=>{allShopFilter=s;allPage=1;renderAllProducts();});
+  // フィルター適用
+  const filtered = allShopFilter ? items.filter(it=>it.shop_name===allShopFilter) : items;
+  document.getElementById('allCnt').textContent=filtered.length+'件';
   const start=(allPage-1)*GPAGE;
-  const page=items.slice(start,start+GPAGE);
+  const page=filtered.slice(start,start+GPAGE);
   document.getElementById('allGrid').innerHTML=page.map((it,i)=>productCard(it,start+i+1)).join('');
-  renderGlobalPagination('allPagination',items.length,allPage,p=>{allPage=p;renderAllProducts();});
+  renderGlobalPagination('allPagination',filtered.length,allPage,p=>{allPage=p;renderAllProducts();});
 }
 
 function renderUnchecked(){
   let items=getAllItems().filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]);
   items=sortItemsByWeeklyDelta(items);
+  buildSidebar('uncheckedShopSidebar', items, uncShopFilter, (s)=>{uncShopFilter=s;uncPage=1;renderUnchecked();});
+  const filtered = uncShopFilter ? items.filter(it=>it.shop_name===uncShopFilter) : items;
   const start=(uncPage-1)*GPAGE;
-  const page=items.slice(start,start+GPAGE);
-  document.getElementById('uncheckedGrid').innerHTML=items.length>0
+  const page=filtered.slice(start,start+GPAGE);
+  document.getElementById('uncheckedGrid').innerHTML=filtered.length>0
     ?page.map((it,i)=>productCard(it,start+i+1)).join('')
     :'<div class="empty-state">チェック前の商品はありません</div>';
-  renderGlobalPagination('uncheckedPagination',items.length,uncPage,p=>{uncPage=p;renderUnchecked();});
+  renderGlobalPagination('uncheckedPagination',filtered.length,uncPage,p=>{uncPage=p;renderUnchecked();});
 }
 
 let goodPage=1,badPage=1;
 function renderGood(){
   let items=getAllItems().filter(it=>goodItems[it.item_id]);
   items=sortItemsByWeeklyDelta(items);
+  buildSidebar('goodShopSidebar', items, goodShopFilter, (s)=>{goodShopFilter=s;goodPage=1;renderGood();});
+  const filtered = goodShopFilter ? items.filter(it=>it.shop_name===goodShopFilter) : items;
   const start=(goodPage-1)*GPAGE;
-  const page=items.slice(start,start+GPAGE);
-  document.getElementById('goodGrid').innerHTML=items.length>0
+  const page=filtered.slice(start,start+GPAGE);
+  document.getElementById('goodGrid').innerHTML=filtered.length>0
     ?page.map((it,i)=>productCard(it,start+i+1)).join('')
     :'<div class="empty-state">👍 Good評価の商品がありません。<br>商品カードの「👍 Good」を押してください。</div>';
-  renderGlobalPagination('goodPagination',items.length,goodPage,p=>{goodPage=p;renderGood();});
+  renderGlobalPagination('goodPagination',filtered.length,goodPage,p=>{goodPage=p;renderGood();});
 }
 
 function renderBad(){
   let items=getAllItems().filter(it=>badItems[it.item_id]);
   items=sortItemsByWeeklyDelta(items);
+  buildSidebar('badShopSidebar', items, badShopFilter, (s)=>{badShopFilter=s;badPage=1;renderBad();});
+  const filtered = badShopFilter ? items.filter(it=>it.shop_name===badShopFilter) : items;
   const start=(badPage-1)*GPAGE;
-  const page=items.slice(start,start+GPAGE);
-  document.getElementById('badGrid').innerHTML=items.length>0
+  const page=filtered.slice(start,start+GPAGE);
+  document.getElementById('badGrid').innerHTML=filtered.length>0
     ?page.map((it,i)=>productCard(it,start+i+1)).join('')
     :'<div class="empty-state">👎 微妙評価の商品がありません。<br>商品カードの「👎 微妙」を押してください。</div>';
-  renderGlobalPagination('badPagination',items.length,badPage,p=>{badPage=p;renderBad();});
+  renderGlobalPagination('badPagination',filtered.length,badPage,p=>{badPage=p;renderBad();});
 }
 
 function renderWorthless(){
