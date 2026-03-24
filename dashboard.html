@@ -124,7 +124,14 @@ tr:last-child td{border-bottom:none}
 
 <header>
   <div class="logo">rival<span>watch</span></div>
-  <div class="hdr-meta"><span><span class="live"></span>商品単位 観測中</span><span id="hdrDate"></span></div>
+  <div class="hdr-meta">
+    <span><span class="live"></span>商品単位 観測中</span>
+    <span id="hdrDate"></span>
+    <a href="https://github.com/kaiyoshida0318/rivalwatch/actions/workflows/weekly.yml" target="_blank"
+      style="padding:5px 12px;background:#2ecc8a;color:#fff;border-radius:5px;font-size:11px;font-family:var(--mono);text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap">
+      ▶ 今すぐ更新
+    </a>
+  </div>
 </header>
 
 <div class="kpi-strip">
@@ -480,6 +487,10 @@ function renderShops(){
         <div class="panel-head">
           <div class="panel-title">${s.name} — 上位${getItemCount(key)}商品${outCount>0?` <span style="font-size:11px;color:var(--muted);font-weight:400">（順位外 ${outCount}件を含む）</span>`:''}
           </div>
+          <a href="https://search.rakuten.co.jp/search/mall/?sid=${s.sid||key}&o=5" target="_blank"
+            style="font-size:11px;color:var(--accent);font-family:var(--mono);text-decoration:none;white-space:nowrap;padding:4px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg)">
+            楽天で全商品を見る →
+          </a>
         </div>
         <div class="product-grid">${allItems.slice(0,getItemCount(key)*2).map((it,i)=>productCard(it,i+1)).join('')}</div>
       </div></div>`;
@@ -561,12 +572,16 @@ function productCard(item, rank){
     ? `<div style="position:absolute;top:6px;left:6px;background:#f0ede8;color:var(--muted);border-radius:4px;font-size:9px;font-family:var(--mono);padding:2px 5px">圏外</div>`
     : '';
   const mock=item.is_mock?`<span style="font-size:9px;color:var(--muted)"> 仮</span>`:'';
+  const shopNameHtml = item.shop_name
+    ? `<div style="font-size:10px;color:var(--muted);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.shop_name}</div>`
+    : '';
   return `<div class="product-card ${isChecked?'checked':''} ${item.out_of_rank?'out-of-rank':''}" id="card-${key}">
     ${isChecked?'<div class="checked-badge">✓済み</div>':''}
     ${outOfRank}
     ${imgHtml}
     <div class="product-body">
       <div class="product-rank">#${rank}${mock}</div>
+      ${shopNameHtml}
       <div class="product-name">${item.name||'—'}</div>
       ${item.price?`<div class="product-price">¥${item.price.toLocaleString()}</div>`:''}
       <div class="product-stat">★${(item.review_count||0).toLocaleString()}件</div>
