@@ -93,7 +93,7 @@ def fetch_items(shop_code):
         "accessKey":     ACCESS_KEY,
         "format":        "json",
         "shopCode":      shop_code,
-        "hits":          30,
+        "hits":          20,
         "sort":          "-reviewCount",
     }
     url = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20220601?" \
@@ -123,6 +123,8 @@ def collect_shop(shop_code):
     items = []
     for entry in data["Items"][:ITEMS_PER_SHOP]:
         it = entry.get("Item", entry)
+        imgs = it.get("mediumImageUrls", [])
+        img_url = imgs[0].get("imageUrl","") if imgs else ""
         items.append({
             "item_id":      str(it.get("itemCode", "")),
             "name":         it.get("itemName", "")[:80],
@@ -130,6 +132,7 @@ def collect_shop(shop_code):
             "review_count": int(it.get("reviewCount", 0)),
             "review_avg":   float(it.get("reviewAverage", 0)),
             "url":          it.get("itemUrl", ""),
+            "image_url":    img_url,
         })
     return items
 
