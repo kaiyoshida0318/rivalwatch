@@ -127,6 +127,8 @@ tr:last-child td{border-bottom:none}
   <div class="hdr-meta">
     <span><span class="live"></span>商品単位 観測中</span>
     <span id="hdrDate"></span>
+    <span id="syncStatus" style="font-size:11px;font-family:var(--mono)"></span>
+    <button onclick="openPATModal()" style="padding:4px 10px;background:transparent;color:#888;border:1px solid #444;border-radius:5px;font-size:10px;font-family:var(--mono);cursor:pointer" title="GitHub同期設定">⚙ 同期</button>
     <a href="https://github.com/kaiyoshida0318/rivalwatch/actions/workflows/weekly.yml" target="_blank"
       style="padding:5px 12px;background:#2ecc8a;color:#fff;border-radius:5px;font-size:11px;font-family:var(--mono);text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap">
       ▶ 今すぐ更新
@@ -307,9 +309,104 @@ const BASE_SHOPS = [
 
 // ── ローカルストレージ ────────────────────────────────
 function loadExtra() { try{return JSON.parse(localStorage.getItem('rw_extra_shops')||'[]')}catch{return[]} }
-function saveExtra(arr) { try{localStorage.setItem('rw_extra_shops',JSON.stringify(arr))}catch{} }
+function saveExtra(arr) { try{localStorage.setItem('rw_extra_shops',JSON.stringify(arr));syncToGitHub()}catch{} }
 function loadChecked() { try{return JSON.parse(localStorage.getItem('rw_checked')||'{}')}catch{return{}} }
-function saveChecked(o) { try{localStorage.setItem('rw_checked',JSON.stringify(o))}catch{} }
+function saveChecked(o) { try{localStorage.setItem('rw_checked',JSON.stringify(o));syncToGitHub()}catch{} }
+
+// ── GitHub 同期 ──────────────────────────────────────
+const GH_OWNER = 'kaiyoshida0318';
+const GH_REPO  = 'rivalwatch';
+const GH_FILE  = 'data/user_state.json';
+const GH_API   = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`;
+
+// PATはlocalStorageに保存（各ブラウザで一度だけ入力）
+function getPAT() { return localStorage.getItem('rw_pat') || ''; }
+function setPAT(t) { localStorage.setItem('rw_pat', t); }
+
+function getUserState() {
+  return {
+    checked:      checkedItems,
+    extra_shops:  extraShops,
+    hidden_shops: hiddenShops,
+    item_counts:  itemCounts,
+    updated_at:   new Date().toISOString(),
+  };
+}
+
+let syncTimer = null;
+function syncToGitHub() {
+  // 500ms デバウンス（連続操作をまとめる）
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(_doSync, 500);
+}
+
+async function _doSync() {
+  const pat = getPAT();
+  if (!pat) return; // PATがなければスキップ
+  try {
+    // 現在のファイルのSHAを取得（更新に必要）
+    const getRes = await fetch(GH_API, {
+      headers: { Authorization: `token ${pat}`, Accept: 'application/vnd.github+json' }
+    });
+    let sha = null;
+    if (getRes.ok) { const d = await getRes.json(); sha = d.sha; }
+
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(getUserState(), null, 2))));
+    const body = { message: '状態を同期', content, ...(sha ? { sha } : {}) };
+
+    await fetch(GH_API, {
+      method: 'PUT',
+      headers: {
+        Authorization: `token ${pat}`,
+        Accept: 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    showSyncStatus('✓ 同期完了');
+  } catch(e) {
+    showSyncStatus('⚠ 同期失敗', true);
+  }
+}
+
+async function loadFromGitHub() {
+  const pat = getPAT();
+  if (!pat) return false;
+  try {
+    const res = await fetch(GH_API + '?t=' + Date.now(), {
+      headers: { Authorization: `token ${pat}`, Accept: 'application/vnd.github+json' }
+    });
+    if (!res.ok) return false;
+    const d = await res.json();
+    const state = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
+    // 状態を反映
+    if (state.checked)      { checkedItems = state.checked;      localStorage.setItem('rw_checked', JSON.stringify(checkedItems)); }
+    if (state.extra_shops)  { extraShops   = state.extra_shops;  localStorage.setItem('rw_extra_shops', JSON.stringify(extraShops)); }
+    if (state.hidden_shops) { hiddenShops  = state.hidden_shops; saveHiddenShops(hiddenShops); }
+    if (state.item_counts)  { itemCounts   = state.item_counts;  saveItemCounts(itemCounts); }
+    return true;
+  } catch(e) { return false; }
+}
+
+function showSyncStatus(msg, isErr=false) {
+  const el = document.getElementById('syncStatus');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = isErr ? 'var(--warn)' : 'var(--up)';
+  setTimeout(() => { el.textContent = ''; }, 3000);
+}
+
+// PAT設定モーダル
+function openPATModal() {
+  const cur = getPAT();
+  const input = prompt('GitHub PATを入力してください（一度だけ必要です）\nghp_ から始まるトークンを貼り付けてください：', cur || '');
+  if (input === null) return;
+  if (input.trim()) {
+    setPAT(input.trim());
+    alert('PATを保存しました。GitHubと同期します。');
+    _doSync();
+  }
+}
 
 let extraShops = loadExtra();
 let checkedItems = loadChecked();
@@ -326,7 +423,9 @@ function getAllShops() {
         topItems:(s.top_items||[]).map(it=>({...it,shop_name:s.name,shop_sid:s.sid}))}))
     : BASE_SHOPS.map(s=>({...s,topItems:[]}));
   const extra = extraShops.map(s=>({...s,topItems:[],isNew:true}));
-  return [...extra, ...base];
+  // 非表示ショップを除外
+  const filteredBase = base.filter(s => !hiddenShops.includes(s.shopCode||s.sid));
+  return [...extra, ...filteredBase];
 }
 
 function makeMockItems(shop, count=20) {
@@ -473,7 +572,7 @@ function renderShops(){
         </div>
       </td>
       <td><button class="expand-btn ${ps.open?'open':''}" onclick="togglePanel('${key}')">▼ 商品を見る</button></td>
-      <td>${isNew?`<button class="del-btn" onclick="deleteShop('${key}')">削除</button>`:''}`;
+      <td><button class="del-btn" onclick="deleteShop('${key}','${s.isBase?'base':'extra'}')">削除</button>`;
     tbody.appendChild(tr);
 
     if(ps.open){
@@ -507,10 +606,22 @@ function renderShops(){
   pg.innerHTML=html;
 }
 
-function deleteShop(key){
-  if(!confirm('このショップを削除しますか？')) return;
-  extraShops=extraShops.filter(s=>(s.shopCode||s.sid)!==key);
-  saveExtra(extraShops);
+// 非表示にしたベースショップのキーを保存
+function loadHiddenShops() { try{return JSON.parse(localStorage.getItem('rw_hidden_shops')||'[]')}catch{return[]} }
+function saveHiddenShops(arr) { try{localStorage.setItem('rw_hidden_shops',JSON.stringify(arr))}catch{} }
+let hiddenShops = loadHiddenShops();
+
+function deleteShop(key, type){
+  if(!confirm('このショップを削除しますか？\n（再表示はできません）')) return;
+  if(type==='base'){
+    // ベースショップは非表示リストに追加
+    if(!hiddenShops.includes(key)) hiddenShops.push(key);
+    saveHiddenShops(hiddenShops);
+  } else {
+    // 追加ショップは完全削除
+    extraShops=extraShops.filter(s=>(s.shopCode||s.sid)!==key);
+    saveExtra(extraShops);
+  }
   renderShops();
   updateBadges();
 }
@@ -853,6 +964,14 @@ function bulkAdd(){
 }
 (async()=>{
   document.getElementById('hdrDate').textContent=new Date().toLocaleDateString('ja-JP');
+
+  // GitHub から最新状態を読み込む
+  if (getPAT()) {
+    showSyncStatus('↓ 同期中...');
+    const ok = await loadFromGitHub();
+    if (ok) showSyncStatus('✓ 同期済み');
+  }
+
   try{
     const r=await fetch('data/latest_summary.json');
     if(r.ok)SUMMARY=await r.json();
