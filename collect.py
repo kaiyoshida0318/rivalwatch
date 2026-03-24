@@ -10,7 +10,8 @@ import urllib.request, urllib.parse
 SNAPSHOTS_FILE = "data/snapshots.json"
 SUMMARY_FILE   = "data/latest_summary.json"
 ALERTS_FILE    = "data/alerts.json"
-ITEMS_PER_SHOP = 30
+ITEM_COUNTS_FILE = "data/item_counts.json"  # ショップ別測定数
+DEFAULT_ITEMS  = 15   # デフォルト測定数
 SLEEP_SEC      = 1.5
 JST            = timezone(timedelta(hours=9))
 APP_ID         = os.environ.get("RAKUTEN_APP_ID", "")
@@ -87,13 +88,20 @@ SHOPS = [
     {"no":"76","name":"ぷらす堂",                        "shopCode":"plusdo"},
 ]
 
-def fetch_items(shop_code):
+def load_item_counts():
+    """ダッシュボードで設定したショップ別測定数を読み込む"""
+    if os.path.exists(ITEM_COUNTS_FILE):
+        with open(ITEM_COUNTS_FILE, encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+def fetch_items(shop_code, hits=DEFAULT_ITEMS):
     params = {
         "applicationId": APP_ID,
         "accessKey":     ACCESS_KEY,
         "format":        "json",
         "shopCode":      shop_code,
-        "hits":          20,
+        "hits":          min(hits, 30),  # APIの最大値は30
         "sort":          "-reviewCount",
     }
     url = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20220601?" \
@@ -116,12 +124,12 @@ def fetch_items(shop_code):
         print(f"    [ERROR] {e}")
         return None
 
-def collect_shop(shop_code):
-    data = fetch_items(shop_code)
+def collect_shop(shop_code, hits=DEFAULT_ITEMS):
+    data = fetch_items(shop_code, hits)
     if not data or "Items" not in data or not data["Items"]:
         return []
     items = []
-    for entry in data["Items"][:ITEMS_PER_SHOP]:
+    for entry in data["Items"][:hits]:
         it = entry.get("Item", entry)
         imgs = it.get("mediumImageUrls", [])
         img_url = imgs[0].get("imageUrl","") if imgs else ""
@@ -185,13 +193,15 @@ def main():
 
     snapshots=load_json(SNAPSHOTS_FILE,{})
     all_alerts=load_json(ALERTS_FILE,[])
+    item_counts=load_item_counts()  # ショップ別測定数
     summary_shops=[]
 
     for shop in SHOPS:
         shop_code = shop["shopCode"]
         name, no  = shop["name"], shop["no"]
-        print(f"\n▶ [{no:>2}] {name}")
-        curr_items=collect_shop(shop_code)
+        hits = item_counts.get(shop_code, DEFAULT_ITEMS)  # 設定された測定数を使用
+        print(f"\n▶ [{no:>2}] {name} (測定数: {hits})")
+        curr_items=collect_shop(shop_code, hits)
         if not curr_items:
             print(f"      スキップ（shopCode要確認: {shop_code}）"); continue
         print(f"      取得: {len(curr_items)}商品 / 最多レビュー: {curr_items[0]['review_count']}件")
