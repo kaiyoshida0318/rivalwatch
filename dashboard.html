@@ -468,10 +468,21 @@ function getAllShops() {
         isBase:true,
         topItems:(s.top_items||[]).map(it=>({...it,shop_name:s.name,shop_sid:s.sid}))}))
     : BASE_SHOPS.map(s=>({...s,topItems:[]}));
-  const extra = extraShops.map(s=>({...s,topItems:[],isNew:true}));
+  // SUMMARYに含まれているshopCodeを取得
+  const summaryKeys = new Set(base.map(s => s.shopCode||s.sid));
+  // extraShopsのうちSUMMARYにないもの（まだ収集されていない新規ショップ）だけ追加
+  const extra = extraShops
+    .filter(s => !summaryKeys.has(s.shopCode||s.sid))
+    .map(s=>({...s,topItems:[],isNew:true}));
   // 非表示ショップを除外
   const filteredBase = base.filter(s => !worthlessShops[s.shopCode||s.sid]);
-  return [...extra, ...filteredBase];
+  // SUMMARYにある追加ショップにもNEWバッジをつける
+  const extraKeys = new Set(extraShops.map(s => s.shopCode||s.sid));
+  const taggedBase = filteredBase.map(s => ({
+    ...s,
+    isNew: extraKeys.has(s.shopCode||s.sid) ? true : s.isNew
+  }));
+  return [...extra, ...taggedBase];
 }
 
 function makeMockItems(shop, count=20) {
