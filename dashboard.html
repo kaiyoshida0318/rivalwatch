@@ -733,15 +733,10 @@ function renderShops(){
     const goodCnt   = shopItems.filter(it=>goodItems[it.item_id]).length;
     const badCnt    = shopItems.filter(it=>badItems[it.item_id]).length;
     const w1Cnt     = shopItems.filter(it=>watch1Items[it.item_id]).length;
-    
-    const goodBadHtml = (goodCnt>0||badCnt>0||w1Cnt>0)
-      ? `<div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap">
-          ${goodCnt>0?`<span style="background:#e8f5ef;color:#0f6e56;border-radius:4px;padding:3px 8px;font-size:12px;font-weight:500">👍 ${goodCnt}</span>`:''}
-          ${badCnt>0?`<span style="background:#fff3cd;color:#856a00;border-radius:4px;padding:3px 8px;font-size:12px;font-weight:500">👎 ${badCnt}</span>`:''}
-          ${w1Cnt>0?`<span style="background:#e8effe;color:#3a5ec0;border-radius:4px;padding:3px 8px;font-size:12px;font-weight:500">👀① ${w1Cnt}</span>`:''}
-
-         </div>`
-      : `<span style="color:var(--muted);font-size:11px">—</span>`;
+    const uncCnt    = shopItems.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]).length;
+    const cntStyle  = (n,bg,col) => n>0
+      ? `<span style="background:${bg};color:${col};border-radius:4px;padding:3px 8px;font-size:12px;font-weight:600">${n}</span>`
+      : `<span style="color:var(--muted);font-size:12px">—</span>`;
 
     tr.innerHTML=`
       <td><span class="mono" style="color:var(--muted)">${rank}</span></td>
