@@ -5,7 +5,6 @@
   },
   "good": {
     "confianceshop:10000444": true,
-    "bestday:10000523": true,
     "shelly-shop:10000963": true,
     "confianceshop:10000286": true,
     "lebenwood:10004906": true,
@@ -38,6 +37,9 @@
     },
     "trade-abc:10012356": {
       "at": "03/24 22:41"
+    },
+    "bestday:10000523": {
+      "at": "03/24 22:42"
     }
   },
   "bad": {
@@ -49,8 +51,6 @@
     "kqueenstore:10001519": true,
     "morevalue:10000227": true,
     "exrevo:10000032": true,
-    "morevalue:10000284": true,
-    "shelly-shop:10000996": true,
     "oobikiyaking:10050681": true,
     "oobikiyaking:10052376": true,
     "oobikiyaking:10057726": true,
@@ -334,6 +334,12 @@
     },
     "forthon:10000841": {
       "at": "03/24 22:41"
+    },
+    "shelly-shop:10000996": {
+      "at": "03/24 22:41"
+    },
+    "morevalue:10000284": {
+      "at": "03/24 22:42"
     }
   },
   "watch1": {
@@ -564,5 +570,5 @@
     "unicona": 50,
     "umiwo": 20
   },
-  "updated_at": "2026-03-24T13:41:59.524Z"
+  "updated_at": "2026-03-24T13:42:01.385Z"
 }
