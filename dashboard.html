@@ -179,7 +179,7 @@ tr:last-child td{border-bottom:none}
     <div class="notice">⏱ <div><strong>Week 0 — 初回スナップショット</strong>。週次収集後に商品データ・画像・販売推定が自動更新されます。</div></div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>#</th><th>ショップ名</th><th>累計レビュー</th><th class="hide-sp">週販売推定</th><th>測定数</th><th>商品一覧</th><th></th></tr></thead>
+        <thead><tr><th>#</th><th>ショップ名</th><th>累計レビュー</th><th class="hide-sp">週販売推定</th><th>測定数</th><th>Good/微妙</th><th>商品一覧</th><th></th></tr></thead>
         <tbody id="shopTbody"></tbody>
       </table>
     </div>
@@ -657,6 +657,18 @@ function renderShops(){
 
     const tr=document.createElement('tr');
     tr.className='shop-row'+(isNew?' new-shop-row':'');
+
+    // このショップのGood/微妙数を集計
+    const shopItems = getAllItems().filter(it=>(it.shop_sid||it.shop_name)===key||(it.shop_name===s.name));
+    const goodCnt = shopItems.filter(it=>goodItems[it.item_id]).length;
+    const badCnt  = shopItems.filter(it=>badItems[it.item_id]).length;
+    const goodBadHtml = (goodCnt>0||badCnt>0)
+      ? `<div style="display:flex;gap:5px;align-items:center">
+          ${goodCnt>0?`<span style="background:#e8f5ef;color:#0f6e56;border-radius:4px;padding:2px 6px;font-size:10px;font-family:var(--mono)">👍${goodCnt}</span>`:''}
+          ${badCnt>0?`<span style="background:#fff3cd;color:#856a00;border-radius:4px;padding:2px 6px;font-size:10px;font-family:var(--mono)">👎${badCnt}</span>`:''}
+         </div>`
+      : `<span style="color:var(--muted);font-size:11px">—</span>`;
+
     tr.innerHTML=`
       <td><span class="mono" style="color:var(--muted)">${rank}</span></td>
       <td><div class="shop-name-cell">
@@ -677,6 +689,7 @@ function renderShops(){
           <span style="font-size:10px;color:var(--muted)">件${s.total_item_count?`<span style="color:var(--muted)">/${s.total_item_count.toLocaleString()}</span>`:''}</span>
         </div>
       </td>
+      <td>${goodBadHtml}</td>
       <td><button class="expand-btn ${ps.open?'open':''}" onclick="togglePanel('${key}')">▼ 商品を見る</button></td>
       <td><button class="del-btn" onclick="deleteShop('${key}','${s.isBase?'base':'extra'}')">価値なし</button>`;
     tbody.appendChild(tr);
@@ -684,7 +697,7 @@ function renderShops(){
     if(ps.open){
       const pr=document.createElement('tr');
       const td=document.createElement('td');
-      td.colSpan=7; td.style.padding='0';
+      td.colSpan=8; td.style.padding='0';
       const currentItems=(s.topItems&&s.topItems.length>0)?s.topItems:makeMockItems(s,getItemCount(key));
       const allItems = getShopAllItems(key, currentItems);
       const outCount = allItems.filter(it=>it.out_of_rank).length;
