@@ -58,11 +58,20 @@ SHOPS = [
 ]
 
 def load_item_counts():
-    """ダッシュボードで設定したショップ別測定数を読み込む"""
+    """ダッシュボードで設定したショップ別測定数を読み込む
+    user_state.json の item_counts フィールドを優先的に使用"""
+    counts = {}
+    # まず item_counts.json を読む（あれば）
     if os.path.exists(ITEM_COUNTS_FILE):
         with open(ITEM_COUNTS_FILE, encoding="utf-8") as f:
-            return json.load(f)
-    return {}
+            counts.update(json.load(f))
+    # user_state.json の item_counts で上書き（こちらが最新）
+    if os.path.exists(USER_STATE_FILE):
+        with open(USER_STATE_FILE, encoding="utf-8") as f:
+            state = json.load(f)
+            if "item_counts" in state:
+                counts.update(state["item_counts"])
+    return counts
 
 def fetch_items(shop_code, hits=DEFAULT_ITEMS, page=1):
     params = {
