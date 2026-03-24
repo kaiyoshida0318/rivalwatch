@@ -6,7 +6,6 @@
   "good": {
     "confianceshop:10000444": true,
     "oobikiyaking:10059177": true,
-    "umiwo:10000001": true,
     "trendstyle:10003765": true,
     "shelly-shop:10000067": true,
     "forthon:10000858": true,
@@ -54,6 +53,9 @@
     },
     "forthon:10000732": {
       "at": "03/24 22:42"
+    },
+    "umiwo:10000001": {
+      "at": "03/24 22:42"
     }
   },
   "bad": {
@@ -64,9 +66,6 @@
     "kqueenstore:10001519": true,
     "haidihaidi:10001569": true,
     "haidihaidi:10002117": true,
-    "trendstyle:10003767": true,
-    "nagomi-japan:10000057": true,
-    "across-zakka:10000006": true,
     "oobikiyaking:10057892": true,
     "oobikiyaking:10059662": true,
     "oobikiyaking:10049635": true,
@@ -434,13 +433,25 @@
     },
     "oobikiyaking:10057820": {
       "at": "03/24 22:42"
+    },
+    "across-zakka:10000006": {
+      "at": "03/24 22:42"
+    },
+    "nagomi-japan:10000057": {
+      "at": "03/24 22:42"
+    },
+    "trendstyle:10003767": {
+      "at": "03/24 22:42"
     }
   },
   "watch1": {
     "barsado:10019926": true,
     "shelly-shop:10000068": true,
     "sweetsweetshop:10000001": true,
-    "roryxtyle:10003202": true
+    "roryxtyle:10003202": true,
+    "forthon:10000137": {
+      "at": "03/24 22:42"
+    }
   },
   "extra_shops": [
     {
@@ -663,5 +674,5 @@
     "unicona": 50,
     "umiwo": 20
   },
-  "updated_at": "2026-03-24T13:42:44.861Z"
+  "updated_at": "2026-03-24T13:42:50.235Z"
 }
