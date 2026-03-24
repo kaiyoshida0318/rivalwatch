@@ -371,27 +371,41 @@ function syncToGitHub() {
 
 async function _doSync() {
   const pat = getPAT();
-  if (!pat) return; // PATがなければスキップ
+  if (!pat) return;
   try {
-    // 現在のファイルのSHAを取得（更新に必要）
-    const getRes = await fetch(GH_API, {
+    // ① user_state.json を更新（チェック状態・非表示・測定数）
+    const stateApi = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`;
+    const getRes = await fetch(stateApi, {
       headers: { Authorization: `token ${pat}`, Accept: 'application/vnd.github+json' }
     });
     let sha = null;
     if (getRes.ok) { const d = await getRes.json(); sha = d.sha; }
-
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(getUserState(), null, 2))));
-    const body = { message: '状態を同期', content, ...(sha ? { sha } : {}) };
-
-    await fetch(GH_API, {
+    const stateContent = btoa(unescape(encodeURIComponent(JSON.stringify(getUserState(), null, 2))));
+    await fetch(stateApi, {
       method: 'PUT',
-      headers: {
-        Authorization: `token ${pat}`,
-        Accept: 'application/vnd.github+json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
+      headers: { Authorization: `token ${pat}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: '状態を同期', content: stateContent, ...(sha ? { sha } : {}) }),
     });
+
+    // ② extra_shops.json を更新（collect.pyが読み込む）
+    const extraApi = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/data/extra_shops.json`;
+    const extraGetRes = await fetch(extraApi, {
+      headers: { Authorization: `token ${pat}`, Accept: 'application/vnd.github+json' }
+    });
+    let extraSha = null;
+    if (extraGetRes.ok) { const d = await extraGetRes.json(); extraSha = d.sha; }
+    // collect.pyが使いやすい形式で保存
+    const extraData = extraShops.map(s => ({
+      shopCode: s.shopCode || s.sid || '',
+      name: s.name || s.shopCode || '',
+    })).filter(s => s.shopCode);
+    const extraContent = btoa(unescape(encodeURIComponent(JSON.stringify(extraData, null, 2))));
+    await fetch(extraApi, {
+      method: 'PUT',
+      headers: { Authorization: `token ${pat}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: '追加ショップを同期', content: extraContent, ...(extraSha ? { sha: extraSha } : {}) }),
+    });
+
     showSyncStatus('✓ 同期完了');
   } catch(e) {
     showSyncStatus('⚠ 同期失敗', true);
@@ -1059,7 +1073,12 @@ function bulkAdd(){
   saveExtra(extraShops);
   renderShops();
   updateBadges();
-  alert(`${toAdd.length}件のショップを追加しました。\n次回の週次収集から自動観測が始まります。`);
+
+  const pat = getPAT();
+  const syncMsg = pat
+    ? '\nGitHubに同期中... 完了後に「今すぐ更新」を押してください。'
+    : '\n⚠ GitHub同期するにはヘッダーの「⚙ 同期」でPATを設定してください。';
+  alert(`${toAdd.length}件のショップを追加しました。${syncMsg}`);
   clearAllRows();
   document.getElementById('bulkResultWrap').style.display='none';
 }
