@@ -1113,38 +1113,6 @@ function extractShopCode(url) {
   return m ? m[1] : null;
 }
 
-function bulkAdd() {
-  const allShops = getAllShops();
-  const existing = new Set(allShops.map(s => s.shopCode || s.sid));
-  const results = [];
-  let added = 0, skipped = 0, failed = 0;
-
-  for (let i = 0; i < URL_INPUT_COUNT; i++) {
-    const val = document.getElementById(`urlBulk${i}`)?.value?.trim();
-    if (!val) continue;
-    const code = extractShopCode(val);
-    if (!code) { failed++; results.push(`<span style="color:var(--down)">✗ ${val} — URLの形式が正しくありません</span>`); continue; }
-    if (existing.has(code)) { skipped++; results.push(`<span style="color:var(--muted)">— ${code} — すでに登録済み</span>`); continue; }
-    extraShops.unshift({shopCode:code, name:code, reviews:0, topItems:[], isNew:true, no:'—', sid:code, addedAt:new Date().toISOString()});
-    existing.add(code);
-    added++;
-    results.push(`<span style="color:var(--up)">✓ ${code} — 追加しました</span>`);
-    document.getElementById(`urlBulk${i}`).value = '';
-  }
-
-  if (added > 0) {
-    saveExtra(extraShops);
-    currentPage = 1;
-    renderShops();
-    updateBadges();
-  }
-
-  document.getElementById('bulkResult').innerHTML = results.join('<br>');
-  if (added > 0) {
-    setTimeout(() => document.getElementById('bulkResult').innerHTML = '', 5000);
-  }
-}
-
 // ── ショップ追加タブ ──────────────────────────────────
 let urlRowCount = 0;
 let bulkResults = [];
