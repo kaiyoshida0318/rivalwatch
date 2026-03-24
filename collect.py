@@ -95,7 +95,8 @@ def fetch_items(shop_code, hits=DEFAULT_ITEMS):
 def collect_shop(shop_code, hits=DEFAULT_ITEMS):
     data = fetch_items(shop_code, hits)
     if not data or "Items" not in data or not data["Items"]:
-        return []
+        return [], 0
+    total_count = int(data.get("count", 0))  # ショップの全商品数
     items = []
     for entry in data["Items"][:hits]:
         it = entry.get("Item", entry)
@@ -110,7 +111,7 @@ def collect_shop(shop_code, hits=DEFAULT_ITEMS):
             "url":          it.get("itemUrl", ""),
             "image_url":    img_url,
         })
-    return items
+    return items, total_count
 
 def estimate_weekly_sales(delta):
     if not delta or delta <= 0: return None
@@ -167,12 +168,12 @@ def main():
     for shop in SHOPS:
         shop_code = shop["shopCode"]
         name, no  = shop["name"], shop["no"]
-        hits = item_counts.get(shop_code, DEFAULT_ITEMS)  # 設定された測定数を使用
+        hits = item_counts.get(shop_code, DEFAULT_ITEMS)
         print(f"\n▶ [{no:>2}] {name} (測定数: {hits})")
-        curr_items=collect_shop(shop_code, hits)
+        curr_items, total_count = collect_shop(shop_code, hits)
         if not curr_items:
             print(f"      スキップ（shopCode要確認: {shop_code}）"); continue
-        print(f"      取得: {len(curr_items)}商品 / 最多レビュー: {curr_items[0]['review_count']}件")
+        print(f"      取得: {len(curr_items)}商品 / 全{total_count}商品 / 最多レビュー: {curr_items[0]['review_count']}件")
 
         prev_snap=snapshots.get(shop_code,{}).get("latest_items",[])
         if prev_snap:
@@ -206,8 +207,9 @@ def main():
             "total_reviews":total_rev,"item_count":len(curr_items),"items":items_with_delta})
 
         summary_shops.append({"no":no,"name":name,"sid":shop_code,"total_reviews":total_rev,
-            "item_count":len(curr_items),"weekly_delta":total_delta,"weekly_est":shop_est,
-            "top_items":items_with_delta,  # 全商品を保存
+            "item_count":len(curr_items),"total_item_count":total_count,
+            "weekly_delta":total_delta,"weekly_est":shop_est,
+            "top_items":items_with_delta,
             "alert_count":len([a for a in all_alerts if a["shop"]==name and a["week"]==week])})
         time.sleep(SLEEP_SEC)
 
