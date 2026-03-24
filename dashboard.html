@@ -161,6 +161,7 @@ tr:last-child td{border-bottom:none}
   <div class="tab active" onclick="switchTab('shops',this)">ショップ一覧</div>
   <div class="tab" onclick="switchTab('all-products',this)">商品全体 <span id="allBadge"></span></div>
   <div class="tab" onclick="switchTab('unchecked',this)">チェック前商品 <span id="uncheckedBadge"></span></div>
+  <div class="tab" onclick="switchTab('watch1',this)">👀 注視 <span id="watch1Badge"></span></div>
   <div class="tab" onclick="switchTab('good',this)">👍 Good商品 <span id="goodBadge"></span></div>
   <div class="tab" onclick="switchTab('bad',this)">👎 微妙商品 <span id="badBadge"></span></div>
   <div class="tab" onclick="switchTab('add-shops',this)">＋ ショップ追加</div>
@@ -227,6 +228,20 @@ tr:last-child td{border-bottom:none}
       <div class="sidebar-content">
         <div class="global-wrap"><div class="global-grid" id="goodGrid"></div></div>
         <div class="pagination" id="goodPagination"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tabWatch1" style="display:none">
+    <div style="margin-bottom:14px;font-size:12px;color:var(--muted)">👀 注視1に登録した商品です。</div>
+    <div class="sidebar-layout">
+      <div class="shop-sidebar">
+        <div class="sidebar-title">ショップ</div>
+        <div class="sidebar-list" id="watch1ShopSidebar"></div>
+      </div>
+      <div class="sidebar-content">
+        <div class="global-wrap"><div class="global-grid" id="watch1Grid"></div></div>
+        <div class="pagination" id="watch1Pagination"></div>
       </div>
     </div>
   </div>
@@ -380,6 +395,8 @@ function loadGood() { try{return JSON.parse(localStorage.getItem('rw_good')||'{}
 function saveGood(o) { try{localStorage.setItem('rw_good',JSON.stringify(o));syncToGitHub()}catch{} }
 function loadBad() { try{return JSON.parse(localStorage.getItem('rw_bad')||'{}')}catch{return{}} }
 function saveBad(o) { try{localStorage.setItem('rw_bad',JSON.stringify(o));syncToGitHub()}catch{} }
+function loadWatch1() { try{return JSON.parse(localStorage.getItem('rw_watch1')||'{}')}catch{return{}} }
+function saveWatch1(o) { try{localStorage.setItem('rw_watch1',JSON.stringify(o));syncToGitHub()}catch{} }
 // 後方互換：旧checkedをgoodとして引き継ぐ
 function loadChecked() {
   const old = localStorage.getItem('rw_checked');
@@ -402,6 +419,7 @@ function getUserState() {
     checked:      checkedItems,
     good:         goodItems,
     bad:          badItems,
+    watch1:       watch1Items,
     extra_shops:  extraShops,
     hidden_shops: hiddenShops,
     item_counts:  itemCounts,
@@ -473,6 +491,7 @@ async function loadFromGitHub() {
     if (state.checked)      { checkedItems = state.checked;      localStorage.setItem('rw_checked', JSON.stringify(checkedItems)); }
     if (state.good)         { goodItems    = state.good;         localStorage.setItem('rw_good', JSON.stringify(goodItems)); }
     if (state.bad)          { badItems     = state.bad;          localStorage.setItem('rw_bad', JSON.stringify(badItems)); }
+    if (state.watch1)       { watch1Items  = state.watch1;       localStorage.setItem('rw_watch1', JSON.stringify(watch1Items)); }
     if (state.extra_shops)  { extraShops   = state.extra_shops;  localStorage.setItem('rw_extra_shops', JSON.stringify(extraShops)); }
     if (state.hidden_shops) { hiddenShops  = state.hidden_shops; saveHiddenShops(hiddenShops); }
     if (state.item_counts)  { itemCounts   = state.item_counts;  saveItemCounts(itemCounts); }
@@ -503,6 +522,7 @@ function openPATModal() {
 let extraShops = loadExtra();
 let goodItems  = loadGood();
 let badItems   = loadBad();
+let watch1Items = loadWatch1();
 loadChecked(); // 旧データ移行
 let SUMMARY = null;
 
@@ -658,14 +678,18 @@ function renderShops(){
     const tr=document.createElement('tr');
     tr.className='shop-row'+(isNew?' new-shop-row':'');
 
-    // このショップのGood/微妙数を集計
+    // このショップのGood/微妙/注視数を集計
     const shopItems = getAllItems().filter(it=>(it.shop_sid||it.shop_name)===key||(it.shop_name===s.name));
-    const goodCnt = shopItems.filter(it=>goodItems[it.item_id]).length;
-    const badCnt  = shopItems.filter(it=>badItems[it.item_id]).length;
-    const goodBadHtml = (goodCnt>0||badCnt>0)
-      ? `<div style="display:flex;gap:5px;align-items:center">
-          ${goodCnt>0?`<span style="background:#e8f5ef;color:#0f6e56;border-radius:4px;padding:2px 6px;font-size:10px;font-family:var(--mono)">👍${goodCnt}</span>`:''}
-          ${badCnt>0?`<span style="background:#fff3cd;color:#856a00;border-radius:4px;padding:2px 6px;font-size:10px;font-family:var(--mono)">👎${badCnt}</span>`:''}
+    const goodCnt   = shopItems.filter(it=>goodItems[it.item_id]).length;
+    const badCnt    = shopItems.filter(it=>badItems[it.item_id]).length;
+    const w1Cnt     = shopItems.filter(it=>watch1Items[it.item_id]).length;
+    
+    const goodBadHtml = (goodCnt>0||badCnt>0||w1Cnt>0)
+      ? `<div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap">
+          ${goodCnt>0?`<span style="background:#e8f5ef;color:#0f6e56;border-radius:4px;padding:3px 8px;font-size:12px;font-weight:500">👍 ${goodCnt}</span>`:''}
+          ${badCnt>0?`<span style="background:#fff3cd;color:#856a00;border-radius:4px;padding:3px 8px;font-size:12px;font-weight:500">👎 ${badCnt}</span>`:''}
+          ${w1Cnt>0?`<span style="background:#e8effe;color:#3a5ec0;border-radius:4px;padding:3px 8px;font-size:12px;font-weight:500">👀① ${w1Cnt}</span>`:''}
+
          </div>`
       : `<span style="color:var(--muted);font-size:11px">—</span>`;
 
@@ -806,11 +830,14 @@ function productCard(item, rank){
   const shopNameHtml = item.shop_name
     ? `<div style="font-size:10px;color:var(--muted);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.shop_name}</div>`
     : '';
-  const isGood = !!goodItems[key];
-  const isBad  = !!badItems[key];
+  const isGood   = !!goodItems[key];
+  const isBad    = !!badItems[key];
+  const isWatch1 = !!watch1Items[key];
   const cardStatus = isGood ? 'good' : isBad ? 'bad' : '';
-  const badgeHtml = isGood ? '<div class="checked-badge" style="background:#2ecc8a">👍 Good</div>'
-                  : isBad  ? '<div class="checked-badge" style="background:var(--warn);color:#fff">👎 微妙</div>' : '';
+  const badgeHtml = isGood   ? '<div class="checked-badge" style="background:#2ecc8a">👍 Good</div>'
+                  : isBad    ? '<div class="checked-badge" style="background:var(--warn);color:#fff">👎 微妙</div>'
+                  : isWatch1 ? '<div class="checked-badge" style="background:#5b8ef0;color:#fff">👀 注視1</div>'
+: '';
 
   return `<div class="product-card ${cardStatus} ${item.out_of_rank?'out-of-rank':''}" id="card-${key}">
     ${badgeHtml}
@@ -824,13 +851,12 @@ function productCard(item, rank){
       <div class="product-stat">★${(item.review_count||0).toLocaleString()}件</div>
       ${deltaHtml}
       ${monthlyHtml}
-      <div style="display:flex;gap:5px;margin-top:7px">
-        <button class="check-btn ${isGood?'is-good':''}" style="flex:1;background:${isGood?'#2ecc8a':'var(--bg)'};color:${isGood?'#fff':'var(--text)'};border-color:${isGood?'#2ecc8a':'var(--border)'}" onclick="markGood('${key}')">
-          👍 Good
-        </button>
-        <button class="check-btn ${isBad?'is-bad':''}" style="flex:1;background:${isBad?'var(--warn)':'var(--bg)'};color:${isBad?'#fff':'var(--text)'};border-color:${isBad?'var(--warn)':'var(--border)'}" onclick="markBad('${key}')">
-          👎 微妙
-        </button>
+      <div style="margin-top:7px;display:flex;flex-direction:column;gap:4px">
+        <button class="check-btn" style="width:100%;background:${isWatch1?'#5b8ef0':'var(--bg)'};color:${isWatch1?'#fff':'var(--text)'};border-color:${isWatch1?'#5b8ef0':'var(--border)'}" onclick="markWatch1('${key}')">👀 注視</button>
+        <div style="display:flex;gap:4px">
+          <button class="check-btn ${isGood?'is-good':''}" style="flex:1;background:${isGood?'#2ecc8a':'var(--bg)'};color:${isGood?'#fff':'var(--text)'};border-color:${isGood?'#2ecc8a':'var(--border)'}" onclick="markGood('${key}')">👍 Good</button>
+          <button class="check-btn ${isBad?'is-bad':''}" style="flex:1;background:${isBad?'var(--warn)':'var(--bg)'};color:${isBad?'#fff':'var(--text)'};border-color:${isBad?'var(--warn)':'var(--border)'}" onclick="markBad('${key}')">👎 微妙</button>
+        </div>
       </div>
     </div>
   </div>`;
@@ -848,6 +874,18 @@ function markBad(key){
   if(badItems[key]){ delete badItems[key]; }
   else { badItems[key]=true; delete goodItems[key]; saveGood(goodItems); }
   saveBad(badItems);
+  updateBadges();
+  refreshCard(key);
+}
+
+function markWatch1(key){
+  if(watch1Items[key]){ delete watch1Items[key]; }
+  else { watch1Items[key]=true; }
+  saveWatch1(watch1Items);
+  updateBadges();
+  refreshCard(key);
+}
+
   updateBadges();
   refreshCard(key);
 }
@@ -920,7 +958,7 @@ function renderUnchecked(){
   renderGlobalPagination('uncheckedPagination',filtered.length,uncPage,p=>{uncPage=p;renderUnchecked();});
 }
 
-let goodPage=1,badPage=1;
+let goodPage=1,badPage=1,watch1Page=1;
 function renderGood(){
   let items=getAllItems().filter(it=>goodItems[it.item_id]);
   items=sortItemsByWeeklyDelta(items);
@@ -933,6 +971,21 @@ function renderGood(){
     :'<div class="empty-state">👍 Good評価の商品がありません。<br>商品カードの「👍 Good」を押してください。</div>';
   renderGlobalPagination('goodPagination',filtered.length,goodPage,p=>{goodPage=p;renderGood();});
 }
+
+let watch1ShopFilter=null;
+function renderWatch1(){
+  let items=getAllItems().filter(it=>watch1Items[it.item_id]);
+  items=sortItemsByWeeklyDelta(items);
+  buildSidebar('watch1ShopSidebar', items, watch1ShopFilter, (s)=>{watch1ShopFilter=s;watch1Page=1;renderWatch1();});
+  const filtered = watch1ShopFilter ? items.filter(it=>it.shop_name===watch1ShopFilter) : items;
+  const start=(watch1Page-1)*GPAGE;
+  const page=filtered.slice(start,start+GPAGE);
+  document.getElementById('watch1Grid').innerHTML=filtered.length>0
+    ?page.map((it,i)=>productCard(it,start+i+1)).join('')
+    :'<div class="empty-state">👀 注視1の商品がありません。<br>商品カードの「👀 注視1」を押してください。</div>';
+  renderGlobalPagination('watch1Pagination',filtered.length,watch1Page,p=>{watch1Page=p;renderWatch1();});
+}
+
 
 function renderBad(){
   let items=getAllItems().filter(it=>badItems[it.item_id]);
@@ -986,6 +1039,7 @@ function updateBadges(){
   const all=getAllItems();
   const goodCount=Object.keys(goodItems).length;
   const badCount=Object.keys(badItems).length;
+  const watch1Count=Object.keys(watch1Items).length;
   const unchecked=all.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]).length;
   const worthlessCount=Object.keys(worthlessShops).length;
   document.getElementById('kpiGood').textContent=goodCount;
@@ -995,6 +1049,8 @@ function updateBadges(){
   document.getElementById('uncheckedBadge').innerHTML=`<span style="background:var(--warn);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${unchecked}</span>`;
   document.getElementById('goodBadge').innerHTML=goodCount>0?`<span style="background:var(--up);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${goodCount}</span>`:'';
   document.getElementById('badBadge').innerHTML=badCount>0?`<span style="background:var(--warn);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${badCount}</span>`:'';
+  document.getElementById('watch1Badge').innerHTML=watch1Count>0?`<span style="background:#5b8ef0;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${watch1Count}</span>`:'';
+
   document.getElementById('worthlessBadge').innerHTML=worthlessCount>0?`<span style="background:var(--down);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${worthlessCount}</span>`:'';
 }
 
@@ -1009,6 +1065,7 @@ function switchTab(name,el){
     'all-products':'tabAllProducts',
     'unchecked':   'tabUnchecked',
     'good':        'tabGood',
+    'watch1':      'tabWatch1',
     'bad':         'tabBad',
     'add-shops':   'tabAddShops',
     'worthless':   'tabWorthless',
@@ -1020,6 +1077,7 @@ function switchTab(name,el){
   if(name==='all-products')renderAllProducts();
   if(name==='unchecked')renderUnchecked();
   if(name==='good')renderGood();
+  if(name==='watch1')renderWatch1();
   if(name==='bad')renderBad();
   if(name==='worthless')renderWorthless();
   if(name==='add-shops')initUrlRows();
