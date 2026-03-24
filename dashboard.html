@@ -1124,7 +1124,7 @@ function updateBadges(){
   document.getElementById('allBadge').innerHTML=`<span style="background:var(--muted);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${all.length}</span>`;
   document.getElementById('uncheckedBadge').innerHTML=`<span style="background:var(--warn);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${unchecked}</span>`;
   document.getElementById('goodBadge').innerHTML=goodCount>0?`<span style="background:var(--up);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${goodCount}</span>`:'';
-  document.getElementById('badBadge').innerHTML=badCount>0?`<span style="background:var(--warn);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${badCount}</span>`:'';
+  document.getElementById('badBadge').innerHTML=badCount>0?`<span style="background:#7c3aed;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${badCount}</span>`:'';
   document.getElementById('watch1Badge').innerHTML=watch1Count>0?`<span style="background:#5b8ef0;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${watch1Count}</span>`:'';
 
   document.getElementById('worthlessBadge').innerHTML=worthlessCount>0?`<span style="background:var(--down);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${worthlessCount}</span>`:'';
