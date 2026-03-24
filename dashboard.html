@@ -309,7 +309,11 @@ let SUMMARY = null;
 // ── 全ショップリスト ──────────────────────────────────
 function getAllShops() {
   const base = SUMMARY
-    ? SUMMARY.shops.map(s=>({...s,shopCode:s.sid,isBase:true,
+    ? SUMMARY.shops.map(s=>({...s,
+        shopCode:s.sid,
+        reviews:s.total_reviews||0,
+        weeklyEst:s.weekly_est||null,
+        isBase:true,
         topItems:(s.top_items||[]).map(it=>({...it,shop_name:s.name,shop_sid:s.sid}))}))
     : BASE_SHOPS.map(s=>({...s,topItems:[]}));
   const extra = extraShops.map(s=>({...s,topItems:[],isNew:true}));
