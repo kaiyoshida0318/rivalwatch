@@ -74,7 +74,7 @@ tr:last-child td{border-bottom:none}
 .check-btn.is-checked{background:var(--up);color:#fff;border-color:var(--up)}
 .product-card.out-of-rank{opacity:.75;border-style:dashed}
 .product-card.out-of-rank:hover{opacity:1}
-.product-card.bad{border-color:var(--warn);background:#fffdf0}
+.product-card.bad{border-color:#7c3aed;background:#f5f0ff}
 .checked-badge{position:absolute;top:6px;right:6px;background:var(--up);color:#fff;border-radius:4px;font-size:9px;font-family:var(--mono);padding:2px 5px}
 
 /* Global product grid */
@@ -180,7 +180,19 @@ tr:last-child td{border-bottom:none}
     <div class="notice">⏱ <div><strong>Week 0 — 初回スナップショット</strong>。週次収集後に商品データ・画像・販売推定が自動更新されます。</div></div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>#</th><th>ショップ名</th><th>累計レビュー</th><th class="hide-sp">週販売推定</th><th>測定数</th><th>Good/微妙</th><th>商品一覧</th><th></th></tr></thead>
+        <thead><tr>
+  <th>#</th>
+  <th>ショップ名</th>
+  <th>累計レビュー</th>
+  <th class="hide-sp">週販売推定</th>
+  <th>測定数</th>
+  <th style="cursor:pointer;user-select:none" onclick="setShopSort('unchecked')" id="th_unchecked">チェック前 <span style="font-size:9px;color:var(--muted)" id="sort_unchecked"></span></th>
+  <th style="cursor:pointer;user-select:none" onclick="setShopSort('watch1')" id="th_watch1">👀注視 <span style="font-size:9px;color:var(--muted)" id="sort_watch1"></span></th>
+  <th style="cursor:pointer;user-select:none" onclick="setShopSort('good')" id="th_good">👍Good <span style="font-size:9px;color:var(--muted)" id="sort_good"></span></th>
+  <th style="cursor:pointer;user-select:none" onclick="setShopSort('bad')" id="th_bad">👎微妙 <span style="font-size:9px;color:var(--muted)" id="sort_bad"></span></th>
+  <th>商品一覧</th>
+  <th></th>
+</tr></thead>
         <tbody id="shopTbody"></tbody>
       </table>
     </div>
@@ -189,7 +201,14 @@ tr:last-child td{border-bottom:none}
 
   <div id="tabAllProducts" style="display:none">
     <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=1;renderAllProducts()" style="max-width:280px">
+      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=1;renderAllProducts()" style="max-width:240px">
+      <select id="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=1;renderCurrentTab()"
+        style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
+        <option value="weekly">週次増加順</option>
+        <option value="monthly">月商順</option>
+        <option value="shop">ショップ順</option>
+        <option value="updated">最終更新順</option>
+      </select>
       <span class="cnt" id="allCnt"></span>
     </div>
     <div class="sidebar-layout">
@@ -205,7 +224,10 @@ tr:last-child td{border-bottom:none}
   </div>
 
   <div id="tabUnchecked" style="display:none">
-    <div style="margin-bottom:14px;font-size:12px;color:var(--muted)">まだ評価していない商品です。「👍 Good」か「👎 微妙」を押して仕分けしてください。</div>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+      <input class="search" id="uncSearch" placeholder="商品名で絞り込み..." oninput="uncPage=1;renderUnchecked()" style="max-width:280px">
+      <span style="font-size:12px;color:var(--muted)">まだ評価していない商品です。</span>
+    </div>
     <div class="sidebar-layout">
       <div class="shop-sidebar">
         <div class="sidebar-title">ショップ</div>
@@ -648,8 +670,26 @@ function getPState(key){if(!panelState[key])panelState[key]={open:false};return 
 function getFilteredShops(){
   let shops=getAllShops();
   if(currentQ){const q=currentQ.toLowerCase();shops=shops.filter(s=>s.name.toLowerCase().includes(q));}
-  if(currentSort==='reviews')shops.sort((a,b)=>(b.reviews||0)-(a.reviews||0));
-  else shops.sort((a,b)=>parseInt(a.no||99)-parseInt(b.no||99));
+  if(shopSortCol){
+    const allItems=getAllItems();
+    const getCnt=(s,type)=>{
+      const key=s.shopCode||s.sid;
+      const si=allItems.filter(it=>(it.shop_sid||it.shop_name)===key||(it.shop_name===s.name));
+      if(type==='unchecked') return si.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]).length;
+      if(type==='watch1') return si.filter(it=>watch1Items[it.item_id]).length;
+      if(type==='good') return si.filter(it=>goodItems[it.item_id]).length;
+      if(type==='bad') return si.filter(it=>badItems[it.item_id]).length;
+      return 0;
+    };
+    shops.sort((a,b)=>{
+      const diff=getCnt(b,shopSortCol)-getCnt(a,shopSortCol);
+      return shopSortAsc ? -diff : diff;
+    });
+  } else if(currentSort==='reviews'){
+    shops.sort((a,b)=>(b.reviews||0)-(a.reviews||0));
+  } else {
+    shops.sort((a,b)=>parseInt(a.no||99)-parseInt(b.no||99));
+  }
   return shops;
 }
 
@@ -713,7 +753,10 @@ function renderShops(){
           <span style="font-size:10px;color:var(--muted)">件${s.total_item_count?`<span style="color:var(--muted)">/${s.total_item_count.toLocaleString()}</span>`:''}</span>
         </div>
       </td>
-      <td>${goodBadHtml}</td>
+      <td style="text-align:center">${cntStyle(uncCnt,'#f0ede8','#555')}</td>
+      <td style="text-align:center">${cntStyle(w1Cnt,'#e8effe','#3a5ec0')}</td>
+      <td style="text-align:center">${cntStyle(goodCnt,'#e8f5ef','#0f6e56')}</td>
+      <td style="text-align:center">${cntStyle(badCnt,'#f0e8ff','#7c3aed')}</td>
       <td><button class="expand-btn ${ps.open?'open':''}" onclick="togglePanel('${key}')">▼ 商品を見る</button></td>
       <td><button class="del-btn" onclick="deleteShop('${key}','${s.isBase?'base':'extra'}')">価値なし</button>`;
     tbody.appendChild(tr);
@@ -721,7 +764,7 @@ function renderShops(){
     if(ps.open){
       const pr=document.createElement('tr');
       const td=document.createElement('td');
-      td.colSpan=8; td.style.padding='0';
+      td.colSpan=11; td.style.padding='0';
       const currentItems=(s.topItems&&s.topItems.length>0)?s.topItems:makeMockItems(s,getItemCount(key));
       const allItems = getShopAllItems(key, currentItems);
       const outCount = allItems.filter(it=>it.out_of_rank).length;
@@ -791,6 +834,28 @@ function calcMonthly(item) {
   return Math.round(salesMid * item.price * 4.3);
 }
 
+// ── 商品ソート ────────────────────────────────────────
+let globalSortOrder = 'weekly'; // 'weekly' | 'monthly' | 'shop' | 'updated'
+
+function sortItemsBy(items, order) {
+  const arr = [...items];
+  if (order === 'shop') {
+    arr.sort((a,b)=>(a.shop_name||'').localeCompare(b.shop_name||'','ja'));
+  } else if (order === 'monthly') {
+    arr.sort((a,b)=>(calcMonthly(b)||0)-(calcMonthly(a)||0));
+  } else if (order === 'updated') {
+    const getAt = it => {
+      const rec = goodItems[it.item_id]||badItems[it.item_id]||watch1Items[it.item_id];
+      return (rec && rec.at) ? rec.at : '';
+    };
+    arr.sort((a,b)=>getAt(b).localeCompare(getAt(a)));
+  } else {
+    // weekly（デフォルト）
+    return sortItemsByWeeklyDelta(arr);
+  }
+  return arr;
+}
+
 // ── 商品ソート（週次増加レビュー順→累計レビュー順） ──
 function sortItemsByWeeklyDelta(items) {
   return [...items].sort((a, b) => {
@@ -833,9 +898,10 @@ function productCard(item, rank){
   const isGood   = !!goodItems[key];
   const isBad    = !!badItems[key];
   const isWatch1 = !!watch1Items[key];
+  const getAt = (obj, k) => { const v=obj[k]; return (v&&v.at)?v.at:''; };
   const cardStatus = isGood ? 'good' : isBad ? 'bad' : '';
   const badgeHtml = isGood   ? '<div class="checked-badge" style="background:#2ecc8a">👍 Good</div>'
-                  : isBad    ? '<div class="checked-badge" style="background:var(--warn);color:#fff">👎 微妙</div>'
+                  : isBad    ? '<div class="checked-badge" style="background:#7c3aed;color:#fff">👎 微妙</div>'
                   : isWatch1 ? '<div class="checked-badge" style="background:#5b8ef0;color:#fff">👀 注視1</div>'
 : '';
 
@@ -851,20 +917,23 @@ function productCard(item, rank){
       <div class="product-stat">★${(item.review_count||0).toLocaleString()}件</div>
       ${deltaHtml}
       ${monthlyHtml}
+      ${(isGood||isBad||isWatch1)?`<div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-top:4px">${getAt(isGood?goodItems:isBad?badItems:watch1Items, key)||''}</div>`:''}
       <div style="margin-top:7px;display:flex;flex-direction:column;gap:4px">
         <button class="check-btn" style="width:100%;background:${isWatch1?'#5b8ef0':'var(--bg)'};color:${isWatch1?'#fff':'var(--text)'};border-color:${isWatch1?'#5b8ef0':'var(--border)'}" onclick="markWatch1('${key}')">👀 注視</button>
         <div style="display:flex;gap:4px">
           <button class="check-btn ${isGood?'is-good':''}" style="flex:1;background:${isGood?'#2ecc8a':'var(--bg)'};color:${isGood?'#fff':'var(--text)'};border-color:${isGood?'#2ecc8a':'var(--border)'}" onclick="markGood('${key}')">👍 Good</button>
-          <button class="check-btn ${isBad?'is-bad':''}" style="flex:1;background:${isBad?'var(--warn)':'var(--bg)'};color:${isBad?'#fff':'var(--text)'};border-color:${isBad?'var(--warn)':'var(--border)'}" onclick="markBad('${key}')">👎 微妙</button>
+          <button class="check-btn ${isBad?'is-bad':''}" style="flex:1;background:${isBad?'#7c3aed':'var(--bg)'};color:${isBad?'#fff':'var(--text)'};border-color:${isBad?'#7c3aed':'var(--border)'}" onclick="markBad('${key}')">👎 微妙</button>
         </div>
       </div>
     </div>
   </div>`;
 }
 
+function nowStr(){ return new Date().toLocaleString('ja-JP',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}); }
+
 function markGood(key){
   if(goodItems[key]){ delete goodItems[key]; }
-  else { goodItems[key]=true; delete badItems[key]; saveBad(badItems); }
+  else { goodItems[key]={at:nowStr()}; delete badItems[key]; saveBad(badItems); }
   saveGood(goodItems);
   updateBadges();
   refreshCard(key);
@@ -872,7 +941,7 @@ function markGood(key){
 
 function markBad(key){
   if(badItems[key]){ delete badItems[key]; }
-  else { badItems[key]=true; delete goodItems[key]; saveGood(goodItems); }
+  else { badItems[key]={at:nowStr()}; delete goodItems[key]; saveGood(goodItems); }
   saveBad(badItems);
   updateBadges();
   refreshCard(key);
@@ -880,18 +949,22 @@ function markBad(key){
 
 function markWatch1(key){
   if(watch1Items[key]){ delete watch1Items[key]; }
-  else { watch1Items[key]=true; }
+  else { watch1Items[key]={at:nowStr()}; }
   saveWatch1(watch1Items);
   updateBadges();
   refreshCard(key);
 }
 
-function refreshCard(key){
-  // カードを再描画するため現在のタブをリフレッシュ
+function renderCurrentTab(){
   if(currentTab==='all-products') renderAllProducts();
   else if(currentTab==='unchecked') renderUnchecked();
   else if(currentTab==='good') renderGood();
   else if(currentTab==='bad') renderBad();
+  else if(currentTab==='watch1') renderWatch1();
+}
+
+function refreshCard(key){
+  renderCurrentTab();
 }
 
 // ── 全商品・チェック前後 ──────────────────────────────
@@ -929,7 +1002,7 @@ function renderAllProducts(){
   const q=(document.getElementById('allSearch')?.value||'').toLowerCase();
   let items=getAllItems();
   if(q)items=items.filter(it=>it.name.toLowerCase().includes(q)||it.shop_name.toLowerCase().includes(q));
-  items=sortItemsByWeeklyDelta(items);
+  items=sortItemsBy(items, globalSortOrder);
   // サイドバー
   buildSidebar('allShopSidebar', items, allShopFilter, (s)=>{allShopFilter=s;allPage=1;renderAllProducts();});
   // フィルター適用
@@ -942,8 +1015,10 @@ function renderAllProducts(){
 }
 
 function renderUnchecked(){
-  let items=getAllItems().filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]);
-  items=sortItemsByWeeklyDelta(items);
+  const q=(document.getElementById('uncSearch')?.value||'').toLowerCase();
+  let items=getAllItems().filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]);
+  if(q) items=items.filter(it=>it.name.toLowerCase().includes(q)||(it.shop_name||'').toLowerCase().includes(q));
+  items=sortItemsBy(items, globalSortOrder);
   buildSidebar('uncheckedShopSidebar', items, uncShopFilter, (s)=>{uncShopFilter=s;uncPage=1;renderUnchecked();});
   const filtered = uncShopFilter ? items.filter(it=>it.shop_name===uncShopFilter) : items;
   const start=(uncPage-1)*GPAGE;
@@ -957,7 +1032,7 @@ function renderUnchecked(){
 let goodPage=1,badPage=1,watch1Page=1;
 function renderGood(){
   let items=getAllItems().filter(it=>goodItems[it.item_id]);
-  items=sortItemsByWeeklyDelta(items);
+  items=sortItemsBy(items, globalSortOrder);
   buildSidebar('goodShopSidebar', items, goodShopFilter, (s)=>{goodShopFilter=s;goodPage=1;renderGood();});
   const filtered = goodShopFilter ? items.filter(it=>it.shop_name===goodShopFilter) : items;
   const start=(goodPage-1)*GPAGE;
@@ -971,7 +1046,7 @@ function renderGood(){
 let watch1ShopFilter=null;
 function renderWatch1(){
   let items=getAllItems().filter(it=>watch1Items[it.item_id]);
-  items=sortItemsByWeeklyDelta(items);
+  items=sortItemsBy(items, globalSortOrder);
   buildSidebar('watch1ShopSidebar', items, watch1ShopFilter, (s)=>{watch1ShopFilter=s;watch1Page=1;renderWatch1();});
   const filtered = watch1ShopFilter ? items.filter(it=>it.shop_name===watch1ShopFilter) : items;
   const start=(watch1Page-1)*GPAGE;
@@ -985,7 +1060,7 @@ function renderWatch1(){
 
 function renderBad(){
   let items=getAllItems().filter(it=>badItems[it.item_id]);
-  items=sortItemsByWeeklyDelta(items);
+  items=sortItemsBy(items, globalSortOrder);
   buildSidebar('badShopSidebar', items, badShopFilter, (s)=>{badShopFilter=s;badPage=1;renderBad();});
   const filtered = badShopFilter ? items.filter(it=>it.shop_name===badShopFilter) : items;
   const start=(badPage-1)*GPAGE;
@@ -1011,7 +1086,7 @@ function renderWorthless(){
       <td><button onclick="restoreShop('${key}')" style="padding:3px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);font-size:11px;cursor:pointer">元に戻す</button></td>
     </tr>`).join('');
   document.getElementById('worthlessBadge').innerHTML=
-    `<span style="background:var(--down);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${entries.length}</span>`;
+    `<span style="background:#1a1a1a;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${entries.length}</span>`;
 }
 
 function restoreShop(key){
@@ -1036,7 +1111,7 @@ function updateBadges(){
   const goodCount=Object.keys(goodItems).length;
   const badCount=Object.keys(badItems).length;
   const watch1Count=Object.keys(watch1Items).length;
-  const unchecked=all.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]).length;
+  const unchecked=all.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]).length;
   const worthlessCount=Object.keys(worthlessShops).length;
   document.getElementById('kpiGood').textContent=goodCount;
   document.getElementById('kpiItems').textContent=all.length.toLocaleString();
