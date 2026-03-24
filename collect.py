@@ -239,7 +239,7 @@ def main():
 
         summary_shops.append({"no":no,"name":name,"sid":shop_code,"total_reviews":total_rev,
             "item_count":len(curr_items),"weekly_delta":total_delta,"weekly_est":shop_est,
-            "top_items":items_with_delta[:10],
+            "top_items":items_with_delta,  # 全商品を保存
             "alert_count":len([a for a in all_alerts if a["shop"]==name and a["week"]==week])})
         time.sleep(SLEEP_SEC)
 
