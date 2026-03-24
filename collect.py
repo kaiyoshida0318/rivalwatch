@@ -63,13 +63,14 @@ def load_item_counts():
             return json.load(f)
     return {}
 
-def fetch_items(shop_code, hits=DEFAULT_ITEMS):
+def fetch_items(shop_code, hits=DEFAULT_ITEMS, page=1):
     params = {
         "applicationId": APP_ID,
         "accessKey":     ACCESS_KEY,
         "format":        "json",
         "shopCode":      shop_code,
-        "hits":          min(hits, 30),  # APIの最大値は30
+        "hits":          30,  # APIの最大値は30
+        "page":          page,
         "sort":          "-reviewCount",
     }
     url = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20220601?" \
@@ -93,25 +94,40 @@ def fetch_items(shop_code, hits=DEFAULT_ITEMS):
         return None
 
 def collect_shop(shop_code, hits=DEFAULT_ITEMS):
-    data = fetch_items(shop_code, hits)
-    if not data or "Items" not in data or not data["Items"]:
-        return [], 0
-    total_count = int(data.get("count", 0))  # ショップの全商品数
-    items = []
-    for entry in data["Items"][:hits]:
-        it = entry.get("Item", entry)
-        imgs = it.get("mediumImageUrls", [])
-        img_url = imgs[0].get("imageUrl","") if imgs else ""
-        items.append({
-            "item_id":      str(it.get("itemCode", "")),
-            "name":         it.get("itemName", "")[:80],
-            "price":        int(it.get("itemPrice", 0)),
-            "review_count": int(it.get("reviewCount", 0)),
-            "review_avg":   float(it.get("reviewAverage", 0)),
-            "url":          it.get("itemUrl", ""),
-            "image_url":    img_url,
-        })
-    return items, total_count
+    """複数ページに分けて最大hits件取得（APIは1ページ30件まで）"""
+    all_items = []
+    total_count = 0
+    pages_needed = (hits + 29) // 30  # 必要なページ数（30件×N）
+
+    for page in range(1, pages_needed + 1):
+        data = fetch_items(shop_code, hits, page)
+        if not data or "Items" not in data or not data["Items"]:
+            if page == 1:
+                return [], 0
+            break
+        if page == 1:
+            total_count = int(data.get("count", 0))
+        for entry in data["Items"]:
+            it = entry.get("Item", entry)
+            imgs = it.get("mediumImageUrls", [])
+            img_url = imgs[0].get("imageUrl","") if imgs else ""
+            all_items.append({
+                "item_id":      str(it.get("itemCode", "")),
+                "name":         it.get("itemName", "")[:80],
+                "price":        int(it.get("itemPrice", 0)),
+                "review_count": int(it.get("reviewCount", 0)),
+                "review_avg":   float(it.get("reviewAverage", 0)),
+                "url":          it.get("itemUrl", ""),
+                "image_url":    img_url,
+            })
+            if len(all_items) >= hits:
+                break
+        if len(all_items) >= hits:
+            break
+        if pages_needed > 1:
+            time.sleep(0.5)  # ページ間のウェイト
+
+    return all_items[:hits], total_count
 
 def estimate_weekly_sales(delta):
     if not delta or delta <= 0: return None
