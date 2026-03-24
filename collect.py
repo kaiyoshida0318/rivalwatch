@@ -177,13 +177,18 @@ def main():
     print(f"  APP_ID: {APP_ID[:8]}...")
     print("="*56)
 
-    # ダッシュボードから追加したショップを読み込む（user_state.jsonのextra_shopsフィールド）
+    # ダッシュボードから追加したショップを読み込む
+    # ① user_state.json の extra_shops
     state = load_json(USER_STATE_FILE, {})
-    extra = state.get("extra_shops", [])
+    extra_from_state = state.get("extra_shops", [])
+    # ② data/extra_shops.json（ダッシュボードが直接書き込むファイル）
+    extra_from_file = load_json("data/extra_shops.json", [])
+
     all_shops = list(SHOPS)
     base_codes = {s["shopCode"] for s in SHOPS}
     added = 0
-    for s in extra:
+    # 両方のソースをマージ（重複除去）
+    for s in extra_from_file + extra_from_state:
         code = s.get("shopCode") or s.get("sid","")
         name = s.get("name", code)
         if code and code not in base_codes:
