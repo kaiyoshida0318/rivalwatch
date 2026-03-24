@@ -19,10 +19,10 @@ ACCESS_KEY     = os.environ.get("RAKUTEN_ACCESS_KEY", "")
 
 # shopCodeは実際に取得成功したもののみ（未確認は除外）
 SHOPS = [
-    {"no":"1", "name":"Porto 楽天市場店",               "shopCode":"porto"},
+    {"no":"1", "name":"Porto 楽天市場店",               "shopCode":"porto3"},
     {"no":"2", "name":"Trade-ABC 楽天市場店",            "shopCode":"trade-abc"},
-    {"no":"9", "name":"LASIEM（ラシエム）",               "shopCode":"lasiem"},
-    {"no":"12","name":"ddice",                           "shopCode":"ddice"},
+    {"no":"9", "name":"LASIEM（ラシエム）",               "shopCode":"morevalue"},
+    {"no":"12","name":"ddice",                           "shopCode":"confianceshop"},
     {"no":"14","name":"PolaPola楽天市場店",               "shopCode":"polapola"},
     {"no":"15","name":"Queens Land",                     "shopCode":"queensland"},
     {"no":"17","name":"Barsado",                         "shopCode":"barsado"},
@@ -50,10 +50,10 @@ SHOPS = [
     {"no":"68","name":"MILASIC",                         "shopCode":"milasic"},
     {"no":"69","name":"よろず生活雑貨屋レーベンウッド",  "shopCode":"lebenwood"},
     {"no":"71","name":"e-monoplus",                      "shopCode":"e-monoplus"},
-    {"no":"72","name":"mitas",                           "shopCode":"mitas"},
+    {"no":"72","name":"mitas",                           "shopCode":"oobikiyaking"},
     {"no":"73","name":"hidekistore",                     "shopCode":"hidekistore"},
     {"no":"75","name":"ドリームマックス",                "shopCode":"dreammax"},
-    {"no":"76","name":"ぷらす堂",                        "shopCode":"plusdo"},
+    {"no":"76","name":"ぷらす堂",                        "shopCode":"plusdo201812"},
 ]
 
 def load_item_counts():
