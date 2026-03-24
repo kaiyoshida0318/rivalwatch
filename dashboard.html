@@ -665,6 +665,16 @@ function getShopAllItems(shopKey, currentItems) {
 let currentSort='reviews', currentQ='', currentPage=1;
 const PAGE_SIZE=20;
 const panelState={};
+let shopSortCol=null, shopSortAsc=false;
+function setShopSort(col){
+  if(shopSortCol===col){ shopSortAsc=!shopSortAsc; }
+  else { shopSortCol=col; shopSortAsc=false; }
+  ['unchecked','watch1','good','bad'].forEach(id=>{
+    const el=document.getElementById('sort_'+id);
+    if(el) el.textContent = id===col ? (shopSortAsc?'▲':'▼') : '';
+  });
+  renderShops();
+}
 function getPState(key){if(!panelState[key])panelState[key]={open:false};return panelState[key];}
 
 function getFilteredShops(){
