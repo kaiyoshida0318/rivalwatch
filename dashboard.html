@@ -355,6 +355,8 @@ function setPAT(t) { localStorage.setItem('rw_pat', t); }
 function getUserState() {
   return {
     checked:      checkedItems,
+    good:         goodItems,
+    bad:          badItems,
     extra_shops:  extraShops,
     hidden_shops: hiddenShops,
     item_counts:  itemCounts,
@@ -424,6 +426,8 @@ async function loadFromGitHub() {
     const state = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
     // 状態を反映
     if (state.checked)      { checkedItems = state.checked;      localStorage.setItem('rw_checked', JSON.stringify(checkedItems)); }
+    if (state.good)         { goodItems    = state.good;         localStorage.setItem('rw_good', JSON.stringify(goodItems)); }
+    if (state.bad)          { badItems     = state.bad;          localStorage.setItem('rw_bad', JSON.stringify(badItems)); }
     if (state.extra_shops)  { extraShops   = state.extra_shops;  localStorage.setItem('rw_extra_shops', JSON.stringify(extraShops)); }
     if (state.hidden_shops) { hiddenShops  = state.hidden_shops; saveHiddenShops(hiddenShops); }
     if (state.item_counts)  { itemCounts   = state.item_counts;  saveItemCounts(itemCounts); }
