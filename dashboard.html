@@ -224,8 +224,8 @@ tr:last-child td{border-bottom:none}
 
   <div id="tabAllProducts" style="display:none">
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=1;renderCurrentTab()" style="max-width:220px">
-      <select id="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=1;renderCurrentTab()"
+      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()" style="max-width:220px">
+      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()"
         style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
         <option value="updated">最終更新順</option>
         <option value="monthly">月商順</option>
@@ -248,7 +248,17 @@ tr:last-child td{border-bottom:none}
   </div>
 
   <div id="tabUnchecked" style="display:none">
-
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()" style="max-width:220px">
+      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()"
+        style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
+        <option value="updated">最終更新順</option>
+        <option value="monthly">月商順</option>
+        <option value="weekly">週次増加順</option>
+        <option value="shop">ショップ順</option>
+      </select>
+      <span class="cnt" id="uncheckedCnt"></span>
+    </div>
     <div class="sidebar-layout">
       <div class="shop-sidebar">
         <div class="sidebar-title">ショップ</div>
@@ -262,6 +272,17 @@ tr:last-child td{border-bottom:none}
   </div>
 
   <div id="tabGood" style="display:none">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()" style="max-width:220px">
+      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()"
+        style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
+        <option value="updated">最終更新順</option>
+        <option value="monthly">月商順</option>
+        <option value="weekly">週次増加順</option>
+        <option value="shop">ショップ順</option>
+      </select>
+      <span class="cnt" id="goodCnt"></span>
+    </div>
     <div class="sidebar-layout">
       <div class="shop-sidebar">
         <div class="sidebar-title">ショップ</div>
@@ -275,6 +296,17 @@ tr:last-child td{border-bottom:none}
   </div>
 
   <div id="tabWatch1" style="display:none">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()" style="max-width:220px">
+      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()"
+        style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
+        <option value="updated">最終更新順</option>
+        <option value="monthly">月商順</option>
+        <option value="weekly">週次増加順</option>
+        <option value="shop">ショップ順</option>
+      </select>
+      <span class="cnt" id="watch1Cnt"></span>
+    </div>
     <div class="sidebar-layout">
       <div class="shop-sidebar">
         <div class="sidebar-title">ショップ</div>
@@ -288,6 +320,17 @@ tr:last-child td{border-bottom:none}
   </div>
 
   <div id="tabSizeok" style="display:none">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()" style="max-width:220px">
+      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()"
+        style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
+        <option value="updated">最終更新順</option>
+        <option value="monthly">月商順</option>
+        <option value="weekly">週次増加順</option>
+        <option value="shop">ショップ順</option>
+      </select>
+      <span class="cnt" id="sizeokCnt"></span>
+    </div>
     <div class="sidebar-layout">
       <div class="shop-sidebar">
         <div class="sidebar-title">ショップ</div>
@@ -301,6 +344,17 @@ tr:last-child td{border-bottom:none}
   </div>
 
   <div id="tabDone" style="display:none">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()" style="max-width:220px">
+      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()"
+        style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
+        <option value="updated">最終更新順</option>
+        <option value="monthly">月商順</option>
+        <option value="weekly">週次増加順</option>
+        <option value="shop">ショップ順</option>
+      </select>
+      <span class="cnt" id="doneCnt"></span>
+    </div>
     <div class="sidebar-layout">
       <div class="shop-sidebar">
         <div class="sidebar-title">ショップ</div>
@@ -314,6 +368,17 @@ tr:last-child td{border-bottom:none}
   </div>
 
   <div id="tabBad" style="display:none">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()" style="max-width:220px">
+      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()"
+        style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
+        <option value="updated">最終更新順</option>
+        <option value="monthly">月商順</option>
+        <option value="weekly">週次増加順</option>
+        <option value="shop">ショップ順</option>
+      </select>
+      <span class="cnt" id="badCnt"></span>
+    </div>
     <div class="sidebar-layout">
       <div class="shop-sidebar">
         <div class="sidebar-title">ショップ</div>
@@ -1250,7 +1315,7 @@ function bulkBarHtml(tabName){
   </div>`;
 }
 function renderAllProducts(){
-  const q=(document.getElementById('allSearch')?.value||'').toLowerCase();
+  const qAll=(document.getElementById('allSearch')?.value||'').toLowerCase();
   let items=getAllItems();
   if(q)items=items.filter(it=>it.name.toLowerCase().includes(q)||it.shop_name.toLowerCase().includes(q));
   items=sortItemsBy(items, globalSortOrder);
@@ -1266,18 +1331,19 @@ function renderAllProducts(){
 }
 
 function renderUnchecked(){
-  const q=(document.getElementById('allSearch')?.value||'').toLowerCase();
+  const qUnc=(document.getElementById('allSearch')?.value||'').toLowerCase();
   let items=getAllItems().filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]&&!sizeokItems[it.item_id]&&!doneItems[it.item_id]);
-  if(q) items=items.filter(it=>it.name.toLowerCase().includes(q)||(it.shop_name||'').toLowerCase().includes(q));
+  if(q) items=items.filter(it=>it.name.toLowerCase().includes(qUnc)||(it.shop_name||'').toLowerCase().includes(qUnc));
   items=sortItemsBy(items, globalSortOrder);
   buildSidebar('uncheckedShopSidebar', items, uncShopFilter, (s)=>{uncShopFilter=s;uncPage=1;renderUnchecked();});
   const filtered = uncShopFilter ? items.filter(it=>it.shop_name===uncShopFilter) : items;
+  const fq = q ? filtered.filter(it=>it.name.toLowerCase().includes(qUnc)||(it.shop_name||'').toLowerCase().includes(q)) : filtered;
   const start=(uncPage-1)*GPAGE;
-  const page=filtered.slice(start,start+GPAGE);
+  const page=fq.slice(start,start+GPAGE);
   document.getElementById('uncheckedGrid').innerHTML=(filtered.length>0
     ?page.map((it,i)=>productCard(it,start+i+1)).join('')
     :'<div class="empty-state">チェック前の商品はありません</div>');
-  renderGlobalPagination('uncheckedPagination',filtered.length,uncPage,p=>{uncPage=p;renderUnchecked();});
+  renderGlobalPagination('uncheckedPagination',fq.length,uncPage,p=>{uncPage=p;renderUnchecked();});
 }
 
 let goodPage=1,badPage=1,watch1Page=1;
@@ -1286,12 +1352,15 @@ function renderGood(){
   items=sortItemsBy(items, globalSortOrder);
   buildSidebar('goodShopSidebar', items, goodShopFilter, (s)=>{goodShopFilter=s;goodPage=1;renderGood();});
   const filtered = goodShopFilter ? items.filter(it=>it.shop_name===goodShopFilter) : items;
+  const qGood=(document.getElementById('allSearch')?.value||'').toLowerCase();
+  const fq = q2 ? filtered.filter(it=>it.name.toLowerCase().includes(qGood)||(it.shop_name||'').toLowerCase().includes(qGood)) : filtered;
+  if(document.getElementById('goodCnt')) document.getElementById('goodCnt').textContent=fq.length+'件';
   const start=(goodPage-1)*GPAGE;
-  const page=filtered.slice(start,start+GPAGE);
-  document.getElementById('goodGrid').innerHTML=(filtered.length>0
+  const page=fq.slice(start,start+GPAGE);
+  document.getElementById('goodGrid').innerHTML=(fq.length>0
     ?page.map((it,i)=>productCard(it,start+i+1)).join('')
     :'<div class="empty-state">👍 Good評価の商品がありません。</div>');
-  renderGlobalPagination('goodPagination',filtered.length,goodPage,p=>{goodPage=p;renderGood();});
+  renderGlobalPagination('goodPagination',fq.length,goodPage,p=>{goodPage=p;renderGood();});
 }
 
 let watch1ShopFilter=null;
@@ -1300,12 +1369,15 @@ function renderWatch1(){
   items=sortItemsBy(items, globalSortOrder);
   buildSidebar('watch1ShopSidebar', items, watch1ShopFilter, (s)=>{watch1ShopFilter=s;watch1Page=1;renderWatch1();});
   const filtered = watch1ShopFilter ? items.filter(it=>it.shop_name===watch1ShopFilter) : items;
+  const qW1=(document.getElementById('allSearch')?.value||'').toLowerCase();
+  const fq = q2 ? filtered.filter(it=>it.name.toLowerCase().includes(qW1)||(it.shop_name||'').toLowerCase().includes(qW1)) : filtered;
+  if(document.getElementById('watch1Cnt')) document.getElementById('watch1Cnt').textContent=fq.length+'件';
   const start=(watch1Page-1)*GPAGE;
-  const page=filtered.slice(start,start+GPAGE);
-  document.getElementById('watch1Grid').innerHTML=filtered.length>0
+  const page=fq.slice(start,start+GPAGE);
+  document.getElementById('watch1Grid').innerHTML=fq.length>0
     ?page.map((it,i)=>productCard(it,start+i+1)).join('')
     :'<div class="empty-state">🔥 すぐやる候補の商品がありません。</div>';
-  renderGlobalPagination('watch1Pagination',filtered.length,watch1Page,p=>{watch1Page=p;renderWatch1();});
+  renderGlobalPagination('watch1Pagination',fq.length,watch1Page,p=>{watch1Page=p;renderWatch1();});
 }
 
 let sizeokPage=1, donePage=1;
@@ -1316,10 +1388,11 @@ function renderSizeok(){
   items=sortItemsBy(items, globalSortOrder);
   buildSidebar('sizeokShopSidebar', items, sizeokShopFilter, (s)=>{sizeokShopFilter=s;sizeokPage=1;renderSizeok();});
   const filtered = sizeokShopFilter ? items.filter(it=>it.shop_name===sizeokShopFilter) : items;
-  const q=(document.getElementById('allSearch')?.value||'').toLowerCase();
-  const fq = q ? filtered.filter(it=>it.name.toLowerCase().includes(q)||(it.shop_name||'').toLowerCase().includes(q)) : filtered;
+  const qSizeok=(document.getElementById('allSearch')?.value||'').toLowerCase();
+  const fq = q ? filtered.filter(it=>it.name.toLowerCase().includes(qSizeok)||(it.shop_name||'').toLowerCase().includes(qSizeok)) : filtered;
   const start=(sizeokPage-1)*GPAGE;
   const page=fq.slice(start,start+GPAGE);
+  if(document.getElementById('sizeokCnt')) document.getElementById('sizeokCnt').textContent=fq.length+'件';
   document.getElementById('sizeokGrid').innerHTML=fq.length>0
     ?page.map((it,i)=>productCard(it,start+i+1)).join('')
     :'<div class="empty-state">📐 sizeOK微妙の商品がありません。</div>';
@@ -1331,10 +1404,11 @@ function renderDone(){
   items=sortItemsBy(items, globalSortOrder);
   buildSidebar('doneShopSidebar', items, doneShopFilter, (s)=>{doneShopFilter=s;donePage=1;renderDone();});
   const filtered = doneShopFilter ? items.filter(it=>it.shop_name===doneShopFilter) : items;
-  const q=(document.getElementById('allSearch')?.value||'').toLowerCase();
-  const fq = q ? filtered.filter(it=>it.name.toLowerCase().includes(q)||(it.shop_name||'').toLowerCase().includes(q)) : filtered;
+  const qDone=(document.getElementById('allSearch')?.value||'').toLowerCase();
+  const fq = q ? filtered.filter(it=>it.name.toLowerCase().includes(qDone)||(it.shop_name||'').toLowerCase().includes(qDone)) : filtered;
   const start=(donePage-1)*GPAGE;
   const page=fq.slice(start,start+GPAGE);
+  if(document.getElementById('doneCnt')) document.getElementById('doneCnt').textContent=fq.length+'件';
   document.getElementById('doneGrid').innerHTML=fq.length>0
     ?page.map((it,i)=>productCard(it,start+i+1)).join('')
     :'<div class="empty-state">✅ もうやってるの商品がありません。</div>';
@@ -1347,12 +1421,15 @@ function renderBad(){
   items=sortItemsBy(items, globalSortOrder);
   buildSidebar('badShopSidebar', items, badShopFilter, (s)=>{badShopFilter=s;badPage=1;renderBad();});
   const filtered = badShopFilter ? items.filter(it=>it.shop_name===badShopFilter) : items;
+  const qBad=(document.getElementById('allSearch')?.value||'').toLowerCase();
+  const fq = q2 ? filtered.filter(it=>it.name.toLowerCase().includes(qBad)||(it.shop_name||'').toLowerCase().includes(qBad)) : filtered;
+  if(document.getElementById('badCnt')) document.getElementById('badCnt').textContent=fq.length+'件';
   const start=(badPage-1)*GPAGE;
-  const page=filtered.slice(start,start+GPAGE);
-  document.getElementById('badGrid').innerHTML=(filtered.length>0
+  const page=fq.slice(start,start+GPAGE);
+  document.getElementById('badGrid').innerHTML=(fq.length>0
     ?page.map((it,i)=>productCard(it,start+i+1)).join('')
     :'<div class="empty-state">👎 微妙評価の商品がありません。</div>');
-  renderGlobalPagination('badPagination',filtered.length,badPage,p=>{badPage=p;renderBad();});
+  renderGlobalPagination('badPagination',fq.length,badPage,p=>{badPage=p;renderBad();});
 }
 
 function renderWorthless(){
