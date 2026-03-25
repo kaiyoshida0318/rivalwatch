@@ -888,8 +888,8 @@ function productCard(item, rank){
   const key=item.item_id;
   const isChecked=!!checkedItems[key];
   const imgHtml=item.image_url
-    ?`<a href="${item.url||'#'}" target="_blank"><img class="product-img" src="${item.image_url}" alt="" loading="lazy" onerror="this.parentNode.innerHTML='<div class=\\'product-img-placeholder\\'>📦</div>'"></a>`
-    :`<a href="${item.url||'#'}" target="_blank"><div class="product-img-placeholder">📦</div></a>`;
+    ?`<img class="product-img" src="${item.image_url}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'product-img-placeholder\\'>📦</div>'">`
+    :`<div class="product-img-placeholder">📦</div>`;
 
   const delta = item.review_delta;
   const deltaHtml = delta != null && delta > 0
@@ -941,7 +941,7 @@ function productCard(item, rank){
     <div class="product-body">
       <div class="product-rank">#${rank}${mock}</div>
       ${shopNameHtml}
-      <div class="product-name">${item.name||'—'}</div>
+      <div class="product-name"><a href="${item.url||'#'}" target="_blank" style="color:inherit;text-decoration:none" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${item.name||'—'}</a></div>
       ${item.price?`<div class="product-price">¥${item.price.toLocaleString()}</div>`:''}
       <div class="product-stat">★${(item.review_count||0).toLocaleString()}件</div>
       ${deltaHtml}
