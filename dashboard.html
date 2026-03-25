@@ -1317,7 +1317,7 @@ function bulkBarHtml(tabName){
 function renderAllProducts(){
   const qAll=(document.getElementById('allSearch')?.value||'').toLowerCase();
   let items=getAllItems();
-  if(q)items=items.filter(it=>it.name.toLowerCase().includes(q)||it.shop_name.toLowerCase().includes(q));
+  if(qAll)items=items.filter(it=>it.name.toLowerCase().includes(qAll)||(it.shop_name||'').toLowerCase().includes(qAll));
   items=sortItemsBy(items, globalSortOrder);
   // サイドバー
   buildSidebar('allShopSidebar', items, allShopFilter, (s)=>{allShopFilter=s;allPage=1;renderAllProducts();});
@@ -1333,7 +1333,7 @@ function renderAllProducts(){
 function renderUnchecked(){
   const qUnc=(document.getElementById('allSearch')?.value||'').toLowerCase();
   let items=getAllItems().filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]&&!sizeokItems[it.item_id]&&!doneItems[it.item_id]);
-  if(q) items=items.filter(it=>it.name.toLowerCase().includes(qUnc)||(it.shop_name||'').toLowerCase().includes(qUnc));
+  if(qUnc) items=items.filter(it=>it.name.toLowerCase().includes(qUnc)||(it.shop_name||'').toLowerCase().includes(qUnc));
   items=sortItemsBy(items, globalSortOrder);
   buildSidebar('uncheckedShopSidebar', items, uncShopFilter, (s)=>{uncShopFilter=s;uncPage=1;renderUnchecked();});
   const filtered = uncShopFilter ? items.filter(it=>it.shop_name===uncShopFilter) : items;
@@ -1483,7 +1483,9 @@ function updateBadges(){
   document.getElementById('uncheckedBadge').innerHTML=`<span style="background:var(--warn);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${unchecked}</span>`;
   document.getElementById('goodBadge').innerHTML=goodCount>0?`<span style="background:var(--up);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${goodCount}</span>`:'';
   document.getElementById('badBadge').innerHTML=badCount>0?`<span style="background:#7c3aed;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${badCount}</span>`:'';
-  document.getElementById('watch1Badge').innerHTML=watch1Count>0?`<span style="background:#5b8ef0;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${watch1Count}</span>`:'';
+  document.getElementById('watch1Badge').innerHTML=watch1Count>0?`<span style="background:#f59e0b;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${watch1Count}</span>`:'';
+  document.getElementById('sizeokBadge').innerHTML=sizeokCount>0?`<span style="background:#06b6d4;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${sizeokCount}</span>`:'';
+  document.getElementById('doneBadge').innerHTML=doneCount>0?`<span style="background:#8b5cf6;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${doneCount}</span>`:'';
 
   document.getElementById('worthlessBadge').innerHTML=worthlessCount>0?`<span style="background:#1a1a1a;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${worthlessCount}</span>`:'';
 }
