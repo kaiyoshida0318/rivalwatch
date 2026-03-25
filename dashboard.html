@@ -162,7 +162,7 @@ tr:last-child td{border-bottom:none}
   <div class="kpi"><div class="kpi-lbl">観測ステータス</div><div class="kpi-val" id="kpiWeek" style="color:var(--warn)">W0</div><div class="kpi-sub">4週後に精度↑</div></div>
 </div>
 
-<div class="tabs">
+<div class="tabs" style="display:flex;align-items:center">
   <div class="tab active" onclick="switchTab('shops',this)">ショップ一覧</div>
   <div class="tab" onclick="switchTab('all-products',this)">商品全体 <span id="allBadge"></span></div>
   <div class="tab" onclick="switchTab('unchecked',this)">チェック前商品 <span id="uncheckedBadge"></span></div>
@@ -171,6 +171,18 @@ tr:last-child td{border-bottom:none}
   <div class="tab" onclick="switchTab('bad',this)">👎 微妙商品 <span id="badBadge"></span></div>
   <div class="tab" onclick="switchTab('add-shops',this)">＋ ショップ追加</div>
   <div class="tab" onclick="switchTab('worthless',this)">価値なしショップ <span id="worthlessBadge"></span></div>
+  <div id="tabSelectUI" style="display:none;margin-left:auto;flex-shrink:0;align-items:center;gap:6px;padding:0 10px">
+    <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;white-space:nowrap;color:var(--muted)">
+      <input type="checkbox" id="selectAllChk" onchange="handleSelectAll(currentTab)" style="width:21px;height:21px;accent-color:#5b8ef0;cursor:pointer">
+      <span id="selectAllText">全選択</span>
+    </label>
+    <div id="bulkActionBtns" style="display:none;gap:4px;align-items:center">
+      <button onclick="bulkMark('watch1')" style="padding:3px 9px;border-radius:4px;border:1px solid #5b8ef0;background:#e8effe;color:#3a5ec0;font-size:11px;cursor:pointer">👀</button>
+      <button onclick="bulkMark('good')" style="padding:3px 9px;border-radius:4px;border:1px solid #2ecc8a;background:#e8f5ef;color:#0f6e56;font-size:11px;cursor:pointer">👍</button>
+      <button onclick="bulkMark('bad')" style="padding:3px 9px;border-radius:4px;border:1px solid #7c3aed;background:#f0e8ff;color:#7c3aed;font-size:11px;cursor:pointer">👎</button>
+      <button onclick="bulkMark(null)" style="padding:3px 9px;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:11px;cursor:pointer">✕</button>
+    </div>
+  </div>
 </div>
 
 <div class="controls" id="mainControls">
@@ -215,16 +227,7 @@ tr:last-child td{border-bottom:none}
         <option value="shop">ショップ順</option>
       </select>
       <span class="cnt" id="allCnt"></span>
-      <label id="selectAllLabel" style="margin-left:auto;display:flex;align-items:center;gap:5px;cursor:pointer;opacity:.5;font-size:12px;white-space:nowrap" title="全選択">
-        <input type="checkbox" id="selectAllChk" onchange="handleSelectAll(currentTab)" style="width:14px;height:14px;accent-color:#5b8ef0">
-        <span id="selectAllText">全選択</span>
-      </label>
-      <div id="bulkActionBtns" style="display:none;gap:5px;align-items:center">
-        <button onclick="bulkMark('watch1')" style="padding:3px 9px;border-radius:4px;border:1px solid #5b8ef0;background:#e8effe;color:#3a5ec0;font-size:11px;cursor:pointer">👀</button>
-        <button onclick="bulkMark('good')" style="padding:3px 9px;border-radius:4px;border:1px solid #2ecc8a;background:#e8f5ef;color:#0f6e56;font-size:11px;cursor:pointer">👍</button>
-        <button onclick="bulkMark('bad')" style="padding:3px 9px;border-radius:4px;border:1px solid #7c3aed;background:#f0e8ff;color:#7c3aed;font-size:11px;cursor:pointer">👎</button>
-        <button onclick="bulkMark(null)" style="padding:3px 9px;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:11px;cursor:pointer">✕</button>
-      </div>
+
     </div>
     <div class="sidebar-layout">
       <div class="shop-sidebar">
@@ -930,7 +933,7 @@ function productCard(item, rank){
   return `<div class="product-card ${cardStatus} ${item.out_of_rank?'out-of-rank':''} ${isPending?'pending-card':''}" id="card-${key}" style="${isPending?'outline:2px solid #5b8ef0;outline-offset:2px':''}">
     <div style="position:absolute;top:6px;left:6px;z-index:10">
       <input type="checkbox" ${isSelected?'checked':''} onclick="event.stopPropagation();toggleItemSelect('${key}')"
-        style="width:16px;height:16px;cursor:pointer;accent-color:#5b8ef0">
+        style="width:24px;height:24px;cursor:pointer;accent-color:#5b8ef0">
     </div>
     ${badgeHtml}
     ${outOfRank}
@@ -1042,9 +1045,6 @@ function updateSelectUI(){
   if(chk) chk.checked = allSel;
   if(txt) txt.textContent = selCount>0 ? `全選択 (${selCount}件)` : '全選択';
   if(btns) btns.style.display = selCount>0 ? 'flex' : 'none';
-  // 選択中は全選択ラベルを強調
-  const lbl = document.getElementById('selectAllLabel');
-  if(lbl) lbl.style.opacity = selCount>0 ? '1' : '0.5';
 }
 
 function bulkMark(type){
@@ -1284,6 +1284,10 @@ function switchTab(name,el){
   currentTab=name;
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
+  // 商品タブのときだけ全選択UIを表示
+  const productTabs = ['all-products','unchecked','watch1','good','bad'];
+  const selUI = document.getElementById('tabSelectUI');
+  if(selUI) selUI.style.display = productTabs.includes(name) ? 'flex' : 'none';
   const tabIds={
     'shops':       'tabShops',
     'all-products':'tabAllProducts',
