@@ -3,7 +3,7 @@
 新API: openapi.rakuten.co.jp
 ショップコードはショップURLから取得
 """
-import json, time, os
+import json, time, os, re
 from datetime import datetime, timezone, timedelta
 import urllib.request, urllib.parse
 
@@ -174,6 +174,98 @@ def save_json(path, data):
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     with open(path,"w",encoding="utf-8") as f: json.dump(data,f,ensure_ascii=False,indent=2)
 
+RANKING_CONFIGS_FILE = "data/ranking_configs.json"
+RANKING_RESULTS_FILE = "data/ranking_results.json"
+
+def scrape_rankings(now):
+    """ランキングページをスクレイピングして商品情報を取得"""
+    configs = load_json(RANKING_CONFIGS_FILE, [])
+    if not configs:
+        return
+    print(f"\n  ランキングスクレイピング: {len(configs)}件")
+    results = []
+    for cfg in configs:
+        url  = cfg.get("url","")
+        top_n = int(cfg.get("topN", 10))
+        label = cfg.get("label", url)
+        genre_id = cfg.get("genreId","")
+        print(f"  → {label} ({url[:60]})")
+        try:
+            req = urllib.request.Request(url, headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Accept-Language": "ja,en;q=0.9",
+            })
+            with urllib.request.urlopen(req, timeout=15) as r:
+                html = r.read().decode("utf-8", errors="replace")
+            # item.rakuten.co.jp リンクから商品情報抽出
+            pattern = r'href="(https?://item\.rakuten\.co\.jp/([^/]+)/([^/"?#]+)[^"]*)"'
+            matches = re.findall(pattern, html)
+            seen = set()
+            items = []
+            for item_url, shop_code, item_code in matches:
+                key = shop_code + ":" + item_code
+                if key in seen: continue
+                seen.add(key)
+                items.append({
+                    "rank":       len(items) + 1,
+                    "item_id":    f"{shop_code}:{item_code}",
+                    "shop_sid":   shop_code,
+                    "shop_name":  shop_code,
+                    "item_code":  item_code,
+                    "url":        item_url,
+                    "name":       "",
+                    "image_url":  "",
+                    "price":      0,
+                    "review_count": 0,
+                })
+                if len(items) >= top_n: break
+            # 楽天APIで商品詳細を補完（上位top_n件）
+            enriched = enrich_ranking_items(items, shop_code if len(set(it["shop_sid"] for it in items))==1 else None)
+            results.append({
+                "genreId":    genre_id,
+                "label":      label,
+                "url":        url,
+                "topN":       top_n,
+                "fetchedAt":  now.isoformat(),
+                "items":      enriched,
+            })
+            print(f"      取得: {len(enriched)}商品")
+            time.sleep(2)
+        except Exception as e:
+            print(f"      エラー: {e}")
+    save_json(RANKING_RESULTS_FILE, {"generated_at": now.isoformat(), "rankings": results})
+
+def enrich_ranking_items(items, shop_code=None):
+    """楽天APIで商品詳細（名前・画像・価格・レビュー）を取得"""
+    if not items: return items
+    enriched = []
+    for it in items:
+        try:
+            params = {
+                "applicationId": APP_ID,
+                "accessKey":     ACCESS_KEY,
+                "format":        "json",
+                "itemCode":      f"{it['shop_sid']}:{it['item_code']}",
+                "hits":          1,
+            }
+            url = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20220601?" + urllib.parse.urlencode(params)
+            req = urllib.request.Request(url, headers={"Referer": "https://kaiyoshida0318.github.io/rivalwatch/"})
+            with urllib.request.urlopen(req, timeout=10) as r:
+                data = json.loads(r.read().decode("utf-8"))
+            if data.get("Items"):
+                api_it = data["Items"][0].get("Item", data["Items"][0])
+                imgs = api_it.get("mediumImageUrls", [])
+                it["name"]         = api_it.get("itemName","")[:80]
+                it["image_url"]    = imgs[0].get("imageUrl","") if imgs else ""
+                it["price"]        = int(api_it.get("itemPrice", 0))
+                it["review_count"] = int(api_it.get("reviewCount", 0))
+                it["shop_name"]    = api_it.get("shopName", it["shop_sid"])
+        except Exception:
+            pass
+        enriched.append(it)
+        time.sleep(0.5)
+    return enriched
+
 def main():
     if not APP_ID or not ACCESS_KEY:
         print("ERROR: RAKUTEN_APP_ID または RAKUTEN_ACCESS_KEY が未設定"); return
@@ -268,6 +360,9 @@ def main():
         "shop_count":len(summary_shops),
         "alert_count":len([a for a in all_alerts if a["week"]==week]),
         "shops":summary_shops})
+
+    # ── ランキングスクレイピング ──────────────────────────
+    scrape_rankings(now)
 
     print("\n"+"="*56)
     print(f"  完了: {len(summary_shops)}店舗取得")
