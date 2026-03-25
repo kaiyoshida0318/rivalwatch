@@ -18,7 +18,6 @@ function saveJson(p, data) {
 }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-// 楽天APIで補完（成功率低い場合があるため補助的に使用）
 async function enrichViaApi(shopSid, itemCode) {
   if (!APP_ID || !itemCode) return null;
   const params = new URLSearchParams({
@@ -45,8 +44,6 @@ async function enrichViaApi(shopSid, itemCode) {
   return null;
 }
 
-// Puppeteerで商品ページをスクレイピング
-// JSON-LD → meta og → セレクタ の優先順で取得
 async function enrichViaPage(browser, itemUrl, shopSid) {
   if (!itemUrl) return null;
   const page = await browser.newPage();
@@ -54,49 +51,53 @@ async function enrichViaPage(browser, itemUrl, shopSid) {
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
     await page.setExtraHTTPHeaders({ 'Accept-Language': 'ja,en-US;q=0.9,en;q=0.8' });
     await page.goto(itemUrl, { waitUntil: 'domcontentloaded', timeout: 25000 });
-
     const detail = await page.evaluate(() => {
-      // 1) JSON-LD から取得（最も確実）
+      // 1) JSON-LD（最優先）
       const ldScripts = Array.from(document.querySelectorAll('script[type="application/ld+json"]'));
       for (const s of ldScripts) {
         try {
           const json = JSON.parse(s.textContent);
-          const obj = Array.isArray(json) ? json.find(o => o['@type'] === 'Product') : json;
-          if (obj && obj['@type'] === 'Product') {
-            const name = (obj.name || '').slice(0, 80);
+          const obj = Array.isArray(json) ? json.find(o => o['@type'] === 'Product') : (json['@type']==='Product' ? json : null);
+          if (obj) {
+            const name = (obj.name || '').trim().slice(0, 80);
             let price = 0;
             if (obj.offers) {
               const offer = Array.isArray(obj.offers) ? obj.offers[0] : obj.offers;
               price = parseInt(offer.price || 0);
             }
-            const image_url = Array.isArray(obj.image) ? (obj.image[0] || '') : (obj.image || '');
-            const review_count = obj.aggregateRating ? parseInt(obj.aggregateRating.reviewCount || 0) : 0;
-            if (name) return { name, price, image_url: typeof image_url === 'string' ? image_url : '', review_count, shop_name: '', source: 'json-ld' };
+            const imgRaw = obj.image;
+            const image_url = Array.isArray(imgRaw) ? (imgRaw[0]||'') : (imgRaw||'');
+            const review_count = obj.aggregateRating ? parseInt(obj.aggregateRating.reviewCount||0) : 0;
+            if (name) return { name, price, image_url: typeof image_url==='string' ? image_url : '', review_count, source:'ld' };
           }
         } catch(e) {}
       }
-      // 2) OGP meta タグから取得
+      // 2) OGP（og:titleを末尾のサイト名だけ除去）
       const ogTitle = document.querySelector('meta[property="og:title"]');
       const ogImage = document.querySelector('meta[property="og:image"]');
-      const name = ogTitle ? ogTitle.content.replace(/\s*楽天市場.*$/, '').trim().slice(0, 80) : '';
+      // 末尾の「 | 楽天市場」「：楽天市場」だけ除去（先頭の【】は残す）
+      const rawTitle = ogTitle ? ogTitle.content : '';
+      const name = rawTitle.replace(/[\s|｜：:]+楽天市場.*$/, '').replace(/\s*楽天市場$/, '').trim().slice(0, 80);
       const image_url = ogImage ? ogImage.content : '';
-      // 価格は itemprop か price2 クラス
-      const priceEl = document.querySelector('[itemprop="price"], .price2, .item_price, span.price');
+      const priceEl = document.querySelector('[itemprop="price"]');
       let price = 0;
       if (priceEl) {
         const val = priceEl.getAttribute('content') || priceEl.textContent;
         const m = val.replace(/,/g,'').match(/\d+/);
         if (m) price = parseInt(m[0]);
       }
-      if (name) return { name, price, image_url, review_count: 0, shop_name: '', source: 'ogp' };
+      if (name && name.length > 1) return { name, price, image_url, review_count: 0, source:'ogp' };
+      // 3) titleタグ（最終手段）
+      const titleRaw = document.title || '';
+      const titleName = titleRaw.replace(/[\s|｜：:]+楽天市場.*$/, '').replace(/\s*楽天市場$/, '').trim().slice(0, 80);
+      if (titleName && titleName.length > 1) return { name: titleName, price, image_url, review_count: 0, source:'title' };
       return null;
     });
-
-    if (detail && detail.name) {
-      console.log('    [Page/' + detail.source + '] ' + detail.name.slice(0,40) + ' Y' + detail.price);
-      return Object.assign(detail, { shop_name: detail.shop_name || shopSid });
+    if (detail && detail.name && detail.name.length > 1) {
+      console.log('    [Page/'+detail.source+'] ' + detail.name.slice(0,40) + ' Y'+detail.price);
+      return Object.assign(detail, { shop_name: shopSid });
     }
-    console.log('    [Page] name not found: ' + itemUrl);
+    console.log('    [Page] name not found at ' + itemUrl);
   } catch(e) {
     console.log('    [Page] error: ' + e.message);
   } finally {
@@ -119,35 +120,30 @@ async function scrapeRankingPage(browser, url, topN) {
       disp:  document.querySelectorAll('.rnkRanking_dispRank').length,
       links: document.querySelectorAll('a[href*="item.rakuten.co.jp"]').length,
     }));
-    console.log('    [debug] "' + dbg.title + '" topBg=' + dbg.topBg + ' top3=' + dbg.top3 + ' disp=' + dbg.disp + ' links=' + dbg.links);
+    console.log('    [debug] "'+dbg.title+'" topBg='+dbg.topBg+' top3='+dbg.top3+' disp='+dbg.disp+' links='+dbg.links);
     const items = await page.evaluate((maxN) => {
-      const seen = new Set(), results = [];
-      function parse(href) {
-        const m = href.match(/https?:\/\/item\.rakuten\.co\.jp\/([^/]+)\/([^/?#]+)/);
-        return m ? { shopSid: m[1], itemCode: m[2] } : null;
-      }
-      const t1 = document.querySelector('.rnkRanking_topBgColor a[href*="item.rakuten.co.jp"]');
-      if (t1) { const p=parse(t1.href); if(p){const k=p.shopSid+':'+p.itemCode; if(!seen.has(k)){seen.add(k);results.push({rank:1,...p,url:t1.href.split('?')[0]});}}}
+      const seen=new Set(), results=[];
+      function parse(href){const m=href.match(/https?:\/\/item\.rakuten\.co\.jp\/([^/]+)\/([^/?#]+)/);return m?{shopSid:m[1],itemCode:m[2]}:null;}
+      const t1=document.querySelector('.rnkRanking_topBgColor a[href*="item.rakuten.co.jp"]');
+      if(t1){const p=parse(t1.href);if(p){const k=p.shopSid+':'+p.itemCode;if(!seen.has(k)){seen.add(k);results.push({rank:1,...p,url:t1.href.split('?')[0]});}}}
       document.querySelectorAll('.rnkRanking_top3box a[href*="item.rakuten.co.jp"]').forEach(a=>{
-        if(results.length>=maxN)return; const p=parse(a.href); if(!p)return;
-        const k=p.shopSid+':'+p.itemCode; if(seen.has(k))return;
-        seen.add(k); results.push({rank:results.length+1,...p,url:a.href.split('?')[0]});
+        if(results.length>=maxN)return;const p=parse(a.href);if(!p)return;
+        const k=p.shopSid+':'+p.itemCode;if(seen.has(k))return;
+        seen.add(k);results.push({rank:results.length+1,...p,url:a.href.split('?')[0]});
       });
       document.querySelectorAll('.rnkRanking_dispRank').forEach(el=>{
-        if(results.length>=maxN)return; const rn=parseInt(el.textContent); if(isNaN(rn))return;
-        const c=el.closest('li')||el.parentElement; if(!c)return;
-        const a=c.querySelector('a[href*="item.rakuten.co.jp"]'); if(!a)return;
-        const p=parse(a.href); if(!p)return;
-        const k=p.shopSid+':'+p.itemCode; if(seen.has(k))return;
-        seen.add(k); results.push({rank:rn,...p,url:a.href.split('?')[0]});
+        if(results.length>=maxN)return;const rn=parseInt(el.textContent);if(isNaN(rn))return;
+        const c=el.closest('li')||el.parentElement;if(!c)return;
+        const a=c.querySelector('a[href*="item.rakuten.co.jp"]');if(!a)return;
+        const p=parse(a.href);if(!p)return;
+        const k=p.shopSid+':'+p.itemCode;if(seen.has(k))return;
+        seen.add(k);results.push({rank:rn,...p,url:a.href.split('?')[0]});
       });
-      if(results.length===0){
-        document.querySelectorAll('a[href*="item.rakuten.co.jp"]').forEach(a=>{
-          if(results.length>=maxN)return; const p=parse(a.href); if(!p)return;
-          const k=p.shopSid+':'+p.itemCode; if(seen.has(k))return;
-          seen.add(k); results.push({rank:results.length+1,...p,url:a.href.split('?')[0]});
-        });
-      }
+      if(results.length===0){document.querySelectorAll('a[href*="item.rakuten.co.jp"]').forEach(a=>{
+        if(results.length>=maxN)return;const p=parse(a.href);if(!p)return;
+        const k=p.shopSid+':'+p.itemCode;if(seen.has(k))return;
+        seen.add(k);results.push({rank:results.length+1,...p,url:a.href.split('?')[0]});
+      });}
       return results.slice(0,maxN);
     }, topN);
     items.forEach(it=>console.log('    [rank'+it.rank+'] '+it.shopSid+':'+it.itemCode+' => '+it.url));
@@ -169,14 +165,13 @@ async function main() {
   try {
     for (const cfg of configs) {
       const url=cfg.url||'', topN=parseInt(cfg.topN||10), label=cfg.label||url, genreId=cfg.genreId||'';
-      if (!url) continue;
+      if(!url) continue;
       try {
         const items = await scrapeRankingPage(browser, url, topN);
         const enriched = [];
         for (const item of items) {
           await sleep(600);
           console.log('  [enrich] rank'+item.rank+': '+item.shopSid+':'+item.itemCode);
-          // まずAPI、失敗したら必ずPuppeteerページで取得
           let detail = item.itemCode ? await enrichViaApi(item.shopSid, item.itemCode) : null;
           if (!detail || !detail.name) {
             console.log('    -> page fallback: ' + item.url);
@@ -202,7 +197,7 @@ async function main() {
     }
   } finally { await browser.close(); }
   saveJson(RESULTS_FILE, {generated_at:now,rankings:results});
-  const total = results.reduce((s,r)=>s+r.items.length,0);
+  const total=results.reduce((s,r)=>s+r.items.length,0);
   console.log('done: '+results.length+' rankings, '+total+' items');
   results.forEach(r=>{
     console.log('['+r.label+']');
