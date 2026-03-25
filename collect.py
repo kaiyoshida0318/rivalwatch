@@ -178,31 +178,50 @@ RANKING_CONFIGS_FILE = "data/ranking_configs.json"
 RANKING_RESULTS_FILE = "data/ranking_results.json"
 
 def scrape_rankings(now):
-    """ランキングページをスクレイピングして商品情報を取得"""
+    """ランキングページをスクレイピングして商品情報を取得（正確なランキング順）"""
     configs = load_json(RANKING_CONFIGS_FILE, [])
     if not configs:
         return
     print(f"\n  ランキングスクレイピング: {len(configs)}件")
+
+    try:
+        from html.parser import HTMLParser
+    except ImportError:
+        pass
+
     results = []
     for cfg in configs:
-        url  = cfg.get("url","")
-        top_n = int(cfg.get("topN", 10))
-        label = cfg.get("label", url)
+        url     = cfg.get("url","")
+        top_n   = int(cfg.get("topN", 10))
+        label   = cfg.get("label", url)
         genre_id = cfg.get("genreId","")
         print(f"  → {label} ({url[:60]})")
         try:
             req = urllib.request.Request(url, headers={
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0",
                 "Accept-Language": "ja,en;q=0.9",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             })
             with urllib.request.urlopen(req, timeout=15) as r:
                 html = r.read().decode("utf-8", errors="replace")
-            # item.rakuten.co.jp リンクから商品情報抽出
-            pattern = r'href="(https?://item\.rakuten\.co\.jp/([^/]+)/([^/"?#]+)[^"]*)"'
-            matches = re.findall(pattern, html)
-            seen = set()
+
+            # ── ランキング順に商品URLを抽出 ──────────────
+            # 楽天ランキングページの構造:
+            #   1位: class="rnkRanking_topBgColor"
+            #   2〜3位: class="rnkRanking_top3box"
+            #   4位〜: class="rnkRanking_dispRank" に「N位」テキスト
             items = []
-            for item_url, shop_code, item_code in matches:
+            seen  = set()
+
+            # top3box の出現順で1〜3位を取得（1位=topBgColor、2〜3位=top3box）
+            # HTMLを文字列解析で top3box/topBgColor ブロックを抽出
+            top3_pattern = re.compile(
+                r'class="rnkRanking_top(?:BgColor|3box)[^"]*".*?'
+                r'href="(https?://item\.rakuten\.co\.jp/([^/]+)/([^/"?#]+)[^"]*)"',
+                re.DOTALL
+            )
+            for m in top3_pattern.finditer(html):
+                item_url, shop_code, item_code = m.group(1), m.group(2), m.group(3)
                 key = shop_code + ":" + item_code
                 if key in seen: continue
                 seen.add(key)
@@ -212,30 +231,57 @@ def scrape_rankings(now):
                     "shop_sid":   shop_code,
                     "shop_name":  shop_code,
                     "item_code":  item_code,
-                    "url":        item_url,
-                    "name":       "",
-                    "image_url":  "",
-                    "price":      0,
-                    "review_count": 0,
+                    "url":        item_url.split("?")[0],
+                    "name":       "", "image_url": "", "price": 0, "review_count": 0,
                 })
                 if len(items) >= top_n: break
-            # 楽天APIで商品詳細を補完（上位top_n件）
-            enriched = enrich_ranking_items(items, shop_code if len(set(it["shop_sid"] for it in items))==1 else None)
+
+            # 4位以降: rnkRanking_dispRank の「N位」と直後の item.rakuten リンクを対応付け
+            rank_block_pattern = re.compile(
+                r'class="rnkRanking_dispRank[^"]*">(\d+)位.*?'
+                r'href="(https?://item\.rakuten\.co\.jp/([^/]+)/([^/"?#]+)[^"]*)"',
+                re.DOTALL
+            )
+            for m in rank_block_pattern.finditer(html):
+                if len(items) >= top_n: break
+                rank_num = int(m.group(1))
+                item_url, shop_code, item_code = m.group(2), m.group(3), m.group(4)
+                key = shop_code + ":" + item_code
+                if key in seen: continue
+                seen.add(key)
+                items.append({
+                    "rank":       rank_num,
+                    "item_id":    f"{shop_code}:{item_code}",
+                    "shop_sid":   shop_code,
+                    "shop_name":  shop_code,
+                    "item_code":  item_code,
+                    "url":        item_url.split("?")[0],
+                    "name":       "", "image_url": "", "price": 0, "review_count": 0,
+                })
+
+            # ランキング順にソート
+            items.sort(key=lambda x: x["rank"])
+            items = items[:top_n]
+
+            print(f"      抽出: {len(items)}商品 (1位:{items[0]['shop_sid'] if items else 'none'})")
+
+            # 楽天APIで商品詳細を補完
+            enriched = enrich_ranking_items(items)
             results.append({
-                "genreId":    genre_id,
-                "label":      label,
-                "url":        url,
-                "topN":       top_n,
-                "fetchedAt":  now.isoformat(),
-                "items":      enriched,
+                "genreId":   genre_id,
+                "label":     label,
+                "url":       url,
+                "topN":      top_n,
+                "fetchedAt": now.isoformat(),
+                "items":     enriched,
             })
-            print(f"      取得: {len(enriched)}商品")
             time.sleep(2)
         except Exception as e:
             print(f"      エラー: {e}")
+
     save_json(RANKING_RESULTS_FILE, {"generated_at": now.isoformat(), "rankings": results})
 
-def enrich_ranking_items(items, shop_code=None):
+def enrich_ranking_items(items):
     """楽天APIで商品詳細（名前・画像・価格・レビュー）を取得"""
     if not items: return items
     enriched = []
