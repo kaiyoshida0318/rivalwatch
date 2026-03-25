@@ -10,43 +10,55 @@ function loadJson(p,d){if(fs.existsSync(p)){try{return JSON.parse(fs.readFileSyn
 function saveJson(p,data){fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,JSON.stringify(data,null,2),'utf-8');}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 
-// 楽天API: itemCode直接検索
-async function enrichViaItemCode(shopSid, itemCode) {
-  if (!APP_ID || !itemCode) return null;
-  const params = new URLSearchParams({applicationId:APP_ID,accessKey:ACCESS_KEY,format:'json',itemCode:shopSid+':'+itemCode,hits:1});
-  try {
-    const res = await fetch(RAKUTEN_API+'?'+params, {headers:{Referer:'https://kaiyoshida0318.github.io/rivalwatch/'}});
-    const data = await res.json();
-    if (data&&data.Items&&data.Items.length) {
-      const it = data.Items[0].Item||data.Items[0]; const imgs=it.mediumImageUrls||[];
-      return {name:(it.itemName||'').slice(0,80),image_url:imgs[0]?imgs[0].imageUrl:'',price:parseInt(it.itemPrice||0),review_count:parseInt(it.reviewCount||0),shop_name:it.shopName||shopSid};
-    }
-  } catch(e) {}
+// レートリミット対応付きfetch
+async function apiFetch(url) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const res = await fetch(url, {headers:{Referer:'https://kaiyoshida0318.github.io/rivalwatch/'}});
+      const data = await res.json();
+      if (data.statusCode === 429) {
+        console.log('    [rateLimit] retry in 2s...');
+        await sleep(2000);
+        continue;
+      }
+      return data;
+    } catch(e) { await sleep(1000); }
+  }
   return null;
 }
 
-// 楽天API: ショップ検索でitemCodeに一致する商品を探す（フォールバック）
+// itemCode直接検索
+async function enrichViaItemCode(shopSid, itemCode) {
+  if (!APP_ID || !itemCode) return null;
+  const params = new URLSearchParams({applicationId:APP_ID,accessKey:ACCESS_KEY,format:'json',itemCode:shopSid+':'+itemCode,hits:1});
+  const data = await apiFetch(RAKUTEN_API+'?'+params);
+  if (data&&data.Items&&data.Items.length) {
+    const it=data.Items[0].Item||data.Items[0]; const imgs=it.mediumImageUrls||[];
+    return {name:(it.itemName||'').slice(0,80),image_url:imgs[0]?imgs[0].imageUrl:'',price:parseInt(it.itemPrice||0),review_count:parseInt(it.reviewCount||0),shop_name:it.shopName||shopSid};
+  }
+  return null;
+}
+
+// ショップ検索でitemCodeに完全一致するものだけ返す
 async function enrichViaShopSearch(shopSid, itemCode) {
   if (!APP_ID || !shopSid) return null;
-  // ショップの上位30件を取得してitemCodeが一致するものを探す
   const params = new URLSearchParams({applicationId:APP_ID,accessKey:ACCESS_KEY,format:'json',shopCode:shopSid,hits:30,sort:'-reviewCount'});
-  try {
-    const res = await fetch(RAKUTEN_API+'?'+params, {headers:{Referer:'https://kaiyoshida0318.github.io/rivalwatch/'}});
-    const data = await res.json();
-    if (data&&data.Items&&data.Items.length) {
-      // itemCodeで一致するものを探す
-      let match = data.Items.find(e => {
-        const it = e.Item||e;
-        const code = (it.itemCode||'').split(':').pop();
-        return code === itemCode;
-      });
-      // 一致しなければ1件目を使う
-      if (!match) match = data.Items[0];
-      const it = match.Item||match; const imgs=it.mediumImageUrls||[];
-      console.log('    [ShopSearch] '+it.itemName.slice(0,30)+' Y'+it.itemPrice);
-      return {name:(it.itemName||'').slice(0,80),image_url:imgs[0]?imgs[0].imageUrl:'',price:parseInt(it.itemPrice||0),review_count:parseInt(it.reviewCount||0),shop_name:it.shopName||shopSid};
+  const data = await apiFetch(RAKUTEN_API+'?'+params);
+  if (data&&data.Items&&data.Items.length) {
+    // itemCodeが完全一致するものだけ返す（別商品は返さない）
+    const match = data.Items.find(e => {
+      const it=e.Item||e;
+      const code=(it.itemCode||'').split(':').pop();
+      return code === itemCode;
+    });
+    if (!match) {
+      console.log('    [ShopSearch] itemCode '+itemCode+' not found in shop '+shopSid);
+      return null;
     }
-  } catch(e) { console.log('    [ShopSearch] error: '+e.message); }
+    const it=match.Item||match; const imgs=it.mediumImageUrls||[];
+    console.log('    [ShopSearch] matched: '+it.itemName.slice(0,30)+' Y'+it.itemPrice);
+    return {name:(it.itemName||'').slice(0,80),image_url:imgs[0]?imgs[0].imageUrl:'',price:parseInt(it.itemPrice||0),review_count:parseInt(it.reviewCount||0),shop_name:it.shopName||shopSid};
+  }
   return null;
 }
 
@@ -93,16 +105,18 @@ async function main(){
         const items=await scrapeRankingPage(browser,url,topN);
         const enriched=[];
         for(const item of items){
-          await sleep(600);
+          await sleep(1200); // レートリミット対策で多めに待機
           console.log('  [enrich] rank'+item.rank+': '+item.shopSid+':'+item.itemCode);
           // 1) itemCode直接検索
           let detail=await enrichViaItemCode(item.shopSid,item.itemCode);
-          // 2) 失敗したらショップ検索フォールバック
+          // 2) 失敗したらショップ検索（itemCode完全一致のみ）
           if(!detail||!detail.name){
             console.log('    -> shopSearch fallback: '+item.shopSid);
+            await sleep(1000);
             detail=await enrichViaShopSearch(item.shopSid,item.itemCode);
-            await sleep(800);
           }
+          if(detail&&detail.name) console.log('    -> OK: '+detail.name.slice(0,30));
+          else console.log('    -> MISS: '+item.shopSid+':'+item.itemCode);
           enriched.push({rank:item.rank,item_id:item.shopSid+':'+item.itemCode,shop_sid:item.shopSid,shop_name:(detail&&detail.shop_name)||item.shopSid,item_code:item.itemCode,url:item.url,name:(detail&&detail.name)||'',image_url:(detail&&detail.image_url)||'',price:(detail&&detail.price)||0,review_count:(detail&&detail.review_count)||0});
         }
         results.push({genreId,label,url,topN,fetchedAt:now,items:enriched});
@@ -112,7 +126,8 @@ async function main(){
   }finally{await browser.close();}
   saveJson(RESULTS_FILE,{generated_at:now,rankings:results});
   const total=results.reduce((s,r)=>s+r.items.length,0);
-  console.log('done: '+results.length+' rankings, '+total+' items');
+  const named=results.reduce((s,r)=>s+r.items.filter(i=>i.name).length,0);
+  console.log('done: '+results.length+' rankings, '+total+' items ('+named+' named)');
   results.forEach(r=>{console.log('['+r.label+']');r.items.forEach(i=>console.log('  '+i.rank+': '+(i.name||'(no name)')+' / '+i.shop_sid+' Y'+i.price));});
 }
 main().catch(e=>{console.error('Fatal:',e);process.exit(1);});
