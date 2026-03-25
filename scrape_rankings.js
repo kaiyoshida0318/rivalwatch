@@ -42,9 +42,8 @@ async function scrapeRankingPage(browser,url,topN){
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
     await page.setExtraHTTPHeaders({'Accept-Language':'ja,en-US;q=0.9,en;q=0.8'});
     console.log('  -> '+url);
-    // networkidle0 でJS描画完了まで待つ
-    await page.goto(url,{waitUntil:'networkidle0',timeout:45000});
-    // ページ全体をスクロールして遅延ロードを発火
+    // domcontentloaded で速く取得、その後スクロールで遅延ロードを発火
+    await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
     await page.evaluate(()=>{window.scrollTo(0,document.body.scrollHeight/2);});
     await sleep(1500);
     await page.evaluate(()=>{window.scrollTo(0,document.body.scrollHeight);});
@@ -55,10 +54,8 @@ async function scrapeRankingPage(browser,url,topN){
       disp:document.querySelectorAll('.rnkRanking_dispRank').length,
       dataRank:document.querySelectorAll('[data-rank]').length,
       links:document.querySelectorAll('a[href*="item.rakuten.co.jp"]').length,
-      classes:Array.from(new Set(Array.from(document.querySelectorAll('[class]')).flatMap(e=>e.className.split(' ').filter(c=>c.startsWith('rnkRanking_'))))).join(','),
     }));
     console.log('    [debug] topBg='+dbg.topBg+' top3='+dbg.top3+' disp='+dbg.disp+' dataRank='+dbg.dataRank+' links='+dbg.links);
-    console.log('    [debug] classes='+dbg.classes);
     const items=await page.evaluate((maxN)=>{
       const seen=new Set(),results=[];
       function parse(href){const m=href.match(/https?:\/\/item\.rakuten\.co\.jp\/([^/]+)\/([^/?#]+)/);return m?{shopSid:m[1],itemCode:m[2]}:null;}
@@ -92,7 +89,11 @@ async function main(){
           await sleep(600);
           console.log('  [enrich] rank'+item.rank+': '+item.shopSid+':'+item.itemCode);
           let detail=item.itemCode?await enrichViaApi(item.shopSid,item.itemCode):null;
-          if(!detail||!detail.name){console.log('    -> page fallback: '+item.url);detail=await enrichViaPage(browser,item.url,item.shopSid);await sleep(1500);}
+          if(!detail||!detail.name){
+            console.log('    -> page fallback: '+item.url);
+            detail=await enrichViaPage(browser,item.url,item.shopSid);
+            await sleep(1500);
+          }
           enriched.push({rank:item.rank,item_id:item.shopSid+':'+item.itemCode,shop_sid:item.shopSid,shop_name:(detail&&detail.shop_name)||item.shopSid,item_code:item.itemCode,url:item.url,name:(detail&&detail.name)||'',image_url:(detail&&detail.image_url)||'',price:(detail&&detail.price)||0,review_count:(detail&&detail.review_count)||0});
         }
         results.push({genreId,label,url,topN,fetchedAt:now,items:enriched});
