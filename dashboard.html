@@ -968,6 +968,8 @@ function productCard(item, rank){
   const isGood   = effectiveType === 'good';
   const isBad    = effectiveType === 'bad';
   const isWatch1 = effectiveType === 'watch1';
+  const isSizeok = effectiveType === 'sizeok';
+  const isDone   = effectiveType === 'done';
   const isPending = pend !== undefined;
   const getAt = (obj, k) => { const v=obj[k]; return (v&&v.at)?v.at:''; };
   const isSelected = selectedItems.has(key);
