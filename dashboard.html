@@ -167,6 +167,7 @@ tr:last-child td{border-bottom:none}
   <div class="tab" onclick="switchTab('all-products',this)">商品全体 <span id="allBadge"></span></div>
   <div class="tab" onclick="switchTab('unchecked',this)">チェック前商品 <span id="uncheckedBadge"></span></div>
   <div class="tab" onclick="switchTab('watch1',this)">🔥 すぐやる候補 <span id="watch1Badge"></span></div>
+  <div class="tab" onclick="switchTab('stop',this)">❌ やるの中止 <span id="stopBadge"></span></div>
   <div class="tab" onclick="switchTab('good',this)">⭐ 70点 <span id="goodBadge"></span></div>
   <div class="tab" onclick="switchTab('sizeok',this)">📐 sizeOK微妙 <span id="sizeokBadge"></span></div>
   <div class="tab" onclick="switchTab('done',this)">✅ もうやってる <span id="doneBadge"></span></div>
@@ -184,6 +185,7 @@ tr:last-child td{border-bottom:none}
       <button onclick="bulkMark('bad')" style="padding:3px 9px;border-radius:4px;border:1px solid #7c3aed;background:#f0e8ff;color:#7c3aed;font-size:11px;cursor:pointer">👎</button>
       <button onclick="bulkMark('sizeok')" style="padding:3px 9px;border-radius:4px;border:1px solid #06b6d4;background:#e0f7fa;color:#0e7490;font-size:11px;cursor:pointer">📐</button>
       <button onclick="bulkMark('done')" style="padding:3px 9px;border-radius:4px;border:1px solid #8b5cf6;background:#ede9fe;color:#5b21b6;font-size:11px;cursor:pointer">✅</button>
+      <button onclick="bulkMark('stop')" style="padding:3px 9px;border-radius:4px;border:1px solid #ef4444;background:#fee2e2;color:#991b1b;font-size:11px;cursor:pointer">❌</button>
       <button onclick="bulkMark(null)" style="padding:3px 9px;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:11px;cursor:pointer">✕</button>
     </div>
   </div>
@@ -208,7 +210,8 @@ tr:last-child td{border-bottom:none}
   <th class="hide-sp" style="cursor:pointer;user-select:none" onclick="setShopSort('weekly')">週販売推定（万）<span style="font-size:9px;color:var(--muted)" id="sort_weekly"></span></th>
   <th>測定数</th>
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('unchecked')" id="th_unchecked">チェック前 <span style="font-size:9px;color:var(--muted)" id="sort_unchecked"></span></th>
-  <th style="cursor:pointer;user-select:none" onclick="setShopSort('watch1')" id="th_watch1">👀注視 <span style="font-size:9px;color:var(--muted)" id="sort_watch1"></span></th>
+  <th style="cursor:pointer;user-select:none" onclick="setShopSort('watch1')" id="th_watch1">🔥すぐやる <span style="font-size:9px;color:var(--muted)" id="sort_watch1"></span></th>
+  <th style="cursor:pointer;user-select:none" onclick="setShopSort('stop')" id="th_stop">❌やる中止 <span style="font-size:9px;color:var(--muted)" id="sort_stop"></span></th>
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('good')" id="th_good">👍Good <span style="font-size:9px;color:var(--muted)" id="sort_good"></span></th>
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('bad')" id="th_bad">👎微妙 <span style="font-size:9px;color:var(--muted)" id="sort_bad"></span></th>
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('sizeok')" id="th_sizeok">📐sizeOK微妙 <span style="font-size:9px;color:var(--muted)" id="sort_sizeok"></span></th>
@@ -224,8 +227,8 @@ tr:last-child td{border-bottom:none}
 
   <div id="tabAllProducts" style="display:none">
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()" style="max-width:220px">
-      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()"
+      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=stopPage=1;renderCurrentTab()" style="max-width:220px">
+      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=stopPage=1;renderCurrentTab()"
         style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
         <option value="updated">最終更新順</option>
         <option value="monthly">月商順</option>
@@ -249,8 +252,8 @@ tr:last-child td{border-bottom:none}
 
   <div id="tabUnchecked" style="display:none">
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()" style="max-width:220px">
-      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()"
+      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=stopPage=1;renderCurrentTab()" style="max-width:220px">
+      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=stopPage=1;renderCurrentTab()"
         style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
         <option value="updated">最終更新順</option>
         <option value="monthly">月商順</option>
@@ -271,10 +274,34 @@ tr:last-child td{border-bottom:none}
     </div>
   </div>
 
+  <div id="tabStop" style="display:none">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=stopPage=1;renderCurrentTab()" style="max-width:220px">
+      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=stopPage=1;renderCurrentTab()"
+        style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
+        <option value="updated">最終更新順</option>
+        <option value="monthly">月商順</option>
+        <option value="weekly">週次増加順</option>
+        <option value="shop">ショップ順</option>
+      </select>
+      <span class="cnt" id="stopCnt"></span>
+    </div>
+    <div class="sidebar-layout">
+      <div class="shop-sidebar">
+        <div class="sidebar-title">ショップ</div>
+        <div class="sidebar-list" id="stopShopSidebar"></div>
+      </div>
+      <div class="sidebar-content">
+        <div class="global-wrap"><div class="global-grid" id="stopGrid"></div></div>
+        <div class="pagination" id="stopPagination"></div>
+      </div>
+    </div>
+  </div>
+
   <div id="tabGood" style="display:none">
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()" style="max-width:220px">
-      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()"
+      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=stopPage=1;renderCurrentTab()" style="max-width:220px">
+      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=stopPage=1;renderCurrentTab()"
         style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
         <option value="updated">最終更新順</option>
         <option value="monthly">月商順</option>
@@ -297,8 +324,8 @@ tr:last-child td{border-bottom:none}
 
   <div id="tabWatch1" style="display:none">
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()" style="max-width:220px">
-      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()"
+      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=stopPage=1;renderCurrentTab()" style="max-width:220px">
+      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=stopPage=1;renderCurrentTab()"
         style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
         <option value="updated">最終更新順</option>
         <option value="monthly">月商順</option>
@@ -321,8 +348,8 @@ tr:last-child td{border-bottom:none}
 
   <div id="tabSizeok" style="display:none">
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()" style="max-width:220px">
-      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()"
+      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=stopPage=1;renderCurrentTab()" style="max-width:220px">
+      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=stopPage=1;renderCurrentTab()"
         style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
         <option value="updated">最終更新順</option>
         <option value="monthly">月商順</option>
@@ -345,8 +372,8 @@ tr:last-child td{border-bottom:none}
 
   <div id="tabDone" style="display:none">
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()" style="max-width:220px">
-      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()"
+      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=stopPage=1;renderCurrentTab()" style="max-width:220px">
+      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=stopPage=1;renderCurrentTab()"
         style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
         <option value="updated">最終更新順</option>
         <option value="monthly">月商順</option>
@@ -369,8 +396,8 @@ tr:last-child td{border-bottom:none}
 
   <div id="tabBad" style="display:none">
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()" style="max-width:220px">
-      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=1;renderCurrentTab()"
+      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=stopPage=1;renderCurrentTab()" style="max-width:220px">
+      <select class="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=sizeokPage=donePage=stopPage=1;renderCurrentTab()"
         style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
         <option value="updated">最終更新順</option>
         <option value="monthly">月商順</option>
@@ -532,6 +559,8 @@ function loadSizeok() { try{return JSON.parse(localStorage.getItem('rw_sizeok')|
 function saveSizeok(o) { try{localStorage.setItem('rw_sizeok',JSON.stringify(o));syncToGitHub()}catch{} }
 function loadDone() { try{return JSON.parse(localStorage.getItem('rw_done')||'{}')}catch{return{}} }
 function saveDone(o) { try{localStorage.setItem('rw_done',JSON.stringify(o));syncToGitHub()}catch{} }
+function loadStop() { try{return JSON.parse(localStorage.getItem('rw_stop')||'{}')}catch{return{}} }
+function saveStop(o) { try{localStorage.setItem('rw_stop',JSON.stringify(o));syncToGitHub()}catch{} }
 // 後方互換：旧checkedをgoodとして引き継ぐ
 function loadChecked() {
   const old = localStorage.getItem('rw_checked');
@@ -557,6 +586,7 @@ function getUserState() {
     watch1:       watch1Items,
     sizeok:       sizeokItems,
     done:         doneItems,
+    stop:         stopItems,
     extra_shops:  extraShops,
     hidden_shops: hiddenShops,
     item_counts:  itemCounts,
@@ -631,6 +661,7 @@ async function loadFromGitHub() {
     if (state.watch1)       { watch1Items  = state.watch1;       localStorage.setItem('rw_watch1', JSON.stringify(watch1Items)); }
     if (state.sizeok)       { sizeokItems  = state.sizeok;       localStorage.setItem('rw_sizeok', JSON.stringify(sizeokItems)); }
     if (state.done)         { doneItems    = state.done;         localStorage.setItem('rw_done',   JSON.stringify(doneItems)); }
+    if (state.stop)         { stopItems    = state.stop;         localStorage.setItem('rw_stop',   JSON.stringify(stopItems)); }
     if (state.extra_shops)  { extraShops   = state.extra_shops;  localStorage.setItem('rw_extra_shops', JSON.stringify(extraShops)); }
     if (state.hidden_shops) { hiddenShops  = state.hidden_shops; saveHiddenShops(hiddenShops); }
     if (state.item_counts)  { itemCounts   = state.item_counts;  saveItemCounts(itemCounts); }
@@ -664,6 +695,7 @@ let badItems   = loadBad();
 let watch1Items = loadWatch1();
 let sizeokItems = loadSizeok();
 let doneItems   = loadDone();
+let stopItems   = loadStop();
 loadChecked(); // 旧データ移行
 let SUMMARY = null;
 
@@ -788,7 +820,7 @@ let shopSortCol=null, shopSortAsc=false;
 function setShopSort(col){
   if(shopSortCol===col){ shopSortAsc=!shopSortAsc; }
   else { shopSortCol=col; shopSortAsc=false; }
-  ['unchecked','watch1','good','bad','sizeok','done','reviews','weekly'].forEach(id=>{
+  ['unchecked','watch1','good','bad','sizeok','done','stop','reviews','weekly'].forEach(id=>{
     const el=document.getElementById('sort_'+id);
     if(el) el.textContent = id===col ? (shopSortAsc?'▲':'▼') : '';
   });
@@ -810,6 +842,7 @@ function getFilteredShops(){
       if(type==='bad') return si.filter(it=>badItems[it.item_id]).length;
       if(type==='sizeok') return si.filter(it=>sizeokItems[it.item_id]).length;
       if(type==='done') return si.filter(it=>doneItems[it.item_id]).length;
+      if(type==='stop') return si.filter(it=>stopItems[it.item_id]).length;
       return 0;
     };
     shops.sort((a,b)=>{
@@ -864,6 +897,7 @@ function renderShops(){
     const w1Cnt     = shopItems.filter(it=>watch1Items[it.item_id]).length;
     const sizeokCnt = shopItems.filter(it=>sizeokItems[it.item_id]).length;
     const doneCnt   = shopItems.filter(it=>doneItems[it.item_id]).length;
+    const stopCnt   = shopItems.filter(it=>stopItems[it.item_id]).length;
     const uncCnt    = shopItems.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]).length;
     const cntStyle  = (n,bg,col) => n>0
       ? `<span style="background:${bg};color:${col};border-radius:4px;padding:3px 8px;font-size:12px;font-weight:600">${n}</span>`
@@ -895,6 +929,7 @@ function renderShops(){
       <td style="text-align:center">${cntStyle(badCnt,'#f0e8ff','#7c3aed')}</td>
       <td style="text-align:center">${cntStyle(sizeokCnt,'#e0f7fa','#0e7490')}</td>
       <td style="text-align:center">${cntStyle(doneCnt,'#ede9fe','#5b21b6')}</td>
+      <td style="text-align:center">${cntStyle(stopCnt,'#fee2e2','#991b1b')}</td>
       <td><button class="expand-btn ${ps.open?'open':''}" onclick="togglePanel('${key}')">▼ 商品を見る</button></td>
       <td><button class="del-btn" onclick="deleteShop('${key}','${s.isBase?'base':'extra'}')">価値なし</button>`;
     tbody.appendChild(tr);
@@ -902,7 +937,7 @@ function renderShops(){
     if(ps.open){
       const pr=document.createElement('tr');
       const td=document.createElement('td');
-      td.colSpan=13; td.style.padding='0';
+      td.colSpan=14; td.style.padding='0';
       const currentItems=(s.topItems&&s.topItems.length>0)?s.topItems:makeMockItems(s,getItemCount(key));
       const allItems = getShopAllItems(key, currentItems);
       const outCount = allItems.filter(it=>it.out_of_rank).length;
@@ -983,7 +1018,7 @@ function sortItemsBy(items, order) {
     arr.sort((a,b)=>(calcMonthly(b)||0)-(calcMonthly(a)||0));
   } else if (order === 'updated') {
     const getAt = it => {
-      const rec = goodItems[it.item_id]||badItems[it.item_id]||watch1Items[it.item_id]||sizeokItems[it.item_id]||doneItems[it.item_id];
+      const rec = goodItems[it.item_id]||badItems[it.item_id]||watch1Items[it.item_id]||sizeokItems[it.item_id]||doneItems[it.item_id]||stopItems[it.item_id];
       return (rec && rec.at) ? rec.at : '';
     };
     arr.sort((a,b)=>getAt(b).localeCompare(getAt(a)));
@@ -1037,12 +1072,13 @@ function productCard(item, rank){
   const pend = pending[key];
   const effectiveType = pend !== undefined
     ? pend.newType
-    : (goodItems[key] ? 'good' : badItems[key] ? 'bad' : watch1Items[key] ? 'watch1' : sizeokItems[key] ? 'sizeok' : doneItems[key] ? 'done' : null);
+    : (goodItems[key] ? 'good' : badItems[key] ? 'bad' : watch1Items[key] ? 'watch1' : sizeokItems[key] ? 'sizeok' : doneItems[key] ? 'done' : stopItems[key] ? 'stop' : null);
   const isGood   = effectiveType === 'good';
   const isBad    = effectiveType === 'bad';
   const isWatch1 = effectiveType === 'watch1';
   const isSizeok = effectiveType === 'sizeok';
   const isDone   = effectiveType === 'done';
+  const isStop   = effectiveType === 'stop';
   const isPending = pend !== undefined;
   const getAt = (obj, k) => { const v=obj[k]; return (v&&v.at)?v.at:''; };
   const isSelected = selectedItems.has(key);
@@ -1053,6 +1089,7 @@ function productCard(item, rank){
                   : isWatch1 ? `<div class="checked-badge" style="background:${isPending?'#92660a':'#f59e0b'};color:#fff">🔥 すぐやる${pendingMark}</div>`
                   : isSizeok ? `<div class="checked-badge" style="background:${isPending?'#065f6b':'#06b6d4'};color:#fff">📐 sizeOK微妙${pendingMark}</div>`
                   : isDone   ? `<div class="checked-badge" style="background:${isPending?'#4c1d95':'#8b5cf6'};color:#fff">✅ やってる${pendingMark}</div>`
+                  : isStop   ? `<div class="checked-badge" style="background:${isPending?'#991b1b':'#ef4444'};color:#fff">❌ やる中止${pendingMark}</div>`
                   : '';
 
   return `<div class="product-card ${cardStatus} ${item.out_of_rank?'out-of-rank':''} ${isPending?'pending-card':''}" id="card-${key}" style="${isPending?'outline:2px solid #5b8ef0;outline-offset:2px':''}">
@@ -1071,9 +1108,10 @@ function productCard(item, rank){
       <div class="product-stat">★${(item.review_count||0).toLocaleString()}件</div>
       ${deltaHtml}
       ${monthlyHtml}
-      ${(isGood||isBad||isWatch1)?`<div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-top:4px">${getAt(isGood?goodItems:isBad?badItems:isWatch1?watch1Items:isSizeok?sizeokItems:doneItems, key)||''}</div>`:''}
+      ${(isGood||isBad||isWatch1)?`<div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-top:4px">${getAt(isGood?goodItems:isBad?badItems:isWatch1?watch1Items:isSizeok?sizeokItems:isDone?doneItems:stopItems, key)||''}</div>`:''}
       <div style="margin-top:7px;display:flex;flex-direction:column;gap:4px">
         <button class="check-btn" style="width:100%;background:${isWatch1?'#f59e0b':'var(--bg)'};color:${isWatch1?'#fff':'var(--text)'};border-color:${isWatch1?'#f59e0b':'var(--border)'}" onclick="markWatch1('${key}')">🔥 すぐやる候補</button>
+        <button class="check-btn" style="width:100%;background:${isStop?'#ef4444':'var(--bg)'};color:${isStop?'#fff':'var(--text)'};border-color:${isStop?'#ef4444':'var(--border)'}" onclick="markStop('${key}')">❌ やるの中止</button>
         <div style="display:flex;gap:4px">
           <button class="check-btn ${isGood?'is-good':''}" style="flex:1;background:${isGood?'#2ecc8a':'var(--bg)'};color:${isGood?'#fff':'var(--text)'};border-color:${isGood?'#2ecc8a':'var(--border)'}" onclick="markGood('${key}')">⭐ 70点</button>
           <button class="check-btn" style="flex:1;background:${isSizeok?'#06b6d4':'var(--bg)'};color:${isSizeok?'#fff':'var(--text)'};border-color:${isSizeok?'#06b6d4':'var(--border)'}" onclick="markSizeok('${key}')">📐 sizeOK微妙</button>
@@ -1105,7 +1143,7 @@ function addPending(key, newType){
   // 現在の「表示上の」状態を取得（ペンディングがあればそれを優先）
   const currentEffective = pending[key] !== undefined
     ? pending[key].newType
-    : (goodItems[key] ? 'good' : badItems[key] ? 'bad' : watch1Items[key] ? 'watch1' : sizeokItems[key] ? 'sizeok' : doneItems[key] ? 'done' : null);
+    : (goodItems[key] ? 'good' : badItems[key] ? 'bad' : watch1Items[key] ? 'watch1' : sizeokItems[key] ? 'sizeok' : doneItems[key] ? 'done' : stopItems[key] ? 'stop' : null);
 
   if(!pending[key]){
     // 初回：確定状態をprevとして保存
@@ -1136,12 +1174,14 @@ function commitPending(){
     delete watch1Items[key];
     delete sizeokItems[key];
     delete doneItems[key];
+    delete stopItems[key];
     // 新しい評価を設定
     if(p.newType==='good')  goodItems[key]  = {at:nowStr()};
     else if(p.newType==='bad')   badItems[key]   = {at:nowStr()};
     else if(p.newType==='watch1') watch1Items[key] = {at:nowStr()};
     else if(p.newType==='sizeok') sizeokItems[key] = {at:nowStr()};
     else if(p.newType==='done')   doneItems[key]   = {at:nowStr()};
+    else if(p.newType==='stop')   stopItems[key]   = {at:nowStr()};
   });
   pending = {};
   saveGood(goodItems);
@@ -1149,6 +1189,7 @@ function commitPending(){
   saveWatch1(watch1Items);
   saveSizeok(sizeokItems);
   saveDone(doneItems);
+  saveStop(stopItems);
   updatePendingBar();
   updateBadges();
   renderCurrentTab();
@@ -1202,12 +1243,13 @@ function bulkMark(type){
 function getTabItems(tabName){
   const all = getAllItems();
   if(tabName==='all-products') return all;
-  if(tabName==='unchecked') return all.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]&&!sizeokItems[it.item_id]&&!doneItems[it.item_id]);
+  if(tabName==='unchecked') return all.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]&&!sizeokItems[it.item_id]&&!doneItems[it.item_id]&&!stopItems[it.item_id]);
   if(tabName==='good') return all.filter(it=>goodItems[it.item_id]||pending[it.item_id]?.newType==='good');
   if(tabName==='bad') return all.filter(it=>badItems[it.item_id]||pending[it.item_id]?.newType==='bad');
   if(tabName==='watch1') return all.filter(it=>watch1Items[it.item_id]||pending[it.item_id]?.newType==='watch1');
   if(tabName==='sizeok') return all.filter(it=>sizeokItems[it.item_id]||pending[it.item_id]?.newType==='sizeok');
   if(tabName==='done')   return all.filter(it=>doneItems[it.item_id]||pending[it.item_id]?.newType==='done');
+  if(tabName==='stop')   return all.filter(it=>stopItems[it.item_id]||pending[it.item_id]?.newType==='stop');
   return all;
 }
 
@@ -1235,6 +1277,12 @@ function markDone(key){
   renderShops();
 }
 
+function markStop(key){
+  addPending(key, 'stop');
+  renderCurrentTab();
+  renderShops();
+}
+
 function markWatch1(key){
   addPending(key, 'watch1');
   renderCurrentTab();
@@ -1255,6 +1303,7 @@ function renderCurrentTab(){
   else if(currentTab==='watch1') renderWatch1();
   else if(currentTab==='sizeok') renderSizeok();
   else if(currentTab==='done') renderDone();
+  else if(currentTab==='stop') renderStop();
   updateSelectUI();
 }
 
@@ -1332,7 +1381,7 @@ function renderAllProducts(){
 
 function renderUnchecked(){
   const qUnc=(document.getElementById('allSearch')?.value||'').toLowerCase();
-  let items=getAllItems().filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]&&!sizeokItems[it.item_id]&&!doneItems[it.item_id]);
+  let items=getAllItems().filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]&&!sizeokItems[it.item_id]&&!doneItems[it.item_id]&&!stopItems[it.item_id]);
   if(qUnc) items=items.filter(it=>it.name.toLowerCase().includes(qUnc)||(it.shop_name||'').toLowerCase().includes(qUnc));
   items=sortItemsBy(items, globalSortOrder);
   buildSidebar('uncheckedShopSidebar', items, uncShopFilter, (s)=>{uncShopFilter=s;uncPage=1;renderUnchecked();});
@@ -1416,6 +1465,25 @@ function renderDone(){
 }
 
 
+let stopPage=1;
+let stopShopFilter=null;
+
+function renderStop(){
+  let items=getAllItems().filter(it=>stopItems[it.item_id]);
+  items=sortItemsBy(items, globalSortOrder);
+  buildSidebar('stopShopSidebar', items, stopShopFilter, (s)=>{stopShopFilter=s;stopPage=1;renderStop();});
+  const filtered = stopShopFilter ? items.filter(it=>it.shop_name===stopShopFilter) : items;
+  const qStop=(document.getElementById('allSearch')?.value||'').toLowerCase();
+  const fq = qStop ? filtered.filter(it=>it.name.toLowerCase().includes(qStop)||(it.shop_name||'').toLowerCase().includes(qStop)) : filtered;
+  if(document.getElementById('stopCnt')) document.getElementById('stopCnt').textContent=fq.length+'件';
+  const start=(stopPage-1)*GPAGE;
+  const page=fq.slice(start,start+GPAGE);
+  document.getElementById('stopGrid').innerHTML=fq.length>0
+    ?page.map((it,i)=>productCard(it,start+i+1)).join('')
+    :'<div class="empty-state">❌ やるの中止の商品がありません。</div>';
+  renderGlobalPagination('stopPagination',fq.length,stopPage,p=>{stopPage=p;renderStop();});
+}
+
 function renderBad(){
   let items=getAllItems().filter(it=>badItems[it.item_id]);
   items=sortItemsBy(items, globalSortOrder);
@@ -1474,7 +1542,8 @@ function updateBadges(){
   const watch1Count=Object.keys(watch1Items).length;
   const sizeokCount=Object.keys(sizeokItems).length;
   const doneCount=Object.keys(doneItems).length;
-  const unchecked=all.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]&&!sizeokItems[it.item_id]&&!doneItems[it.item_id]).length;
+  const stopCount=Object.keys(stopItems).length;
+  const unchecked=all.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]&&!sizeokItems[it.item_id]&&!doneItems[it.item_id]&&!stopItems[it.item_id]).length;
   const worthlessCount=Object.keys(worthlessShops).length;
   document.getElementById('kpiGood').textContent=goodCount;
   document.getElementById('kpiItems').textContent=all.length.toLocaleString();
@@ -1485,6 +1554,7 @@ function updateBadges(){
   document.getElementById('badBadge').innerHTML=badCount>0?`<span style="background:#7c3aed;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${badCount}</span>`:'';
   document.getElementById('watch1Badge').innerHTML=watch1Count>0?`<span style="background:#f59e0b;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${watch1Count}</span>`:'';
   document.getElementById('sizeokBadge').innerHTML=sizeokCount>0?`<span style="background:#06b6d4;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${sizeokCount}</span>`:'';
+  document.getElementById('stopBadge').innerHTML=stopCount>0?`<span style="background:#ef4444;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${stopCount}</span>`:'';  
   document.getElementById('doneBadge').innerHTML=doneCount>0?`<span style="background:#8b5cf6;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${doneCount}</span>`:'';
 
   document.getElementById('worthlessBadge').innerHTML=worthlessCount>0?`<span style="background:#1a1a1a;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${worthlessCount}</span>`:'';
@@ -1497,7 +1567,7 @@ function switchTab(name,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   // 商品タブのときだけ全選択UIを表示
-  const productTabs = ['all-products','unchecked','watch1','good','bad','sizeok','done'];
+  const productTabs = ['all-products','unchecked','watch1','good','bad','sizeok','done','stop'];
   const selUI = document.getElementById('tabSelectUI');
   if(selUI) selUI.style.display = productTabs.includes(name) ? 'flex' : 'none';
   const tabIds={
@@ -1509,6 +1579,7 @@ function switchTab(name,el){
     'bad':         'tabBad',
     'sizeok':      'tabSizeok',
     'done':        'tabDone',
+    'stop':        'tabStop',
     'add-shops':   'tabAddShops',
     'worthless':   'tabWorthless',
   };
@@ -1520,6 +1591,7 @@ function switchTab(name,el){
   if(name==='unchecked')renderUnchecked();
   else if(name==='sizeok')renderSizeok();
   else if(name==='done')renderDone();
+  else if(name==='stop')renderStop();
   selectedItems.clear();
   updateSelectUI();
   if(name==='good')renderGood();
