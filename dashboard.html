@@ -158,7 +158,7 @@ tr:last-child td{border-bottom:none}
 <div class="kpi-strip">
   <div class="kpi"><div class="kpi-lbl">登録ショップ</div><div class="kpi-val" id="kpiShops">67</div><div class="kpi-sub">追跡中</div></div>
   <div class="kpi"><div class="kpi-lbl">追跡商品数</div><div class="kpi-val" id="kpiItems">—</div><div class="kpi-sub">上位20商品/店</div></div>
-  <div class="kpi"><div class="kpi-lbl">Good商品</div><div class="kpi-val" id="kpiGood">0</div><div class="kpi-sub">Good商品タブ</div></div>
+  <div class="kpi"><div class="kpi-lbl">70点</div><div class="kpi-val" id="kpiGood">0</div><div class="kpi-sub">70点タブ</div></div>
   <div class="kpi"><div class="kpi-lbl">観測ステータス</div><div class="kpi-val" id="kpiWeek" style="color:var(--warn)">W0</div><div class="kpi-sub">4週後に精度↑</div></div>
 </div>
 
@@ -166,8 +166,10 @@ tr:last-child td{border-bottom:none}
   <div class="tab active" onclick="switchTab('shops',this)">ショップ一覧</div>
   <div class="tab" onclick="switchTab('all-products',this)">商品全体 <span id="allBadge"></span></div>
   <div class="tab" onclick="switchTab('unchecked',this)">チェック前商品 <span id="uncheckedBadge"></span></div>
-  <div class="tab" onclick="switchTab('watch1',this)">👀 注視 <span id="watch1Badge"></span></div>
-  <div class="tab" onclick="switchTab('good',this)">👍 Good商品 <span id="goodBadge"></span></div>
+  <div class="tab" onclick="switchTab('watch1',this)">🔥 すぐやる候補 <span id="watch1Badge"></span></div>
+  <div class="tab" onclick="switchTab('good',this)">⭐ 70点 <span id="goodBadge"></span></div>
+  <div class="tab" onclick="switchTab('sizeok',this)">📐 sizeOK/やらない <span id="sizeokBadge"></span></div>
+  <div class="tab" onclick="switchTab('done',this)">✅ もうやってる <span id="doneBadge"></span></div>
   <div class="tab" onclick="switchTab('bad',this)">👎 微妙商品 <span id="badBadge"></span></div>
   <div class="tab" onclick="switchTab('add-shops',this)">＋ ショップ追加</div>
   <div class="tab" onclick="switchTab('worthless',this)">価値なしショップ <span id="worthlessBadge"></span></div>
@@ -177,9 +179,11 @@ tr:last-child td{border-bottom:none}
       <span id="selectAllText">全選択</span>
     </label>
     <div id="bulkActionBtns" style="display:none;gap:4px;align-items:center">
-      <button onclick="bulkMark('watch1')" style="padding:3px 9px;border-radius:4px;border:1px solid #5b8ef0;background:#e8effe;color:#3a5ec0;font-size:11px;cursor:pointer">👀</button>
+      <button onclick="bulkMark('watch1')" style="padding:3px 9px;border-radius:4px;border:1px solid #f59e0b;background:#fef3c7;color:#92400e;font-size:11px;cursor:pointer">🔥</button>
       <button onclick="bulkMark('good')" style="padding:3px 9px;border-radius:4px;border:1px solid #2ecc8a;background:#e8f5ef;color:#0f6e56;font-size:11px;cursor:pointer">👍</button>
       <button onclick="bulkMark('bad')" style="padding:3px 9px;border-radius:4px;border:1px solid #7c3aed;background:#f0e8ff;color:#7c3aed;font-size:11px;cursor:pointer">👎</button>
+      <button onclick="bulkMark('sizeok')" style="padding:3px 9px;border-radius:4px;border:1px solid #06b6d4;background:#e0f7fa;color:#0e7490;font-size:11px;cursor:pointer">📐</button>
+      <button onclick="bulkMark('done')" style="padding:3px 9px;border-radius:4px;border:1px solid #8b5cf6;background:#ede9fe;color:#5b21b6;font-size:11px;cursor:pointer">✅</button>
       <button onclick="bulkMark(null)" style="padding:3px 9px;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:11px;cursor:pointer">✕</button>
     </div>
   </div>
@@ -207,6 +211,8 @@ tr:last-child td{border-bottom:none}
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('watch1')" id="th_watch1">👀注視 <span style="font-size:9px;color:var(--muted)" id="sort_watch1"></span></th>
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('good')" id="th_good">👍Good <span style="font-size:9px;color:var(--muted)" id="sort_good"></span></th>
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('bad')" id="th_bad">👎微妙 <span style="font-size:9px;color:var(--muted)" id="sort_bad"></span></th>
+  <th style="cursor:pointer;user-select:none" onclick="setShopSort('sizeok')" id="th_sizeok">📐sizeOK <span style="font-size:9px;color:var(--muted)" id="sort_sizeok"></span></th>
+  <th style="cursor:pointer;user-select:none" onclick="setShopSort('done')" id="th_done">✅やってる <span style="font-size:9px;color:var(--muted)" id="sort_done"></span></th>
   <th>商品一覧</th>
   <th></th>
 </tr></thead>
@@ -277,6 +283,32 @@ tr:last-child td{border-bottom:none}
       <div class="sidebar-content">
         <div class="global-wrap"><div class="global-grid" id="watch1Grid"></div></div>
         <div class="pagination" id="watch1Pagination"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tabSizeok" style="display:none">
+    <div class="sidebar-layout">
+      <div class="shop-sidebar">
+        <div class="sidebar-title">ショップ</div>
+        <div class="sidebar-list" id="sizeokShopSidebar"></div>
+      </div>
+      <div class="sidebar-content">
+        <div class="global-wrap"><div class="global-grid" id="sizeokGrid"></div></div>
+        <div class="pagination" id="sizeokPagination"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tabDone" style="display:none">
+    <div class="sidebar-layout">
+      <div class="shop-sidebar">
+        <div class="sidebar-title">ショップ</div>
+        <div class="sidebar-list" id="doneShopSidebar"></div>
+      </div>
+      <div class="sidebar-content">
+        <div class="global-wrap"><div class="global-grid" id="doneGrid"></div></div>
+        <div class="pagination" id="donePagination"></div>
       </div>
     </div>
   </div>
@@ -431,6 +463,10 @@ function loadBad() { try{return JSON.parse(localStorage.getItem('rw_bad')||'{}')
 function saveBad(o) { try{localStorage.setItem('rw_bad',JSON.stringify(o));syncToGitHub()}catch{} }
 function loadWatch1() { try{return JSON.parse(localStorage.getItem('rw_watch1')||'{}')}catch{return{}} }
 function saveWatch1(o) { try{localStorage.setItem('rw_watch1',JSON.stringify(o));syncToGitHub()}catch{} }
+function loadSizeok() { try{return JSON.parse(localStorage.getItem('rw_sizeok')||'{}')}catch{return{}} }
+function saveSizeok(o) { try{localStorage.setItem('rw_sizeok',JSON.stringify(o));syncToGitHub()}catch{} }
+function loadDone() { try{return JSON.parse(localStorage.getItem('rw_done')||'{}')}catch{return{}} }
+function saveDone(o) { try{localStorage.setItem('rw_done',JSON.stringify(o));syncToGitHub()}catch{} }
 // 後方互換：旧checkedをgoodとして引き継ぐ
 function loadChecked() {
   const old = localStorage.getItem('rw_checked');
@@ -454,6 +490,8 @@ function getUserState() {
     good:         goodItems,
     bad:          badItems,
     watch1:       watch1Items,
+    sizeok:       sizeokItems,
+    done:         doneItems,
     extra_shops:  extraShops,
     hidden_shops: hiddenShops,
     item_counts:  itemCounts,
@@ -526,6 +564,8 @@ async function loadFromGitHub() {
     if (state.good)         { goodItems    = state.good;         localStorage.setItem('rw_good', JSON.stringify(goodItems)); }
     if (state.bad)          { badItems     = state.bad;          localStorage.setItem('rw_bad', JSON.stringify(badItems)); }
     if (state.watch1)       { watch1Items  = state.watch1;       localStorage.setItem('rw_watch1', JSON.stringify(watch1Items)); }
+    if (state.sizeok)       { sizeokItems  = state.sizeok;       localStorage.setItem('rw_sizeok', JSON.stringify(sizeokItems)); }
+    if (state.done)         { doneItems    = state.done;         localStorage.setItem('rw_done',   JSON.stringify(doneItems)); }
     if (state.extra_shops)  { extraShops   = state.extra_shops;  localStorage.setItem('rw_extra_shops', JSON.stringify(extraShops)); }
     if (state.hidden_shops) { hiddenShops  = state.hidden_shops; saveHiddenShops(hiddenShops); }
     if (state.item_counts)  { itemCounts   = state.item_counts;  saveItemCounts(itemCounts); }
@@ -557,6 +597,8 @@ let extraShops = loadExtra();
 let goodItems  = loadGood();
 let badItems   = loadBad();
 let watch1Items = loadWatch1();
+let sizeokItems = loadSizeok();
+let doneItems   = loadDone();
 loadChecked(); // 旧データ移行
 let SUMMARY = null;
 
@@ -681,7 +723,7 @@ let shopSortCol=null, shopSortAsc=false;
 function setShopSort(col){
   if(shopSortCol===col){ shopSortAsc=!shopSortAsc; }
   else { shopSortCol=col; shopSortAsc=false; }
-  ['unchecked','watch1','good','bad'].forEach(id=>{
+  ['unchecked','watch1','good','bad','sizeok','done'].forEach(id=>{
     const el=document.getElementById('sort_'+id);
     if(el) el.textContent = id===col ? (shopSortAsc?'▲':'▼') : '';
   });
@@ -701,6 +743,8 @@ function getFilteredShops(){
       if(type==='watch1') return si.filter(it=>watch1Items[it.item_id]).length;
       if(type==='good') return si.filter(it=>goodItems[it.item_id]).length;
       if(type==='bad') return si.filter(it=>badItems[it.item_id]).length;
+      if(type==='sizeok') return si.filter(it=>sizeokItems[it.item_id]).length;
+      if(type==='done') return si.filter(it=>doneItems[it.item_id]).length;
       return 0;
     };
     shops.sort((a,b)=>{
@@ -745,6 +789,8 @@ function renderShops(){
     const goodCnt   = shopItems.filter(it=>goodItems[it.item_id]).length;
     const badCnt    = shopItems.filter(it=>badItems[it.item_id]).length;
     const w1Cnt     = shopItems.filter(it=>watch1Items[it.item_id]).length;
+    const sizeokCnt = shopItems.filter(it=>sizeokItems[it.item_id]).length;
+    const doneCnt   = shopItems.filter(it=>doneItems[it.item_id]).length;
     const uncCnt    = shopItems.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]).length;
     const cntStyle  = (n,bg,col) => n>0
       ? `<span style="background:${bg};color:${col};border-radius:4px;padding:3px 8px;font-size:12px;font-weight:600">${n}</span>`
@@ -774,6 +820,8 @@ function renderShops(){
       <td style="text-align:center">${cntStyle(w1Cnt,'#e8effe','#3a5ec0')}</td>
       <td style="text-align:center">${cntStyle(goodCnt,'#e8f5ef','#0f6e56')}</td>
       <td style="text-align:center">${cntStyle(badCnt,'#f0e8ff','#7c3aed')}</td>
+      <td style="text-align:center">${cntStyle(sizeokCnt,'#e0f7fa','#0e7490')}</td>
+      <td style="text-align:center">${cntStyle(doneCnt,'#ede9fe','#5b21b6')}</td>
       <td><button class="expand-btn ${ps.open?'open':''}" onclick="togglePanel('${key}')">▼ 商品を見る</button></td>
       <td><button class="del-btn" onclick="deleteShop('${key}','${s.isBase?'base':'extra'}')">価値なし</button>`;
     tbody.appendChild(tr);
@@ -781,7 +829,7 @@ function renderShops(){
     if(ps.open){
       const pr=document.createElement('tr');
       const td=document.createElement('td');
-      td.colSpan=11; td.style.padding='0';
+      td.colSpan=13; td.style.padding='0';
       const currentItems=(s.topItems&&s.topItems.length>0)?s.topItems:makeMockItems(s,getItemCount(key));
       const allItems = getShopAllItems(key, currentItems);
       const outCount = allItems.filter(it=>it.out_of_rank).length;
@@ -862,7 +910,7 @@ function sortItemsBy(items, order) {
     arr.sort((a,b)=>(calcMonthly(b)||0)-(calcMonthly(a)||0));
   } else if (order === 'updated') {
     const getAt = it => {
-      const rec = goodItems[it.item_id]||badItems[it.item_id]||watch1Items[it.item_id];
+      const rec = goodItems[it.item_id]||badItems[it.item_id]||watch1Items[it.item_id]||sizeokItems[it.item_id]||doneItems[it.item_id];
       return (rec && rec.at) ? rec.at : '';
     };
     arr.sort((a,b)=>getAt(b).localeCompare(getAt(a)));
@@ -916,7 +964,7 @@ function productCard(item, rank){
   const pend = pending[key];
   const effectiveType = pend !== undefined
     ? pend.newType
-    : (goodItems[key] ? 'good' : badItems[key] ? 'bad' : watch1Items[key] ? 'watch1' : null);
+    : (goodItems[key] ? 'good' : badItems[key] ? 'bad' : watch1Items[key] ? 'watch1' : sizeokItems[key] ? 'sizeok' : doneItems[key] ? 'done' : null);
   const isGood   = effectiveType === 'good';
   const isBad    = effectiveType === 'bad';
   const isWatch1 = effectiveType === 'watch1';
@@ -927,7 +975,9 @@ function productCard(item, rank){
   const pendingMark = isPending ? ' ●' : '';
   const badgeHtml = isGood   ? `<div class="checked-badge" style="background:${isPending?'#1a7a52':'#2ecc8a'}">👍 Good${pendingMark}</div>`
                   : isBad    ? `<div class="checked-badge" style="background:${isPending?'#4a1a8e':'#7c3aed'};color:#fff">👎 微妙${pendingMark}</div>`
-                  : isWatch1 ? `<div class="checked-badge" style="background:${isPending?'#2a4a90':'#5b8ef0'};color:#fff">👀 注視${pendingMark}</div>`
+                  : isWatch1 ? `<div class="checked-badge" style="background:${isPending?'#92660a':'#f59e0b'};color:#fff">🔥 すぐやる${pendingMark}</div>`
+                  : isSizeok ? `<div class="checked-badge" style="background:${isPending?'#065f6b':'#06b6d4'};color:#fff">📐 sizeOK${pendingMark}</div>`
+                  : isDone   ? `<div class="checked-badge" style="background:${isPending?'#4c1d95':'#8b5cf6'};color:#fff">✅ やってる${pendingMark}</div>`
                   : '';
 
   return `<div class="product-card ${cardStatus} ${item.out_of_rank?'out-of-rank':''} ${isPending?'pending-card':''}" id="card-${key}" style="${isPending?'outline:2px solid #5b8ef0;outline-offset:2px':''}">
@@ -946,11 +996,15 @@ function productCard(item, rank){
       <div class="product-stat">★${(item.review_count||0).toLocaleString()}件</div>
       ${deltaHtml}
       ${monthlyHtml}
-      ${(isGood||isBad||isWatch1)?`<div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-top:4px">${getAt(isGood?goodItems:isBad?badItems:watch1Items, key)||''}</div>`:''}
+      ${(isGood||isBad||isWatch1)?`<div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-top:4px">${getAt(isGood?goodItems:isBad?badItems:isWatch1?watch1Items:isSizeok?sizeokItems:doneItems, key)||''}</div>`:''}
       <div style="margin-top:7px;display:flex;flex-direction:column;gap:4px">
-        <button class="check-btn" style="width:100%;background:${isWatch1?'#5b8ef0':'var(--bg)'};color:${isWatch1?'#fff':'var(--text)'};border-color:${isWatch1?'#5b8ef0':'var(--border)'}" onclick="markWatch1('${key}')">👀 注視</button>
+        <button class="check-btn" style="width:100%;background:${isWatch1?'#f59e0b':'var(--bg)'};color:${isWatch1?'#fff':'var(--text)'};border-color:${isWatch1?'#f59e0b':'var(--border)'}" onclick="markWatch1('${key}')">🔥 すぐやる候補</button>
         <div style="display:flex;gap:4px">
-          <button class="check-btn ${isGood?'is-good':''}" style="flex:1;background:${isGood?'#2ecc8a':'var(--bg)'};color:${isGood?'#fff':'var(--text)'};border-color:${isGood?'#2ecc8a':'var(--border)'}" onclick="markGood('${key}')">👍 Good</button>
+          <button class="check-btn ${isGood?'is-good':''}" style="flex:1;background:${isGood?'#2ecc8a':'var(--bg)'};color:${isGood?'#fff':'var(--text)'};border-color:${isGood?'#2ecc8a':'var(--border)'}" onclick="markGood('${key}')">⭐ 70点</button>
+          <button class="check-btn" style="flex:1;background:${isSizeok?'#06b6d4':'var(--bg)'};color:${isSizeok?'#fff':'var(--text)'};border-color:${isSizeok?'#06b6d4':'var(--border)'}" onclick="markSizeok('${key}')">📐 sizeOK</button>
+        </div>
+        <div style="display:flex;gap:4px">
+          <button class="check-btn" style="flex:1;background:${isDone?'#8b5cf6':'var(--bg)'};color:${isDone?'#fff':'var(--text)'};border-color:${isDone?'#8b5cf6':'var(--border)'}" onclick="markDone('${key}')">✅ もうやってる</button>
           <button class="check-btn ${isBad?'is-bad':''}" style="flex:1;background:${isBad?'#7c3aed':'var(--bg)'};color:${isBad?'#fff':'var(--text)'};border-color:${isBad?'#7c3aed':'var(--border)'}" onclick="markBad('${key}')">👎 微妙</button>
         </div>
       </div>
@@ -976,7 +1030,7 @@ function addPending(key, newType){
   // 現在の「表示上の」状態を取得（ペンディングがあればそれを優先）
   const currentEffective = pending[key] !== undefined
     ? pending[key].newType
-    : (goodItems[key] ? 'good' : badItems[key] ? 'bad' : watch1Items[key] ? 'watch1' : null);
+    : (goodItems[key] ? 'good' : badItems[key] ? 'bad' : watch1Items[key] ? 'watch1' : sizeokItems[key] ? 'sizeok' : doneItems[key] ? 'done' : null);
 
   if(!pending[key]){
     // 初回：確定状態をprevとして保存
@@ -1005,15 +1059,21 @@ function commitPending(){
     delete goodItems[key];
     delete badItems[key];
     delete watch1Items[key];
+    delete sizeokItems[key];
+    delete doneItems[key];
     // 新しい評価を設定
     if(p.newType==='good')  goodItems[key]  = {at:nowStr()};
     else if(p.newType==='bad')   badItems[key]   = {at:nowStr()};
     else if(p.newType==='watch1') watch1Items[key] = {at:nowStr()};
+    else if(p.newType==='sizeok') sizeokItems[key] = {at:nowStr()};
+    else if(p.newType==='done')   doneItems[key]   = {at:nowStr()};
   });
   pending = {};
   saveGood(goodItems);
   saveBad(badItems);
   saveWatch1(watch1Items);
+  saveSizeok(sizeokItems);
+  saveDone(doneItems);
   updatePendingBar();
   updateBadges();
   renderCurrentTab();
@@ -1067,10 +1127,12 @@ function bulkMark(type){
 function getTabItems(tabName){
   const all = getAllItems();
   if(tabName==='all-products') return all;
-  if(tabName==='unchecked') return all.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]);
+  if(tabName==='unchecked') return all.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]&&!sizeokItems[it.item_id]&&!doneItems[it.item_id]);
   if(tabName==='good') return all.filter(it=>goodItems[it.item_id]||pending[it.item_id]?.newType==='good');
   if(tabName==='bad') return all.filter(it=>badItems[it.item_id]||pending[it.item_id]?.newType==='bad');
   if(tabName==='watch1') return all.filter(it=>watch1Items[it.item_id]||pending[it.item_id]?.newType==='watch1');
+  if(tabName==='sizeok') return all.filter(it=>sizeokItems[it.item_id]||pending[it.item_id]?.newType==='sizeok');
+  if(tabName==='done')   return all.filter(it=>doneItems[it.item_id]||pending[it.item_id]?.newType==='done');
   return all;
 }
 
@@ -1082,6 +1144,18 @@ function markGood(key){
 
 function markBad(key){
   addPending(key, 'bad');
+  renderCurrentTab();
+  renderShops();
+}
+
+function markSizeok(key){
+  addPending(key, 'sizeok');
+  renderCurrentTab();
+  renderShops();
+}
+
+function markDone(key){
+  addPending(key, 'done');
   renderCurrentTab();
   renderShops();
 }
@@ -1104,6 +1178,8 @@ function renderCurrentTab(){
   else if(currentTab==='good') renderGood();
   else if(currentTab==='bad') renderBad();
   else if(currentTab==='watch1') renderWatch1();
+  else if(currentTab==='sizeok') renderSizeok();
+  else if(currentTab==='done') renderDone();
   updateSelectUI();
 }
 
@@ -1154,7 +1230,9 @@ function bulkBarHtml(tabName){
       <span style="color:var(--muted)">全選択 ${selCount>0?'<b style=color:#5b8ef0>('+selCount+'件選択中)</b>':''}</span>
     </label>
     ${selCount>0?`<span style="font-size:11px;color:var(--muted)">→ 選択した商品を：</span>
-    <button onclick="bulkMark('watch1')" style="padding:3px 10px;border-radius:4px;border:1px solid #5b8ef0;background:#e8effe;color:#3a5ec0;font-size:11px;cursor:pointer">👀 注視</button>
+    <button onclick="bulkMark('watch1')" style="padding:3px 10px;border-radius:4px;border:1px solid #f59e0b;background:#fef3c7;color:#92400e;font-size:11px;cursor:pointer">🔥 すぐやる</button>
+    <button onclick="bulkMark('sizeok')" style="padding:3px 10px;border-radius:4px;border:1px solid #06b6d4;background:#e0f7fa;color:#0e7490;font-size:11px;cursor:pointer">📐 sizeOK</button>
+    <button onclick="bulkMark('done')" style="padding:3px 10px;border-radius:4px;border:1px solid #8b5cf6;background:#ede9fe;color:#5b21b6;font-size:11px;cursor:pointer">✅ やってる</button>
     <button onclick="bulkMark('good')" style="padding:3px 10px;border-radius:4px;border:1px solid #2ecc8a;background:#e8f5ef;color:#0f6e56;font-size:11px;cursor:pointer">👍 Good</button>
     <button onclick="bulkMark('bad')" style="padding:3px 10px;border-radius:4px;border:1px solid #7c3aed;background:#f0e8ff;color:#7c3aed;font-size:11px;cursor:pointer">👎 微妙</button>
     <button onclick="bulkMark(null)" style="padding:3px 10px;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:11px;cursor:pointer">✕ 解除</button>`:
@@ -1179,7 +1257,7 @@ function renderAllProducts(){
 
 function renderUnchecked(){
   const q=(document.getElementById('allSearch')?.value||'').toLowerCase();
-  let items=getAllItems().filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]);
+  let items=getAllItems().filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]&&!sizeokItems[it.item_id]&&!doneItems[it.item_id]);
   if(q) items=items.filter(it=>it.name.toLowerCase().includes(q)||(it.shop_name||'').toLowerCase().includes(q));
   items=sortItemsBy(items, globalSortOrder);
   buildSidebar('uncheckedShopSidebar', items, uncShopFilter, (s)=>{uncShopFilter=s;uncPage=1;renderUnchecked();});
@@ -1274,7 +1352,9 @@ function updateBadges(){
   const goodCount=Object.keys(goodItems).length;
   const badCount=Object.keys(badItems).length;
   const watch1Count=Object.keys(watch1Items).length;
-  const unchecked=all.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]).length;
+  const sizeokCount=Object.keys(sizeokItems).length;
+  const doneCount=Object.keys(doneItems).length;
+  const unchecked=all.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]&&!sizeokItems[it.item_id]&&!doneItems[it.item_id]).length;
   const worthlessCount=Object.keys(worthlessShops).length;
   document.getElementById('kpiGood').textContent=goodCount;
   document.getElementById('kpiItems').textContent=all.length.toLocaleString();
@@ -1295,7 +1375,7 @@ function switchTab(name,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   // 商品タブのときだけ全選択UIを表示
-  const productTabs = ['all-products','unchecked','watch1','good','bad'];
+  const productTabs = ['all-products','unchecked','watch1','good','bad','sizeok','done'];
   const selUI = document.getElementById('tabSelectUI');
   if(selUI) selUI.style.display = productTabs.includes(name) ? 'flex' : 'none';
   const tabIds={
@@ -1305,6 +1385,8 @@ function switchTab(name,el){
     'good':        'tabGood',
     'watch1':      'tabWatch1',
     'bad':         'tabBad',
+    'sizeok':      'tabSizeok',
+    'done':        'tabDone',
     'add-shops':   'tabAddShops',
     'worthless':   'tabWorthless',
   };
@@ -1314,6 +1396,8 @@ function switchTab(name,el){
   document.getElementById('mainControls').style.display=name==='shops'?'':'none';
   if(name==='all-products')renderAllProducts();
   if(name==='unchecked')renderUnchecked();
+  else if(name==='sizeok')renderSizeok();
+  else if(name==='done')renderDone();
   selectedItems.clear();
   updateSelectUI();
   if(name==='good')renderGood();
