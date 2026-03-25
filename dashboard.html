@@ -1304,8 +1304,41 @@ function renderWatch1(){
   const page=filtered.slice(start,start+GPAGE);
   document.getElementById('watch1Grid').innerHTML=filtered.length>0
     ?page.map((it,i)=>productCard(it,start+i+1)).join('')
-    :'<div class="empty-state">👀 注視1の商品がありません。<br>商品カードの「👀 注視1」を押してください。</div>';
+    :'<div class="empty-state">🔥 すぐやる候補の商品がありません。</div>';
   renderGlobalPagination('watch1Pagination',filtered.length,watch1Page,p=>{watch1Page=p;renderWatch1();});
+}
+
+let sizeokPage=1, donePage=1;
+let sizeokShopFilter=null, doneShopFilter=null;
+
+function renderSizeok(){
+  let items=getAllItems().filter(it=>sizeokItems[it.item_id]);
+  items=sortItemsBy(items, globalSortOrder);
+  buildSidebar('sizeokShopSidebar', items, sizeokShopFilter, (s)=>{sizeokShopFilter=s;sizeokPage=1;renderSizeok();});
+  const filtered = sizeokShopFilter ? items.filter(it=>it.shop_name===sizeokShopFilter) : items;
+  const q=(document.getElementById('allSearch')?.value||'').toLowerCase();
+  const fq = q ? filtered.filter(it=>it.name.toLowerCase().includes(q)||(it.shop_name||'').toLowerCase().includes(q)) : filtered;
+  const start=(sizeokPage-1)*GPAGE;
+  const page=fq.slice(start,start+GPAGE);
+  document.getElementById('sizeokGrid').innerHTML=fq.length>0
+    ?page.map((it,i)=>productCard(it,start+i+1)).join('')
+    :'<div class="empty-state">📐 sizeOK微妙の商品がありません。</div>';
+  renderGlobalPagination('sizeokPagination',fq.length,sizeokPage,p=>{sizeokPage=p;renderSizeok();});
+}
+
+function renderDone(){
+  let items=getAllItems().filter(it=>doneItems[it.item_id]);
+  items=sortItemsBy(items, globalSortOrder);
+  buildSidebar('doneShopSidebar', items, doneShopFilter, (s)=>{doneShopFilter=s;donePage=1;renderDone();});
+  const filtered = doneShopFilter ? items.filter(it=>it.shop_name===doneShopFilter) : items;
+  const q=(document.getElementById('allSearch')?.value||'').toLowerCase();
+  const fq = q ? filtered.filter(it=>it.name.toLowerCase().includes(q)||(it.shop_name||'').toLowerCase().includes(q)) : filtered;
+  const start=(donePage-1)*GPAGE;
+  const page=fq.slice(start,start+GPAGE);
+  document.getElementById('doneGrid').innerHTML=fq.length>0
+    ?page.map((it,i)=>productCard(it,start+i+1)).join('')
+    :'<div class="empty-state">✅ もうやってるの商品がありません。</div>';
+  renderGlobalPagination('donePagination',fq.length,donePage,p=>{donePage=p;renderDone();});
 }
 
 
