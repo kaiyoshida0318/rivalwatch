@@ -8,7 +8,7 @@ on:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     permissions:
       contents: write
 
@@ -23,21 +23,44 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: pip install requests --quiet
 
       - name: Prepare data dir
         run: mkdir -p data
 
-      - name: Run collection
+      - name: Run shop collection
         run: python collect.py
         env:
-          RAKUTEN_APP_ID: ${{ secrets.RAKUTEN_APP_ID }}
+          RAKUTEN_APP_ID:     ${{ secrets.RAKUTEN_APP_ID }}
+          RAKUTEN_ACCESS_KEY: ${{ secrets.RAKUTEN_ACCESS_KEY }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Puppeteer
+        run: npm install puppeteer --save-dev --loglevel=error
+
+      - name: Install Chromium dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            libnss3 libatk1.0-0 libatk-bridge2.0-0 \
+            libcups2 libdrm2 libxkbcommon0 libxcomposite1 \
+            libxdamage1 libxfixes3 libxrandr2 libgbm1 \
+            libasound2t64 libpango-1.0-0 libcairo2
+
+      - name: Run ranking scraper (Puppeteer)
+        run: node scrape_rankings.js
+        env:
+          RAKUTEN_APP_ID:     ${{ secrets.RAKUTEN_APP_ID }}
           RAKUTEN_ACCESS_KEY: ${{ secrets.RAKUTEN_ACCESS_KEY }}
 
       - name: Commit results
         run: |
-          git config user.name "RivalWatch Bot"
+          git config user.name  "RivalWatch Bot"
           git config user.email "bot@rivalwatch"
           git add data/
           git diff --staged --quiet || git commit -m "週次観測 $(date '+%Y/%m/%d')"
