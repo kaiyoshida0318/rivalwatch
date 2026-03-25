@@ -488,12 +488,22 @@ tr:last-child td{border-bottom:none}
           <button onclick="addRankingRow()" style="padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg);font-size:12px;cursor:pointer;font-family:'Noto Sans JP',sans-serif">＋ 行を追加</button>
         </div>
       </div>
-      <div style="display:flex;gap:10px;align-items:center;margin-bottom:20px">
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:20px;flex-wrap:wrap">
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:12px">上位</span>
           <input type="number" id="rankingTopN" value="10" min="1" max="100"
             style="width:60px;padding:4px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;text-align:center">
-          <span style="font-size:12px">位まで取得</span>
+          <span style="font-size:12px">件</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px">取得順：</span>
+          <select id="rankingSort" style="padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;background:var(--bg)">
+            <option value="-reviewCount">レビュー数順（定番商品）</option>
+            <option value="-updateTimestamp">最終更新順（新着・変動商品）</option>
+            <option value="-reviewAverage">評価平均順</option>
+            <option value="+itemPrice">価格が安い順</option>
+            <option value="-itemPrice">価格が高い順</option>
+          </select>
         </div>
         <button onclick="fetchRankings()" style="padding:7px 18px;border-radius:6px;background:#2ecc8a;color:#fff;border:none;font-size:12px;cursor:pointer;font-family:'Noto Sans JP',sans-serif">ランキングを取得・追加</button>
       </div>
@@ -1703,7 +1713,7 @@ function parseRankingUrl(url){
 }
 
 // 楽天APIでgenreIdのランキング上位N件を取得
-async function fetchRankingItems(genreId, topN){
+async function fetchRankingItems(genreId, topN, sortOrder='-reviewCount'){
   const APP_ID    = '384a802a-c387-4cef-8369-16b0af9f47c9';
   const ACCESS_KEY = 'pk_fWUk0zscbq3cKshgY8wJQHCge1NqULUqrLvs2mi6ydx';
   const params = new URLSearchParams({
@@ -1712,7 +1722,7 @@ async function fetchRankingItems(genreId, topN){
     format:        'json',
     genreId:       genreId,
     hits:          Math.min(topN, 30),
-    sort:          '-popular',
+    sort:          sortOrder,
     page:          1,
   });
   const url = `https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20220601?${params}`;
@@ -1742,6 +1752,7 @@ async function fetchRankingItems(genreId, topN){
 
 async function fetchRankings(){
   const topN = parseInt(document.getElementById('rankingTopN')?.value||'10');
+  const sortOrder = document.getElementById('rankingSort')?.value || '-reviewCount';
   const msg = document.getElementById('rankingMsg');
   const urls = rankingRows.filter(u=>u.trim());
   if(!urls.length){ if(msg) msg.textContent='URLを入力してください'; return; }
@@ -1758,8 +1769,8 @@ async function fetchRankings(){
     // ジャンル名を取得
     let label = `ランキング #${genreId}`;
     try {
-      const items = await fetchRankingItems(genreId, topN);
-      savedRankings.push({ genreId, label, topN, url: url.trim(), items, fetchedAt: new Date().toISOString() });
+      const items = await fetchRankingItems(genreId, topN, sortOrder);
+      savedRankings.push({ genreId, label, topN, sortOrder, url: url.trim(), items, fetchedAt: new Date().toISOString() });
       addedCount++;
     } catch(e) {
       if(msg) msg.textContent = `エラー: ${e.message}`;
@@ -1818,7 +1829,7 @@ async function refreshRanking(idx){
   const r = savedRankings[idx];
   if(!r) return;
   try {
-    const items = await fetchRankingItems(r.genreId, r.topN);
+    const items = await fetchRankingItems(r.genreId, r.topN, r.sortOrder||'-reviewCount');
     savedRankings[idx].items = items;
     savedRankings[idx].fetchedAt = new Date().toISOString();
     saveRankings(savedRankings);
