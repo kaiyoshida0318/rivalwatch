@@ -164,6 +164,7 @@ tr:last-child td{border-bottom:none}
 
 <div class="tabs" style="display:flex;align-items:center">
   <div class="tab active" onclick="switchTab('shops',this)">ショップ一覧</div>
+  <div class="tab" onclick="switchTab('rankings',this)">📊 ランキング一覧 <span id="rankingBadge"></span></div>
   <div class="tab" onclick="switchTab('all-products',this)">商品全体 <span id="allBadge"></span></div>
   <div class="tab" onclick="switchTab('unchecked',this)">チェック前商品 <span id="uncheckedBadge"></span></div>
   <div class="tab" onclick="switchTab('watch1',this)">🔥 すぐやる候補 <span id="watch1Badge"></span></div>
@@ -173,6 +174,7 @@ tr:last-child td{border-bottom:none}
   <div class="tab" onclick="switchTab('done',this)">✅ もうやってる <span id="doneBadge"></span></div>
   <div class="tab" onclick="switchTab('bad',this)">👎 微妙商品 <span id="badBadge"></span></div>
   <div class="tab" onclick="switchTab('add-shops',this)">＋ ショップ追加</div>
+  <div class="tab" onclick="switchTab('add-ranking',this)">📊 ランキング追加</div>
   <div class="tab" onclick="switchTab('worthless',this)">価値なしショップ <span id="worthlessBadge"></span></div>
   <div id="tabSelectUI" style="display:none;margin-left:auto;flex-shrink:0;align-items:center;gap:6px;padding:0 10px">
     <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;white-space:nowrap;color:var(--muted)">
@@ -223,6 +225,16 @@ tr:last-child td{border-bottom:none}
       </table>
     </div>
     <div class="pagination" id="shopPagination"></div>
+  </div>
+
+
+  <!-- ランキング一覧タブ -->
+  <div id="tabRankings" style="display:none">
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+      <span style="font-size:13px;font-weight:500">登録ランキング</span>
+      <span style="font-size:12px;color:var(--muted)">各ランキングの上位商品がチェック前に自動追加されます</span>
+    </div>
+    <div id="rankingListWrap"></div>
   </div>
 
   <div id="tabAllProducts" style="display:none">
@@ -461,6 +473,34 @@ tr:last-child td{border-bottom:none}
 </main>
 
 
+
+  <!-- ランキング追加タブ -->
+  <div id="tabAddRanking" style="display:none">
+    <div style="max-width:640px">
+      <div style="font-size:13px;font-weight:500;margin-bottom:6px">楽天ランキングURLを入力</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px">
+        例: https://ranking.rakuten.co.jp/daily/565271/<br>
+        1行に1つのURLを入力してください。
+      </div>
+      <div class="global-wrap" style="margin-bottom:16px;padding:0">
+        <div id="rankingUrlList" style="padding:4px 0"></div>
+        <div style="padding:10px 16px;border-top:1px solid var(--border)">
+          <button onclick="addRankingRow()" style="padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg);font-size:12px;cursor:pointer;font-family:'Noto Sans JP',sans-serif">＋ 行を追加</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px">上位</span>
+          <input type="number" id="rankingTopN" value="10" min="1" max="100"
+            style="width:60px;padding:4px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;text-align:center">
+          <span style="font-size:12px">位まで取得</span>
+        </div>
+        <button onclick="fetchRankings()" style="padding:7px 18px;border-radius:6px;background:#2ecc8a;color:#fff;border:none;font-size:12px;cursor:pointer;font-family:'Noto Sans JP',sans-serif">ランキングを取得・追加</button>
+      </div>
+      <div id="rankingMsg" style="font-size:12px;color:var(--muted);margin-top:8px"></div>
+    </div>
+  </div>
+
 <!-- モーダルなし -->
 
   <!-- 価値なしショップタブ -->
@@ -561,6 +601,10 @@ function loadDone() { try{return JSON.parse(localStorage.getItem('rw_done')||'{}
 function saveDone(o) { try{localStorage.setItem('rw_done',JSON.stringify(o));syncToGitHub()}catch{} }
 function loadStop() { try{return JSON.parse(localStorage.getItem('rw_stop')||'{}')}catch{return{}} }
 function saveStop(o) { try{localStorage.setItem('rw_stop',JSON.stringify(o));syncToGitHub()}catch{} }
+// ランキング商品プール（localStorageから読み込み）
+let rankingItemPool = (() => {
+  try { return JSON.parse(localStorage.getItem('rw_ranking_pool')||'{}'); } catch{ return {}; }
+})();
 // 後方互換：旧checkedをgoodとして引き継ぐ
 function loadChecked() {
   const old = localStorage.getItem('rw_checked');
@@ -587,6 +631,7 @@ function getUserState() {
     sizeok:       sizeokItems,
     done:         doneItems,
     stop:         stopItems,
+    rankings:     savedRankings,
     extra_shops:  extraShops,
     hidden_shops: hiddenShops,
     item_counts:  itemCounts,
@@ -662,6 +707,7 @@ async function loadFromGitHub() {
     if (state.sizeok)       { sizeokItems  = state.sizeok;       localStorage.setItem('rw_sizeok', JSON.stringify(sizeokItems)); }
     if (state.done)         { doneItems    = state.done;         localStorage.setItem('rw_done',   JSON.stringify(doneItems)); }
     if (state.stop)         { stopItems    = state.stop;         localStorage.setItem('rw_stop',   JSON.stringify(stopItems)); }
+    if (state.rankings)     { savedRankings = state.rankings;   localStorage.setItem('rw_rankings', JSON.stringify(savedRankings)); initRankingPool(); }
     if (state.extra_shops)  { extraShops   = state.extra_shops;  localStorage.setItem('rw_extra_shops', JSON.stringify(extraShops)); }
     if (state.hidden_shops) { hiddenShops  = state.hidden_shops; saveHiddenShops(hiddenShops); }
     if (state.item_counts)  { itemCounts   = state.item_counts;  saveItemCounts(itemCounts); }
@@ -743,10 +789,14 @@ function makeMockItems(shop, count=20) {
 }
 
 function getAllItems() {
-  return getAllShops().flatMap(s=>{
+  const shopItems = getAllShops().flatMap(s=>{
     const items=(s.topItems&&s.topItems.length>0)?s.topItems:makeMockItems(s,20);
     return items.map(it=>({...it,shop_name:s.name,shop_sid:s.sid||s.shopCode}));
   });
+  // ランキング商品プールをマージ（ショップ商品と重複しないもののみ）
+  const shopItemIds = new Set(shopItems.map(it=>it.item_id));
+  const rankingOnly = Object.values(rankingItemPool).filter(it=>it.item_id && !shopItemIds.has(it.item_id));
+  return [...shopItems, ...rankingOnly];
 }
 
 function estWeeklySales(r){
@@ -1554,7 +1604,8 @@ function updateBadges(){
   document.getElementById('badBadge').innerHTML=badCount>0?`<span style="background:#7c3aed;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${badCount}</span>`:'';
   document.getElementById('watch1Badge').innerHTML=watch1Count>0?`<span style="background:#f59e0b;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${watch1Count}</span>`:'';
   document.getElementById('sizeokBadge').innerHTML=sizeokCount>0?`<span style="background:#06b6d4;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${sizeokCount}</span>`:'';
-  document.getElementById('stopBadge').innerHTML=stopCount>0?`<span style="background:#ef4444;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${stopCount}</span>`:'';  
+  document.getElementById('stopBadge').innerHTML=stopCount>0?`<span style="background:#ef4444;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${stopCount}</span>`:'';
+  document.getElementById('rankingBadge').innerHTML=savedRankings.length>0?`<span style="background:#f59e0b;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${savedRankings.length}</span>`:'';
   document.getElementById('doneBadge').innerHTML=doneCount>0?`<span style="background:#8b5cf6;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${doneCount}</span>`:'';
 
   document.getElementById('worthlessBadge').innerHTML=worthlessCount>0?`<span style="background:#1a1a1a;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${worthlessCount}</span>`:'';
@@ -1581,6 +1632,8 @@ function switchTab(name,el){
     'done':        'tabDone',
     'stop':        'tabStop',
     'add-shops':   'tabAddShops',
+    'add-ranking': 'tabAddRanking',
+    'rankings':    'tabRankings',
     'worthless':   'tabWorthless',
   };
   Object.entries(tabIds).forEach(([k,v])=>{
@@ -1599,11 +1652,207 @@ function switchTab(name,el){
   if(name==='bad')renderBad();
   if(name==='worthless')renderWorthless();
   if(name==='add-shops')initUrlRows();
+  if(name==='add-ranking')initRankingRows();
+  if(name==='rankings')renderRankingList();
 }
 
 function sortBy(key,btn){currentSort=key;currentPage=1;document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderShops();}
 function onSearch(){currentQ=document.getElementById('searchInput').value;currentPage=1;renderShops();}
 function goShopPage(p){currentPage=p;renderShops();window.scrollTo({top:0,behavior:'smooth'});}
+
+
+// ══════════════════════════════════════════════════════
+// ── ランキング機能 ────────────────────────────────────
+// ══════════════════════════════════════════════════════
+
+// ランキング設定をlocalStorageに保存
+function loadRankings()  { try{return JSON.parse(localStorage.getItem('rw_rankings')||'[]')}catch{return[]} }
+function saveRankings(a) { try{localStorage.setItem('rw_rankings',JSON.stringify(a));syncToGitHub()}catch{} }
+let savedRankings = loadRankings();
+
+// getUserStateに追加済み → 同期対象
+function getRankingsState(){ return savedRankings; }
+
+// URL入力行の管理
+let rankingRows = [''];
+function initRankingRows(){
+  rankingRows = [''];
+  renderRankingRows();
+}
+function addRankingRow(){
+  rankingRows.push('');
+  renderRankingRows();
+}
+function renderRankingRows(){
+  const el = document.getElementById('rankingUrlList');
+  if(!el) return;
+  el.innerHTML = rankingRows.map((v,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--border)">
+      <input type="text" value="${v}" placeholder="https://ranking.rakuten.co.jp/daily/XXXXXX/"
+        oninput="rankingRows[${i}]=this.value"
+        style="flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:5px;font-size:12px;background:var(--bg)">
+      <button onclick="rankingRows.splice(${i},1);renderRankingRows()"
+        style="padding:4px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);font-size:11px;cursor:pointer;color:var(--muted)">✕</button>
+    </div>`).join('');
+}
+
+// URLからgenreId・ラベルを抽出
+function parseRankingUrl(url){
+  const m = url.match(/ranking\.rakuten\.co\.jp\/daily\/(\d+)/);
+  return m ? m[1] : null;
+}
+
+// 楽天APIでgenreIdのランキング上位N件を取得
+async function fetchRankingItems(genreId, topN){
+  const APP_ID    = '384a802a-c387-4cef-8369-16b0af9f47c9';
+  const ACCESS_KEY = 'pk_fWUk0zscbq3cKshgY8wJQHCge1NqULUqrLvs2mi6ydx';
+  const params = new URLSearchParams({
+    applicationId: APP_ID,
+    accessKey:     ACCESS_KEY,
+    format:        'json',
+    genreId:       genreId,
+    hits:          Math.min(topN, 30),
+    sort:          '-popular',
+    page:          1,
+  });
+  const url = `https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20220601?${params}`;
+  const res = await fetch(url, {
+    headers: { 'Referer': 'https://kaiyoshida0318.github.io/rivalwatch/' }
+  });
+  const data = await res.json();
+  if(data.errors || !data.Items) throw new Error(JSON.stringify(data.errors||data));
+  return data.Items.map((entry,idx) => {
+    const it = entry.Item || entry;
+    const imgs = it.mediumImageUrls||[];
+    return {
+      item_id:      it.itemCode||'',
+      name:         (it.itemName||'').slice(0,80),
+      price:        parseInt(it.itemPrice||0),
+      review_count: parseInt(it.reviewCount||0),
+      review_avg:   parseFloat(it.reviewAverage||0),
+      url:          it.itemUrl||'',
+      image_url:    imgs[0]?.imageUrl||'',
+      ranking_pos:  idx+1,
+      shop_name:    it.shopName||'',
+      shop_sid:     it.shopCode||'',
+      review_delta: null, est_sales: null, out_of_rank: false,
+    };
+  });
+}
+
+async function fetchRankings(){
+  const topN = parseInt(document.getElementById('rankingTopN')?.value||'10');
+  const msg = document.getElementById('rankingMsg');
+  const urls = rankingRows.filter(u=>u.trim());
+  if(!urls.length){ if(msg) msg.textContent='URLを入力してください'; return; }
+  if(msg) msg.textContent = '取得中...';
+
+  let addedCount = 0;
+  for(const url of urls){
+    const genreId = parseRankingUrl(url.trim());
+    if(!genreId){ continue; }
+    // 既存チェック
+    if(savedRankings.find(r=>r.genreId===genreId)){
+      continue; // 既に登録済み
+    }
+    // ジャンル名を取得
+    let label = `ランキング #${genreId}`;
+    try {
+      const items = await fetchRankingItems(genreId, topN);
+      savedRankings.push({ genreId, label, topN, url: url.trim(), items, fetchedAt: new Date().toISOString() });
+      addedCount++;
+    } catch(e) {
+      if(msg) msg.textContent = `エラー: ${e.message}`;
+      return;
+    }
+  }
+  saveRankings(savedRankings);
+  updateBadges();
+  if(msg) msg.textContent = `${addedCount}件のランキングを追加しました`;
+  rankingRows = [''];
+  renderRankingRows();
+}
+
+// ランキング一覧の描画
+function renderRankingList(){
+  const el = document.getElementById('rankingListWrap');
+  if(!el) return;
+  if(!savedRankings.length){
+    el.innerHTML = '<div class="empty-state">登録されたランキングはありません。「📊 ランキング追加」タブから追加してください。</div>';
+    return;
+  }
+  el.innerHTML = savedRankings.map((r,ri)=>`
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:500">${r.label}</div>
+        <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">genreId:${r.genreId} | 上位${r.topN}位 | 取得:${new Date(r.fetchedAt).toLocaleDateString('ja-JP')}</div>
+        <div style="margin-left:auto;display:flex;gap:6px">
+          <button onclick="refreshRanking(${ri})" style="padding:3px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);font-size:11px;cursor:pointer">🔄 更新</button>
+          <button onclick="deleteRanking(${ri})" style="padding:3px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);font-size:11px;cursor:pointer;color:var(--muted)">削除</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px">
+        ${(r.items||[]).map((it,i)=>rankingCard(it, i+1)).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function rankingCard(item, rank){
+  const isChecked = getAllItems().some(it=>it.item_id===item.item_id);
+  return `<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;overflow:hidden;position:relative">
+    <div style="position:absolute;top:4px;left:4px;background:#f59e0b;color:#fff;border-radius:4px;font-size:10px;font-family:var(--mono);padding:1px 5px;font-weight:600">#${rank}</div>
+    ${isChecked?'<div style="position:absolute;top:4px;right:4px;background:#2ecc8a;color:#fff;border-radius:4px;font-size:8px;padding:1px 4px">登録済</div>':''}
+    <img src="${item.image_url}" alt="" style="width:100%;aspect-ratio:1;object-fit:cover;background:#f0ede8" onerror="this.style.display='none'">
+    <div style="padding:6px 8px">
+      <div style="font-size:10px;font-weight:500;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:4px">
+        <a href="${item.url}" target="_blank" style="color:inherit;text-decoration:none">${item.name}</a>
+      </div>
+      <div style="font-size:10px;color:var(--muted)">¥${item.price?.toLocaleString()}</div>
+      <div style="font-size:9px;color:var(--muted)">★${item.review_count?.toLocaleString()}件</div>
+    </div>
+  </div>`;
+}
+
+async function refreshRanking(idx){
+  const r = savedRankings[idx];
+  if(!r) return;
+  try {
+    const items = await fetchRankingItems(r.genreId, r.topN);
+    savedRankings[idx].items = items;
+    savedRankings[idx].fetchedAt = new Date().toISOString();
+    saveRankings(savedRankings);
+    // チェック前に自動追加
+    injectRankingToItems(savedRankings[idx]);
+    renderRankingList();
+    updateBadges();
+  } catch(e) { alert('更新失敗: ' + e.message); }
+}
+
+function deleteRanking(idx){
+  if(!confirm('このランキングを削除しますか？')) return;
+  savedRankings.splice(idx, 1);
+  saveRankings(savedRankings);
+  renderRankingList();
+  updateBadges();
+}
+
+// ランキング商品をSUMMARYの商品リストに注入（チェック前に表示させる）
+function injectRankingToItems(ranking){
+  if(!ranking?.items?.length) return;
+  ranking.items.forEach(item => {
+    if(!item.item_id) return;
+    // localStorageのランキング商品プールに保存
+    rankingItemPool[item.item_id] = item;
+  });
+  localStorage.setItem('rw_ranking_pool', JSON.stringify(rankingItemPool));
+}
+
+
+// 初期化時に全ランキングを注入
+function initRankingPool(){
+  savedRankings.forEach(r => injectRankingToItems(r));
+}
 
 // ── ショップ追加（一括URL入力） ───────────────────────
 const URL_INPUT_COUNT = 10;
@@ -1750,9 +1999,11 @@ function bulkAdd(){
     const r=await fetch('data/latest_summary.json');
     if(r.ok)SUMMARY=await r.json();
   }catch{}
+  initRankingPool();
   renderShops();
   updateBadges();
   buildUrlInputs();
+  initRankingRows();
 })();
 </script>
 </body>
