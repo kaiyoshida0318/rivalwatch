@@ -204,8 +204,8 @@ tr:last-child td{border-bottom:none}
         <thead><tr>
   <th>#</th>
   <th>ショップ名</th>
-  <th>累計レビュー</th>
-  <th class="hide-sp">週販売推定</th>
+  <th style="cursor:pointer;user-select:none" onclick="setShopSort('reviews')">累計レビュー <span style="font-size:9px;color:var(--muted)" id="sort_reviews"></span></th>
+  <th class="hide-sp" style="cursor:pointer;user-select:none" onclick="setShopSort('weekly')">週販売推定（万）<span style="font-size:9px;color:var(--muted)" id="sort_weekly"></span></th>
   <th>測定数</th>
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('unchecked')" id="th_unchecked">チェック前 <span style="font-size:9px;color:var(--muted)" id="sort_unchecked"></span></th>
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('watch1')" id="th_watch1">👀注視 <span style="font-size:9px;color:var(--muted)" id="sort_watch1"></span></th>
@@ -723,7 +723,7 @@ let shopSortCol=null, shopSortAsc=false;
 function setShopSort(col){
   if(shopSortCol===col){ shopSortAsc=!shopSortAsc; }
   else { shopSortCol=col; shopSortAsc=false; }
-  ['unchecked','watch1','good','bad','sizeok','done'].forEach(id=>{
+  ['unchecked','watch1','good','bad','sizeok','done','reviews','weekly'].forEach(id=>{
     const el=document.getElementById('sort_'+id);
     if(el) el.textContent = id===col ? (shopSortAsc?'▲':'▼') : '';
   });
@@ -751,6 +751,13 @@ function getFilteredShops(){
       const diff=getCnt(b,shopSortCol)-getCnt(a,shopSortCol);
       return shopSortAsc ? -diff : diff;
     });
+  } else if(shopSortCol==='reviews'){
+    shops.sort((a,b)=>shopSortAsc ? (a.reviews||0)-(b.reviews||0) : (b.reviews||0)-(a.reviews||0));
+  } else if(shopSortCol==='weekly'){
+    shops.sort((a,b)=>{
+      const am=(a.weeklyEst||{mid:0}).mid, bm=(b.weeklyEst||{mid:0}).mid;
+      return shopSortAsc ? am-bm : bm-am;
+    });
   } else if(currentSort==='reviews'){
     shops.sort((a,b)=>(b.reviews||0)-(a.reviews||0));
   } else {
@@ -774,7 +781,8 @@ function renderShops(){
     const rank=start+idx+1;
     const rev=s.reviews||0;
     const est=s.weeklyEst||estWeeklySales(rev);
-    const estStr=est?`${est.low.toLocaleString()}〜${est.high.toLocaleString()}`:'—';
+    const toMan = n => n>=10000 ? (n/10000).toFixed(1)+'万' : n>=1000 ? (n/1000).toFixed(1)+'千' : n.toString();
+    const estStr=est?`${toMan(est.low)}〜${toMan(est.high)}`:'—';
     const estCls=est&&est.mid>=500?'est-hi':est&&est.mid>=100?'est-md':'est-lo';
     const barPct=Math.min(100,(rev/113476)*100).toFixed(1);
     const ps=getPState(s.shopCode||s.sid||s.no);
