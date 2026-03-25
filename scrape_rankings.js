@@ -9,44 +9,47 @@ const RAKUTEN_API  = 'https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Sear
 function loadJson(p,d){if(fs.existsSync(p)){try{return JSON.parse(fs.readFileSync(p,'utf-8'));}catch(e){return d;}}return d;}
 function saveJson(p,data){fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,JSON.stringify(data,null,2),'utf-8');}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-function cleanTitle(raw){if(!raw)return '';return raw.replace(/^[\u300c\u300d\u3010\u3011]?\u697d\u5929\u5e02\u5834[\u300c\u300d\u3010\u3011]?\s*/u,'').replace(/[\s|\uff5c:\uff1a]+\u697d\u5929\u5e02\u5834.*$/u,'').replace(/\s*\u697d\u5929\u5e02\u5834$/u,'').trim().slice(0,80);}
-async function enrichViaApi(shopSid,itemCode){
-  if(!APP_ID||!itemCode)return null;
-  const params=new URLSearchParams({applicationId:APP_ID,accessKey:ACCESS_KEY,format:'json',itemCode:shopSid+':'+itemCode,hits:1});
-  try{const res=await fetch(RAKUTEN_API+'?'+params,{headers:{Referer:'https://kaiyoshida0318.github.io/rivalwatch/'}});
-  const data=await res.json();
-  if(data&&data.Items&&data.Items.length){const it=data.Items[0].Item||data.Items[0];const imgs=it.mediumImageUrls||[];
-  return{name:(it.itemName||'').slice(0,80),image_url:imgs[0]?imgs[0].imageUrl:'',price:parseInt(it.itemPrice||0),review_count:parseInt(it.reviewCount||0),shop_name:it.shopName||shopSid};}
-  }catch(e){}return null;}
-async function enrichViaPage(browser,itemUrl,shopSid){
-  if(!itemUrl)return null;const page=await browser.newPage();
-  try{
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-    await page.setExtraHTTPHeaders({'Accept-Language':'ja,en-US;q=0.9,en;q=0.8','Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'});
-    await page.goto(itemUrl,{waitUntil:'networkidle2',timeout:30000});
-    // デバッグ: 実際に取得できたページの情報をログ出力
-    const pageInfo=await page.evaluate(()=>({
-      title: document.title,
-      url: location.href,
-      ogTitle: (document.querySelector('meta[property="og:title"]')||{}).content||'',
-      ldCount: document.querySelectorAll('script[type="application/ld+json"]').length,
-      bodyLen: document.body ? document.body.innerText.length : 0,
-    }));
-    console.log('    [pageInfo] title="'+pageInfo.title.slice(0,50)+'" url='+pageInfo.url.slice(0,60));
-    console.log('    [pageInfo] ogTitle="'+pageInfo.ogTitle.slice(0,50)+'" ldCount='+pageInfo.ldCount+' bodyLen='+pageInfo.bodyLen);
-    const detail=await page.evaluate(()=>{
-      function ct(r){if(!r)return '';return r.replace(/^[\u300c\u300d\u3010\u3011]?\u697d\u5929\u5e02\u5834[\u300c\u300d\u3010\u3011]?\s*/u,'').replace(/[\s|\uff5c:\uff1a]+\u697d\u5929\u5e02\u5834.*$/u,'').replace(/\s*\u697d\u5929\u5e02\u5834$/u,'').trim().slice(0,80);}
-      for(const s of document.querySelectorAll('script[type="application/ld+json"]')){try{const j=JSON.parse(s.textContent);const o=Array.isArray(j)?j.find(x=>x['@type']==='Product'):(j['@type']==='Product'?j:null);if(o){const name=ct(o.name||'');let price=0;if(o.offers){const of=Array.isArray(o.offers)?o.offers[0]:o.offers;price=parseInt(of.price||0);}const ir=o.image;const img=Array.isArray(ir)?(ir[0]||''):(ir||'');const rv=o.aggregateRating?parseInt(o.aggregateRating.reviewCount||0):0;if(name)return{name,price,image_url:typeof img==='string'?img:'',review_count:rv,source:'ld'};}}catch(e){}}
-      const ot=document.querySelector('meta[property="og:title"]');const oi=document.querySelector('meta[property="og:image"]');
-      const name=ct(ot?ot.content:'');const img=oi?oi.content:'';
-      const pe=document.querySelector('[itemprop="price"]');let price=0;if(pe){const v=pe.getAttribute('content')||pe.textContent;const m=v.replace(/,/g,'').match(/\d+/);if(m)price=parseInt(m[0]);}
-      if(name&&name.length>1)return{name,price,image_url:img,review_count:0,source:'ogp'};
-      const tn=ct(document.title||'');if(tn&&tn.length>1)return{name:tn,price,image_url:img,review_count:0,source:'title'};
-      return null;
-    });
-    if(detail&&detail.name&&detail.name.length>1){console.log('    [Page/'+detail.source+'] '+detail.name.slice(0,40)+' Y'+detail.price);return Object.assign(detail,{shop_name:shopSid});}
-    console.log('    [Page] not found: '+itemUrl);
-  }catch(e){console.log('    [Page] error: '+e.message);}finally{await page.close();}return null;}
+
+// 楽天API: itemCode直接検索
+async function enrichViaItemCode(shopSid, itemCode) {
+  if (!APP_ID || !itemCode) return null;
+  const params = new URLSearchParams({applicationId:APP_ID,accessKey:ACCESS_KEY,format:'json',itemCode:shopSid+':'+itemCode,hits:1});
+  try {
+    const res = await fetch(RAKUTEN_API+'?'+params, {headers:{Referer:'https://kaiyoshida0318.github.io/rivalwatch/'}});
+    const data = await res.json();
+    if (data&&data.Items&&data.Items.length) {
+      const it = data.Items[0].Item||data.Items[0]; const imgs=it.mediumImageUrls||[];
+      return {name:(it.itemName||'').slice(0,80),image_url:imgs[0]?imgs[0].imageUrl:'',price:parseInt(it.itemPrice||0),review_count:parseInt(it.reviewCount||0),shop_name:it.shopName||shopSid};
+    }
+  } catch(e) {}
+  return null;
+}
+
+// 楽天API: ショップ検索でitemCodeに一致する商品を探す（フォールバック）
+async function enrichViaShopSearch(shopSid, itemCode) {
+  if (!APP_ID || !shopSid) return null;
+  // ショップの上位30件を取得してitemCodeが一致するものを探す
+  const params = new URLSearchParams({applicationId:APP_ID,accessKey:ACCESS_KEY,format:'json',shopCode:shopSid,hits:30,sort:'-reviewCount'});
+  try {
+    const res = await fetch(RAKUTEN_API+'?'+params, {headers:{Referer:'https://kaiyoshida0318.github.io/rivalwatch/'}});
+    const data = await res.json();
+    if (data&&data.Items&&data.Items.length) {
+      // itemCodeで一致するものを探す
+      let match = data.Items.find(e => {
+        const it = e.Item||e;
+        const code = (it.itemCode||'').split(':').pop();
+        return code === itemCode;
+      });
+      // 一致しなければ1件目を使う
+      if (!match) match = data.Items[0];
+      const it = match.Item||match; const imgs=it.mediumImageUrls||[];
+      console.log('    [ShopSearch] '+it.itemName.slice(0,30)+' Y'+it.itemPrice);
+      return {name:(it.itemName||'').slice(0,80),image_url:imgs[0]?imgs[0].imageUrl:'',price:parseInt(it.itemPrice||0),review_count:parseInt(it.reviewCount||0),shop_name:it.shopName||shopSid};
+    }
+  } catch(e) { console.log('    [ShopSearch] error: '+e.message); }
+  return null;
+}
+
 async function scrapeRankingPage(browser,url,topN){
   const page=await browser.newPage();
   try{
@@ -75,6 +78,7 @@ async function scrapeRankingPage(browser,url,topN){
     return items;
   }finally{await page.close();}
 }
+
 async function main(){
   const configs=loadJson(CONFIGS_FILE,[]);
   if(!configs.length){console.log('configs empty, skip');return;}
@@ -91,11 +95,13 @@ async function main(){
         for(const item of items){
           await sleep(600);
           console.log('  [enrich] rank'+item.rank+': '+item.shopSid+':'+item.itemCode);
-          let detail=item.itemCode?await enrichViaApi(item.shopSid,item.itemCode):null;
+          // 1) itemCode直接検索
+          let detail=await enrichViaItemCode(item.shopSid,item.itemCode);
+          // 2) 失敗したらショップ検索フォールバック
           if(!detail||!detail.name){
-            console.log('    -> page fallback: '+item.url);
-            detail=await enrichViaPage(browser,item.url,item.shopSid);
-            await sleep(1000);
+            console.log('    -> shopSearch fallback: '+item.shopSid);
+            detail=await enrichViaShopSearch(item.shopSid,item.itemCode);
+            await sleep(800);
           }
           enriched.push({rank:item.rank,item_id:item.shopSid+':'+item.itemCode,shop_sid:item.shopSid,shop_name:(detail&&detail.shop_name)||item.shopSid,item_code:item.itemCode,url:item.url,name:(detail&&detail.name)||'',image_url:(detail&&detail.image_url)||'',price:(detail&&detail.price)||0,review_count:(detail&&detail.review_count)||0});
         }
