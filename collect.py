@@ -236,9 +236,10 @@ def scrape_rankings(now):
                 })
                 if len(items) >= top_n: break
 
-            # 4位以降: rnkRanking_dispRank の「N位」と直後の item.rakuten リンクを対応付け
+            # 4位以降: rnkRanking_dispRank の数字と直後の item.rakuten リンクを対応付け
+            # 実際のHTML: <div class="rnkRanking_dispRank">4<span class="rnkRanking_dispRankExt">位</span></div>
             rank_block_pattern = re.compile(
-                r'class="rnkRanking_dispRank[^"]*">(\d+)位.*?'
+                r'class="rnkRanking_dispRank[^"]*">(\d+)<[^>]*>位.*?'
                 r'href="(https?://item\.rakuten\.co\.jp/([^/]+)/([^/"?#]+)[^"]*)"',
                 re.DOTALL
             )
