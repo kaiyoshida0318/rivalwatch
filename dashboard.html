@@ -1353,7 +1353,7 @@ function renderGood(){
   buildSidebar('goodShopSidebar', items, goodShopFilter, (s)=>{goodShopFilter=s;goodPage=1;renderGood();});
   const filtered = goodShopFilter ? items.filter(it=>it.shop_name===goodShopFilter) : items;
   const qGood=(document.getElementById('allSearch')?.value||'').toLowerCase();
-  const fq = q2 ? filtered.filter(it=>it.name.toLowerCase().includes(qGood)||(it.shop_name||'').toLowerCase().includes(qGood)) : filtered;
+  const fq = qGood ? filtered.filter(it=>it.name.toLowerCase().includes(qGood)||(it.shop_name||'').toLowerCase().includes(qGood)) : filtered;
   if(document.getElementById('goodCnt')) document.getElementById('goodCnt').textContent=fq.length+'件';
   const start=(goodPage-1)*GPAGE;
   const page=fq.slice(start,start+GPAGE);
@@ -1370,7 +1370,7 @@ function renderWatch1(){
   buildSidebar('watch1ShopSidebar', items, watch1ShopFilter, (s)=>{watch1ShopFilter=s;watch1Page=1;renderWatch1();});
   const filtered = watch1ShopFilter ? items.filter(it=>it.shop_name===watch1ShopFilter) : items;
   const qW1=(document.getElementById('allSearch')?.value||'').toLowerCase();
-  const fq = q2 ? filtered.filter(it=>it.name.toLowerCase().includes(qW1)||(it.shop_name||'').toLowerCase().includes(qW1)) : filtered;
+  const fq = qW1 ? filtered.filter(it=>it.name.toLowerCase().includes(qW1)||(it.shop_name||'').toLowerCase().includes(qW1)) : filtered;
   if(document.getElementById('watch1Cnt')) document.getElementById('watch1Cnt').textContent=fq.length+'件';
   const start=(watch1Page-1)*GPAGE;
   const page=fq.slice(start,start+GPAGE);
@@ -1422,7 +1422,7 @@ function renderBad(){
   buildSidebar('badShopSidebar', items, badShopFilter, (s)=>{badShopFilter=s;badPage=1;renderBad();});
   const filtered = badShopFilter ? items.filter(it=>it.shop_name===badShopFilter) : items;
   const qBad=(document.getElementById('allSearch')?.value||'').toLowerCase();
-  const fq = q2 ? filtered.filter(it=>it.name.toLowerCase().includes(qBad)||(it.shop_name||'').toLowerCase().includes(qBad)) : filtered;
+  const fq = qBad ? filtered.filter(it=>it.name.toLowerCase().includes(qBad)||(it.shop_name||'').toLowerCase().includes(qBad)) : filtered;
   if(document.getElementById('badCnt')) document.getElementById('badCnt').textContent=fq.length+'件';
   const start=(badPage-1)*GPAGE;
   const page=fq.slice(start,start+GPAGE);
