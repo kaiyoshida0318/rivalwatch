@@ -18,6 +18,17 @@ function saveJson(p, data) {
 }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
+// タイトルから楽天市場の prefix/suffix を除去
+function cleanTitle(raw) {
+  if (!raw) return '';
+  return raw
+    .replace(/^【?楽天市場】?\s*/u, '')   // 先頭の【楽天市場】
+    .replace(/[\s|｜:：]+楽天市場.*$/u, '') // 末尾の | 楽天市場...
+    .replace(/\s*楽天市場$/u, '')           // 末尾の楽天市場
+    .trim()
+    .slice(0, 80);
+}
+
 async function enrichViaApi(shopSid, itemCode) {
   if (!APP_ID || !itemCode) return null;
   const params = new URLSearchParams({
@@ -52,44 +63,42 @@ async function enrichViaPage(browser, itemUrl, shopSid) {
     await page.setExtraHTTPHeaders({ 'Accept-Language': 'ja,en-US;q=0.9,en;q=0.8' });
     await page.goto(itemUrl, { waitUntil: 'domcontentloaded', timeout: 25000 });
     const detail = await page.evaluate(() => {
-      // 1) JSON-LD（最優先）
+      function cleanTitle(raw) {
+        if (!raw) return '';
+        return raw
+          .replace(/^[\u300c\u3010]?\u697d\u5929\u5e02\u5834[\u300d\u3011]?\s*/u, '')
+          .replace(/[\s|\uff5c:\uff1a]+\u697d\u5929\u5e02\u5834.*$/u, '')
+          .replace(/\s*\u697d\u5929\u5e02\u5834$/u, '')
+          .trim().slice(0, 80);
+      }
+      // 1) JSON-LD
       const ldScripts = Array.from(document.querySelectorAll('script[type="application/ld+json"]'));
       for (const s of ldScripts) {
         try {
           const json = JSON.parse(s.textContent);
-          const obj = Array.isArray(json) ? json.find(o => o['@type'] === 'Product') : (json['@type']==='Product' ? json : null);
+          const obj = Array.isArray(json) ? json.find(o => o['@type']==='Product') : (json['@type']==='Product' ? json : null);
           if (obj) {
-            const name = (obj.name || '').trim().slice(0, 80);
+            const name = cleanTitle(obj.name || '');
             let price = 0;
-            if (obj.offers) {
-              const offer = Array.isArray(obj.offers) ? obj.offers[0] : obj.offers;
-              price = parseInt(offer.price || 0);
-            }
+            if (obj.offers) { const o=Array.isArray(obj.offers)?obj.offers[0]:obj.offers; price=parseInt(o.price||0); }
             const imgRaw = obj.image;
-            const image_url = Array.isArray(imgRaw) ? (imgRaw[0]||'') : (imgRaw||'');
+            const image_url = Array.isArray(imgRaw)?(imgRaw[0]||''):(imgRaw||'');
             const review_count = obj.aggregateRating ? parseInt(obj.aggregateRating.reviewCount||0) : 0;
-            if (name) return { name, price, image_url: typeof image_url==='string' ? image_url : '', review_count, source:'ld' };
+            if (name) return { name, price, image_url: typeof image_url==='string'?image_url:'', review_count, source:'ld' };
           }
         } catch(e) {}
       }
-      // 2) OGP（og:titleを末尾のサイト名だけ除去）
+      // 2) OGP
       const ogTitle = document.querySelector('meta[property="og:title"]');
       const ogImage = document.querySelector('meta[property="og:image"]');
-      // 末尾の「 | 楽天市場」「：楽天市場」だけ除去（先頭の【】は残す）
-      const rawTitle = ogTitle ? ogTitle.content : '';
-      const name = rawTitle.replace(/[\s|｜：:]+楽天市場.*$/, '').replace(/\s*楽天市場$/, '').trim().slice(0, 80);
+      const name = cleanTitle(ogTitle ? ogTitle.content : '');
       const image_url = ogImage ? ogImage.content : '';
       const priceEl = document.querySelector('[itemprop="price"]');
       let price = 0;
-      if (priceEl) {
-        const val = priceEl.getAttribute('content') || priceEl.textContent;
-        const m = val.replace(/,/g,'').match(/\d+/);
-        if (m) price = parseInt(m[0]);
-      }
+      if (priceEl) { const v=priceEl.getAttribute('content')||priceEl.textContent; const m=v.replace(/,/g,'').match(/\d+/); if(m) price=parseInt(m[0]); }
       if (name && name.length > 1) return { name, price, image_url, review_count: 0, source:'ogp' };
-      // 3) titleタグ（最終手段）
-      const titleRaw = document.title || '';
-      const titleName = titleRaw.replace(/[\s|｜：:]+楽天市場.*$/, '').replace(/\s*楽天市場$/, '').trim().slice(0, 80);
+      // 3) titleタグ
+      const titleName = cleanTitle(document.title || '');
       if (titleName && titleName.length > 1) return { name: titleName, price, image_url, review_count: 0, source:'title' };
       return null;
     });
@@ -97,7 +106,7 @@ async function enrichViaPage(browser, itemUrl, shopSid) {
       console.log('    [Page/'+detail.source+'] ' + detail.name.slice(0,40) + ' Y'+detail.price);
       return Object.assign(detail, { shop_name: shopSid });
     }
-    console.log('    [Page] name not found at ' + itemUrl);
+    console.log('    [Page] name not found: ' + itemUrl);
   } catch(e) {
     console.log('    [Page] error: ' + e.message);
   } finally {
