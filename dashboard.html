@@ -1337,13 +1337,13 @@ function renderUnchecked(){
   items=sortItemsBy(items, globalSortOrder);
   buildSidebar('uncheckedShopSidebar', items, uncShopFilter, (s)=>{uncShopFilter=s;uncPage=1;renderUnchecked();});
   const filtered = uncShopFilter ? items.filter(it=>it.shop_name===uncShopFilter) : items;
-  const fq = q ? filtered.filter(it=>it.name.toLowerCase().includes(qUnc)||(it.shop_name||'').toLowerCase().includes(q)) : filtered;
+  if(document.getElementById('uncheckedCnt')) document.getElementById('uncheckedCnt').textContent=filtered.length+'件';
   const start=(uncPage-1)*GPAGE;
-  const page=fq.slice(start,start+GPAGE);
+  const page=filtered.slice(start,start+GPAGE);
   document.getElementById('uncheckedGrid').innerHTML=(filtered.length>0
     ?page.map((it,i)=>productCard(it,start+i+1)).join('')
     :'<div class="empty-state">チェック前の商品はありません</div>');
-  renderGlobalPagination('uncheckedPagination',fq.length,uncPage,p=>{uncPage=p;renderUnchecked();});
+  renderGlobalPagination('uncheckedPagination',filtered.length,uncPage,p=>{uncPage=p;renderUnchecked();});
 }
 
 let goodPage=1,badPage=1,watch1Page=1;
@@ -1389,7 +1389,7 @@ function renderSizeok(){
   buildSidebar('sizeokShopSidebar', items, sizeokShopFilter, (s)=>{sizeokShopFilter=s;sizeokPage=1;renderSizeok();});
   const filtered = sizeokShopFilter ? items.filter(it=>it.shop_name===sizeokShopFilter) : items;
   const qSizeok=(document.getElementById('allSearch')?.value||'').toLowerCase();
-  const fq = q ? filtered.filter(it=>it.name.toLowerCase().includes(qSizeok)||(it.shop_name||'').toLowerCase().includes(qSizeok)) : filtered;
+  const fq = qSizeok ? filtered.filter(it=>it.name.toLowerCase().includes(qSizeok)||(it.shop_name||'').toLowerCase().includes(qSizeok)) : filtered;
   const start=(sizeokPage-1)*GPAGE;
   const page=fq.slice(start,start+GPAGE);
   if(document.getElementById('sizeokCnt')) document.getElementById('sizeokCnt').textContent=fq.length+'件';
@@ -1405,7 +1405,7 @@ function renderDone(){
   buildSidebar('doneShopSidebar', items, doneShopFilter, (s)=>{doneShopFilter=s;donePage=1;renderDone();});
   const filtered = doneShopFilter ? items.filter(it=>it.shop_name===doneShopFilter) : items;
   const qDone=(document.getElementById('allSearch')?.value||'').toLowerCase();
-  const fq = q ? filtered.filter(it=>it.name.toLowerCase().includes(qDone)||(it.shop_name||'').toLowerCase().includes(qDone)) : filtered;
+  const fq = qDone ? filtered.filter(it=>it.name.toLowerCase().includes(qDone)||(it.shop_name||'').toLowerCase().includes(qDone)) : filtered;
   const start=(donePage-1)*GPAGE;
   const page=fq.slice(start,start+GPAGE);
   if(document.getElementById('doneCnt')) document.getElementById('doneCnt').textContent=fq.length+'件';
