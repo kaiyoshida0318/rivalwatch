@@ -205,8 +205,8 @@ tr:last-child td{border-bottom:none}
   </div>
 
   <div id="tabAllProducts" style="display:none">
-    <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=1;renderAllProducts()" style="max-width:240px">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+      <input class="search" id="allSearch" placeholder="商品名で絞り込み..." oninput="allPage=uncPage=goodPage=badPage=watch1Page=1;renderCurrentTab()" style="max-width:220px">
       <select id="globalSort" onchange="globalSortOrder=this.value;allPage=uncPage=goodPage=badPage=watch1Page=1;renderCurrentTab()"
         style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
         <option value="updated">最終更新順</option>
@@ -215,6 +215,16 @@ tr:last-child td{border-bottom:none}
         <option value="shop">ショップ順</option>
       </select>
       <span class="cnt" id="allCnt"></span>
+      <label id="selectAllLabel" style="margin-left:auto;display:flex;align-items:center;gap:5px;cursor:pointer;opacity:.5;font-size:12px;white-space:nowrap" title="全選択">
+        <input type="checkbox" id="selectAllChk" onchange="handleSelectAll(currentTab)" style="width:14px;height:14px;accent-color:#5b8ef0">
+        <span id="selectAllText">全選択</span>
+      </label>
+      <div id="bulkActionBtns" style="display:none;gap:5px;align-items:center">
+        <button onclick="bulkMark('watch1')" style="padding:3px 9px;border-radius:4px;border:1px solid #5b8ef0;background:#e8effe;color:#3a5ec0;font-size:11px;cursor:pointer">👀</button>
+        <button onclick="bulkMark('good')" style="padding:3px 9px;border-radius:4px;border:1px solid #2ecc8a;background:#e8f5ef;color:#0f6e56;font-size:11px;cursor:pointer">👍</button>
+        <button onclick="bulkMark('bad')" style="padding:3px 9px;border-radius:4px;border:1px solid #7c3aed;background:#f0e8ff;color:#7c3aed;font-size:11px;cursor:pointer">👎</button>
+        <button onclick="bulkMark(null)" style="padding:3px 9px;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:11px;cursor:pointer">✕</button>
+      </div>
     </div>
     <div class="sidebar-layout">
       <div class="shop-sidebar">
@@ -229,17 +239,7 @@ tr:last-child td{border-bottom:none}
   </div>
 
   <div id="tabUnchecked" style="display:none">
-    <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <input class="search" id="uncSearch" placeholder="商品名で絞り込み..." oninput="uncPage=1;renderUnchecked()" style="max-width:240px">
-      <select onchange="globalSortOrder=this.value;uncPage=goodPage=badPage=watch1Page=1;renderCurrentTab()"
-        style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
-        <option value="updated">最終更新順</option>
-        <option value="monthly">月商順</option>
-        <option value="weekly">週次増加順</option>
-        <option value="shop">ショップ順</option>
-      </select>
-      <span style="font-size:12px;color:var(--muted)">まだ評価していない商品です。</span>
-    </div>
+
     <div class="sidebar-layout">
       <div class="shop-sidebar">
         <div class="sidebar-title">ショップ</div>
@@ -253,16 +253,6 @@ tr:last-child td{border-bottom:none}
   </div>
 
   <div id="tabGood" style="display:none">
-    <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <select onchange="globalSortOrder=this.value;uncPage=goodPage=badPage=watch1Page=1;renderCurrentTab()"
-        style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
-        <option value="updated">最終更新順</option>
-        <option value="monthly">月商順</option>
-        <option value="weekly">週次増加順</option>
-        <option value="shop">ショップ順</option>
-      </select>
-      <span style="font-size:12px;color:var(--muted)">👍 Good評価をつけた商品です。</span>
-    </div>
     <div class="sidebar-layout">
       <div class="shop-sidebar">
         <div class="sidebar-title">ショップ</div>
@@ -276,16 +266,6 @@ tr:last-child td{border-bottom:none}
   </div>
 
   <div id="tabWatch1" style="display:none">
-    <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <select onchange="globalSortOrder=this.value;uncPage=goodPage=badPage=watch1Page=1;renderCurrentTab()"
-        style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
-        <option value="updated">最終更新順</option>
-        <option value="monthly">月商順</option>
-        <option value="weekly">週次増加順</option>
-        <option value="shop">ショップ順</option>
-      </select>
-      <span style="font-size:12px;color:var(--muted)">👀 注視に登録した商品です。</span>
-    </div>
     <div class="sidebar-layout">
       <div class="shop-sidebar">
         <div class="sidebar-title">ショップ</div>
@@ -299,16 +279,6 @@ tr:last-child td{border-bottom:none}
   </div>
 
   <div id="tabBad" style="display:none">
-    <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <select onchange="globalSortOrder=this.value;uncPage=goodPage=badPage=watch1Page=1;renderCurrentTab()"
-        style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg);font-family:'Noto Sans JP',sans-serif">
-        <option value="updated">最終更新順</option>
-        <option value="monthly">月商順</option>
-        <option value="weekly">週次増加順</option>
-        <option value="shop">ショップ順</option>
-      </select>
-      <span style="font-size:12px;color:var(--muted)">👎 微妙評価をつけた商品です。</span>
-    </div>
     <div class="sidebar-layout">
       <div class="shop-sidebar">
         <div class="sidebar-title">ショップ</div>
@@ -1058,6 +1028,25 @@ function toggleSelectAll(tabName){
   renderCurrentTab();
 }
 
+function handleSelectAll(tabName){
+  toggleSelectAll(tabName);
+}
+
+function updateSelectUI(){
+  const items = getTabItems(currentTab);
+  const selCount = items.filter(it=>selectedItems.has(it.item_id)).length;
+  const allSel = items.length>0 && items.every(it=>selectedItems.has(it.item_id));
+  const chk = document.getElementById('selectAllChk');
+  const txt = document.getElementById('selectAllText');
+  const btns = document.getElementById('bulkActionBtns');
+  if(chk) chk.checked = allSel;
+  if(txt) txt.textContent = selCount>0 ? `全選択 (${selCount}件)` : '全選択';
+  if(btns) btns.style.display = selCount>0 ? 'flex' : 'none';
+  // 選択中は全選択ラベルを強調
+  const lbl = document.getElementById('selectAllLabel');
+  if(lbl) lbl.style.opacity = selCount>0 ? '1' : '0.5';
+}
+
 function bulkMark(type){
   if(selectedItems.size===0){ alert('商品を選択してください'); return; }
   selectedItems.forEach(key => addPending(key, type));
@@ -1105,6 +1094,7 @@ function renderCurrentTab(){
   else if(currentTab==='good') renderGood();
   else if(currentTab==='bad') renderBad();
   else if(currentTab==='watch1') renderWatch1();
+  updateSelectUI();
 }
 
 function refreshCard(key){
@@ -1173,12 +1163,12 @@ function renderAllProducts(){
   document.getElementById('allCnt').textContent=filtered.length+'件';
   const start=(allPage-1)*GPAGE;
   const page=filtered.slice(start,start+GPAGE);
-  document.getElementById('allGrid').innerHTML=bulkBarHtml('all-products')+page.map((it,i)=>productCard(it,start+i+1)).join('');
+  document.getElementById('allGrid').innerHTML=page.map((it,i)=>productCard(it,start+i+1)).join('');
   renderGlobalPagination('allPagination',filtered.length,allPage,p=>{allPage=p;renderAllProducts();});
 }
 
 function renderUnchecked(){
-  const q=(document.getElementById('uncSearch')?.value||'').toLowerCase();
+  const q=(document.getElementById('allSearch')?.value||'').toLowerCase();
   let items=getAllItems().filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]);
   if(q) items=items.filter(it=>it.name.toLowerCase().includes(q)||(it.shop_name||'').toLowerCase().includes(q));
   items=sortItemsBy(items, globalSortOrder);
@@ -1186,7 +1176,7 @@ function renderUnchecked(){
   const filtered = uncShopFilter ? items.filter(it=>it.shop_name===uncShopFilter) : items;
   const start=(uncPage-1)*GPAGE;
   const page=filtered.slice(start,start+GPAGE);
-  document.getElementById('uncheckedGrid').innerHTML=bulkBarHtml('unchecked')+(filtered.length>0
+  document.getElementById('uncheckedGrid').innerHTML=(filtered.length>0
     ?page.map((it,i)=>productCard(it,start+i+1)).join('')
     :'<div class="empty-state">チェック前の商品はありません</div>');
   renderGlobalPagination('uncheckedPagination',filtered.length,uncPage,p=>{uncPage=p;renderUnchecked();});
@@ -1200,7 +1190,7 @@ function renderGood(){
   const filtered = goodShopFilter ? items.filter(it=>it.shop_name===goodShopFilter) : items;
   const start=(goodPage-1)*GPAGE;
   const page=filtered.slice(start,start+GPAGE);
-  document.getElementById('goodGrid').innerHTML=bulkBarHtml('good')+(filtered.length>0
+  document.getElementById('goodGrid').innerHTML=(filtered.length>0
     ?page.map((it,i)=>productCard(it,start+i+1)).join('')
     :'<div class="empty-state">👍 Good評価の商品がありません。</div>');
   renderGlobalPagination('goodPagination',filtered.length,goodPage,p=>{goodPage=p;renderGood();});
@@ -1228,7 +1218,7 @@ function renderBad(){
   const filtered = badShopFilter ? items.filter(it=>it.shop_name===badShopFilter) : items;
   const start=(badPage-1)*GPAGE;
   const page=filtered.slice(start,start+GPAGE);
-  document.getElementById('badGrid').innerHTML=bulkBarHtml('bad')+(filtered.length>0
+  document.getElementById('badGrid').innerHTML=(filtered.length>0
     ?page.map((it,i)=>productCard(it,start+i+1)).join('')
     :'<div class="empty-state">👎 微妙評価の商品がありません。</div>');
   renderGlobalPagination('badPagination',filtered.length,badPage,p=>{badPage=p;renderBad();});
@@ -1310,6 +1300,8 @@ function switchTab(name,el){
   document.getElementById('mainControls').style.display=name==='shops'?'':'none';
   if(name==='all-products')renderAllProducts();
   if(name==='unchecked')renderUnchecked();
+  selectedItems.clear();
+  updateSelectUI();
   if(name==='good')renderGood();
   if(name==='watch1')renderWatch1();
   if(name==='bad')renderBad();
