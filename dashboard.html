@@ -168,7 +168,7 @@ tr:last-child td{border-bottom:none}
   <div class="tab" onclick="switchTab('unchecked',this)">チェック前商品 <span id="uncheckedBadge"></span></div>
   <div class="tab" onclick="switchTab('watch1',this)">🔥 すぐやる候補 <span id="watch1Badge"></span></div>
   <div class="tab" onclick="switchTab('good',this)">⭐ 70点 <span id="goodBadge"></span></div>
-  <div class="tab" onclick="switchTab('sizeok',this)">📐 sizeOK/やらない <span id="sizeokBadge"></span></div>
+  <div class="tab" onclick="switchTab('sizeok',this)">📐 sizeOK微妙 <span id="sizeokBadge"></span></div>
   <div class="tab" onclick="switchTab('done',this)">✅ もうやってる <span id="doneBadge"></span></div>
   <div class="tab" onclick="switchTab('bad',this)">👎 微妙商品 <span id="badBadge"></span></div>
   <div class="tab" onclick="switchTab('add-shops',this)">＋ ショップ追加</div>
@@ -211,7 +211,7 @@ tr:last-child td{border-bottom:none}
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('watch1')" id="th_watch1">👀注視 <span style="font-size:9px;color:var(--muted)" id="sort_watch1"></span></th>
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('good')" id="th_good">👍Good <span style="font-size:9px;color:var(--muted)" id="sort_good"></span></th>
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('bad')" id="th_bad">👎微妙 <span style="font-size:9px;color:var(--muted)" id="sort_bad"></span></th>
-  <th style="cursor:pointer;user-select:none" onclick="setShopSort('sizeok')" id="th_sizeok">📐sizeOK <span style="font-size:9px;color:var(--muted)" id="sort_sizeok"></span></th>
+  <th style="cursor:pointer;user-select:none" onclick="setShopSort('sizeok')" id="th_sizeok">📐sizeOK微妙 <span style="font-size:9px;color:var(--muted)" id="sort_sizeok"></span></th>
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('done')" id="th_done">✅やってる <span style="font-size:9px;color:var(--muted)" id="sort_done"></span></th>
   <th>商品一覧</th>
   <th></th>
@@ -978,7 +978,7 @@ function productCard(item, rank){
   const badgeHtml = isGood   ? `<div class="checked-badge" style="background:${isPending?'#1a7a52':'#2ecc8a'}">👍 Good${pendingMark}</div>`
                   : isBad    ? `<div class="checked-badge" style="background:${isPending?'#4a1a8e':'#7c3aed'};color:#fff">👎 微妙${pendingMark}</div>`
                   : isWatch1 ? `<div class="checked-badge" style="background:${isPending?'#92660a':'#f59e0b'};color:#fff">🔥 すぐやる${pendingMark}</div>`
-                  : isSizeok ? `<div class="checked-badge" style="background:${isPending?'#065f6b':'#06b6d4'};color:#fff">📐 sizeOK${pendingMark}</div>`
+                  : isSizeok ? `<div class="checked-badge" style="background:${isPending?'#065f6b':'#06b6d4'};color:#fff">📐 sizeOK微妙${pendingMark}</div>`
                   : isDone   ? `<div class="checked-badge" style="background:${isPending?'#4c1d95':'#8b5cf6'};color:#fff">✅ やってる${pendingMark}</div>`
                   : '';
 
@@ -1003,7 +1003,7 @@ function productCard(item, rank){
         <button class="check-btn" style="width:100%;background:${isWatch1?'#f59e0b':'var(--bg)'};color:${isWatch1?'#fff':'var(--text)'};border-color:${isWatch1?'#f59e0b':'var(--border)'}" onclick="markWatch1('${key}')">🔥 すぐやる候補</button>
         <div style="display:flex;gap:4px">
           <button class="check-btn ${isGood?'is-good':''}" style="flex:1;background:${isGood?'#2ecc8a':'var(--bg)'};color:${isGood?'#fff':'var(--text)'};border-color:${isGood?'#2ecc8a':'var(--border)'}" onclick="markGood('${key}')">⭐ 70点</button>
-          <button class="check-btn" style="flex:1;background:${isSizeok?'#06b6d4':'var(--bg)'};color:${isSizeok?'#fff':'var(--text)'};border-color:${isSizeok?'#06b6d4':'var(--border)'}" onclick="markSizeok('${key}')">📐 sizeOK</button>
+          <button class="check-btn" style="flex:1;background:${isSizeok?'#06b6d4':'var(--bg)'};color:${isSizeok?'#fff':'var(--text)'};border-color:${isSizeok?'#06b6d4':'var(--border)'}" onclick="markSizeok('${key}')">📐 sizeOK微妙</button>
         </div>
         <div style="display:flex;gap:4px">
           <button class="check-btn" style="flex:1;background:${isDone?'#8b5cf6':'var(--bg)'};color:${isDone?'#fff':'var(--text)'};border-color:${isDone?'#8b5cf6':'var(--border)'}" onclick="markDone('${key}')">✅ もうやってる</button>
@@ -1233,7 +1233,7 @@ function bulkBarHtml(tabName){
     </label>
     ${selCount>0?`<span style="font-size:11px;color:var(--muted)">→ 選択した商品を：</span>
     <button onclick="bulkMark('watch1')" style="padding:3px 10px;border-radius:4px;border:1px solid #f59e0b;background:#fef3c7;color:#92400e;font-size:11px;cursor:pointer">🔥 すぐやる</button>
-    <button onclick="bulkMark('sizeok')" style="padding:3px 10px;border-radius:4px;border:1px solid #06b6d4;background:#e0f7fa;color:#0e7490;font-size:11px;cursor:pointer">📐 sizeOK</button>
+    <button onclick="bulkMark('sizeok')" style="padding:3px 10px;border-radius:4px;border:1px solid #06b6d4;background:#e0f7fa;color:#0e7490;font-size:11px;cursor:pointer">📐 sizeOK微妙</button>
     <button onclick="bulkMark('done')" style="padding:3px 10px;border-radius:4px;border:1px solid #8b5cf6;background:#ede9fe;color:#5b21b6;font-size:11px;cursor:pointer">✅ やってる</button>
     <button onclick="bulkMark('good')" style="padding:3px 10px;border-radius:4px;border:1px solid #2ecc8a;background:#e8f5ef;color:#0f6e56;font-size:11px;cursor:pointer">👍 Good</button>
     <button onclick="bulkMark('bad')" style="padding:3px 10px;border-radius:4px;border:1px solid #7c3aed;background:#f0e8ff;color:#7c3aed;font-size:11px;cursor:pointer">👎 微妙</button>
