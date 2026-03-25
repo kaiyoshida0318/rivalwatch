@@ -20,7 +20,9 @@ header{background:var(--accent);color:#fff;padding:14px 28px;display:flex;align-
 .kpi-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
 .kpi-val{font-family:var(--mono);font-size:20px;font-weight:500}
 .kpi-sub{font-size:10px;color:var(--muted);margin-top:2px}
-.tabs{display:flex;border-bottom:2px solid var(--border);background:var(--surface);padding:0 28px;overflow-x:auto}
+.tabs{background:var(--surface);padding:0 28px;border-bottom:2px solid var(--border)}
+.tabs-row{display:flex;align-items:center;overflow-x:auto}
+.tabs-row.row1{border-bottom:1px solid var(--border)}
 .tab{padding:10px 18px;font-size:12px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--muted);transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:6px}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 .controls{padding:12px 28px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -131,7 +133,7 @@ tr:last-child td{border-bottom:none}
 .pg-btn{padding:4px 9px;border:1px solid var(--border);border-radius:5px;background:var(--surface);cursor:pointer;font-family:var(--mono);font-size:11px}
 .pg-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .pg-info{font-family:var(--mono);font-size:11px;color:var(--muted)}
-@media(max-width:780px){.kpi-strip{grid-template-columns:repeat(2,1fr)}.hide-sp{display:none}main,header,.controls,.tabs{padding-left:14px;padding-right:14px}}
+@media(max-width:780px){.kpi-strip{grid-template-columns:repeat(2,1fr)}.hide-sp{display:none}main,header,.controls,.tabs,.tabs-row{padding-left:14px;padding-right:14px}}
 </style>
 </head>
 <body>
@@ -162,21 +164,24 @@ tr:last-child td{border-bottom:none}
   <div class="kpi"><div class="kpi-lbl">観測ステータス</div><div class="kpi-val" id="kpiWeek" style="color:var(--warn)">W0</div><div class="kpi-sub">4週後に精度↑</div></div>
 </div>
 
-<div class="tabs" style="display:flex;align-items:center">
-  <div class="tab active" onclick="switchTab('shops',this)">ショップ一覧</div>
-  <div class="tab" onclick="switchTab('rankings',this)">📊 ランキング一覧 <span id="rankingBadge"></span></div>
-  <div class="tab" onclick="switchTab('all-products',this)">商品全体 <span id="allBadge"></span></div>
-  <div class="tab" onclick="switchTab('unchecked',this)">チェック前商品 <span id="uncheckedBadge"></span></div>
-  <div class="tab" onclick="switchTab('watch1',this)">🔥 すぐやる候補 <span id="watch1Badge"></span></div>
-  <div class="tab" onclick="switchTab('stop',this)">❌ やるの中止 <span id="stopBadge"></span></div>
-  <div class="tab" onclick="switchTab('good',this)">⭐ 70点 <span id="goodBadge"></span></div>
-  <div class="tab" onclick="switchTab('sizeok',this)">📐 sizeOK微妙 <span id="sizeokBadge"></span></div>
-  <div class="tab" onclick="switchTab('done',this)">✅ もうやってる <span id="doneBadge"></span></div>
-  <div class="tab" onclick="switchTab('bad',this)">👎 微妙商品 <span id="badBadge"></span></div>
-  <div class="tab" onclick="switchTab('add-shops',this)">＋ ショップ追加</div>
-  <div class="tab" onclick="switchTab('add-ranking',this)">📊 ランキング追加</div>
-  <div class="tab" onclick="switchTab('worthless',this)">価値なしショップ <span id="worthlessBadge"></span></div>
-  <div id="tabSelectUI" style="display:none;margin-left:auto;flex-shrink:0;align-items:center;gap:6px;padding:0 10px">
+<div class="tabs">
+  <div class="tabs-row row1">
+    <div class="tab active" onclick="switchTab('shops',this)">ショップ一覧</div>
+    <div class="tab" onclick="switchTab('rankings',this)">📊 ランキング一覧 <span id="rankingBadge"></span></div>
+    <div class="tab" onclick="switchTab('add-shops',this)">＋ ショップ追加</div>
+    <div class="tab" onclick="switchTab('add-ranking',this)">＋ ランキング追加</div>
+    <div class="tab" onclick="switchTab('worthless',this)">価値なしショップ <span id="worthlessBadge"></span></div>
+  </div>
+  <div class="tabs-row row2">
+    <div class="tab" onclick="switchTab('all-products',this)">商品全体 <span id="allBadge"></span></div>
+    <div class="tab" onclick="switchTab('unchecked',this)">チェック前商品 <span id="uncheckedBadge"></span></div>
+    <div class="tab" onclick="switchTab('watch1',this)">🔥 すぐやる候補 <span id="watch1Badge"></span></div>
+    <div class="tab" onclick="switchTab('stop',this)">❌ やるの中止 <span id="stopBadge"></span></div>
+    <div class="tab" onclick="switchTab('good',this)">⭐ 70点 <span id="goodBadge"></span></div>
+    <div class="tab" onclick="switchTab('sizeok',this)">📐 sizeOK微妙 <span id="sizeokBadge"></span></div>
+    <div class="tab" onclick="switchTab('done',this)">✅ もうやってる <span id="doneBadge"></span></div>
+    <div class="tab" onclick="switchTab('bad',this)">👎 微妙商品 <span id="badBadge"></span></div>
+    <div id="tabSelectUI" style="display:none;margin-left:auto;flex-shrink:0;align-items:center;gap:6px;padding:0 10px">
     <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;white-space:nowrap;color:var(--muted)">
       <input type="checkbox" id="selectAllChk" onchange="handleSelectAll(currentTab)" style="width:21px;height:21px;accent-color:#5b8ef0;cursor:pointer">
       <span id="selectAllText">全選択</span>
