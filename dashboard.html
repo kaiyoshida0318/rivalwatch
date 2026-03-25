@@ -143,6 +143,11 @@ tr:last-child td{border-bottom:none}
     <span id="hdrDate"></span>
     <span id="syncStatus" style="font-size:11px;font-family:var(--mono)"></span>
     <button onclick="openPATModal()" style="padding:4px 10px;background:transparent;color:#888;border:1px solid #444;border-radius:5px;font-size:10px;font-family:var(--mono);cursor:pointer" title="GitHub同期設定">⚙ 同期</button>
+    <div id="pendingBar" style="display:none;align-items:center;gap:6px;background:#1a1a2e;border:1px solid #5b8ef0;border-radius:6px;padding:5px 10px">
+      <span id="pendingCount" style="font-size:11px;color:#5b8ef0;font-family:var(--mono)">0件 ペンディング</span>
+      <button onclick="commitPending()" style="padding:4px 10px;background:#2ecc8a;color:#fff;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-family:var(--mono)">✓ 反映する</button>
+      <button onclick="cancelPending()" style="padding:4px 10px;background:transparent;color:#aaa;border:1px solid #555;border-radius:4px;font-size:11px;cursor:pointer;font-family:var(--mono)">✕ 取消</button>
+    </div>
     <a href="https://github.com/kaiyoshida0318/rivalwatch/actions/workflows/weekly.yml" target="_blank"
       style="padding:5px 12px;background:#2ecc8a;color:#fff;border-radius:5px;font-size:11px;font-family:var(--mono);text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap">
       ▶ 今すぐ更新
@@ -934,17 +939,29 @@ function productCard(item, rank){
   const shopNameHtml = item.shop_name
     ? `<div style="font-size:10px;color:var(--muted);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.shop_name}</div>`
     : '';
-  const isGood   = !!goodItems[key];
-  const isBad    = !!badItems[key];
-  const isWatch1 = !!watch1Items[key];
+  // ペンディングがあればペンディング状態を優先表示
+  const pend = pending[key];
+  const effectiveType = pend !== undefined
+    ? pend.newType
+    : (goodItems[key] ? 'good' : badItems[key] ? 'bad' : watch1Items[key] ? 'watch1' : null);
+  const isGood   = effectiveType === 'good';
+  const isBad    = effectiveType === 'bad';
+  const isWatch1 = effectiveType === 'watch1';
+  const isPending = pend !== undefined;
   const getAt = (obj, k) => { const v=obj[k]; return (v&&v.at)?v.at:''; };
+  const isSelected = selectedItems.has(key);
   const cardStatus = isGood ? 'good' : isBad ? 'bad' : '';
-  const badgeHtml = isGood   ? '<div class="checked-badge" style="background:#2ecc8a">👍 Good</div>'
-                  : isBad    ? '<div class="checked-badge" style="background:#7c3aed;color:#fff">👎 微妙</div>'
-                  : isWatch1 ? '<div class="checked-badge" style="background:#5b8ef0;color:#fff">👀 注視1</div>'
-: '';
+  const pendingMark = isPending ? ' ●' : '';
+  const badgeHtml = isGood   ? `<div class="checked-badge" style="background:${isPending?'#1a7a52':'#2ecc8a'}">👍 Good${pendingMark}</div>`
+                  : isBad    ? `<div class="checked-badge" style="background:${isPending?'#4a1a8e':'#7c3aed'};color:#fff">👎 微妙${pendingMark}</div>`
+                  : isWatch1 ? `<div class="checked-badge" style="background:${isPending?'#2a4a90':'#5b8ef0'};color:#fff">👀 注視${pendingMark}</div>`
+                  : '';
 
-  return `<div class="product-card ${cardStatus} ${item.out_of_rank?'out-of-rank':''}" id="card-${key}">
+  return `<div class="product-card ${cardStatus} ${item.out_of_rank?'out-of-rank':''} ${isPending?'pending-card':''}" id="card-${key}" style="${isPending?'outline:2px solid #5b8ef0;outline-offset:2px':''}">
+    <div style="position:absolute;top:6px;left:6px;z-index:10">
+      <input type="checkbox" ${isSelected?'checked':''} onclick="event.stopPropagation();toggleItemSelect('${key}')"
+        style="width:16px;height:16px;cursor:pointer;accent-color:#5b8ef0">
+    </div>
     ${badgeHtml}
     ${outOfRank}
     ${imgHtml}
@@ -970,28 +987,116 @@ function productCard(item, rank){
 
 function nowStr(){ return new Date().toLocaleString('ja-JP',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}); }
 
-function markGood(key){
-  if(goodItems[key]){ delete goodItems[key]; }
-  else { goodItems[key]={at:nowStr()}; delete badItems[key]; saveBad(badItems); }
+// ── ペンディング（仮評価）管理 ────────────────────────
+// pending: {itemId: {type:'good'|'bad'|'watch1'|null, prev:{type,val}}}
+let pending = {};
+
+function updatePendingBar(){
+  const cnt = Object.keys(pending).length;
+  const bar = document.getElementById('pendingBar');
+  if(bar) bar.style.display = cnt>0 ? 'flex' : 'none';
+  const el = document.getElementById('pendingCount');
+  if(el) el.textContent = cnt+'件 ペンディング';
+}
+
+function addPending(key, newType){
+  // 既にペンディング中なら前のペンディングの前状態を保持
+  if(!pending[key]){
+    // 現在の確定状態を保存
+    const prev = goodItems[key] ? 'good' : badItems[key] ? 'bad' : watch1Items[key] ? 'watch1' : null;
+    const prevVal = prev==='good'?goodItems[key]:prev==='bad'?badItems[key]:prev==='watch1'?watch1Items[key]:null;
+    pending[key] = { newType, prev, prevVal };
+  } else {
+    pending[key].newType = newType;
+  }
+  // 同じ型を再クリック → 解除
+  if(pending[key].prev === newType){
+    pending[key].newType = null;
+  }
+  updatePendingBar();
+}
+
+function commitPending(){
+  Object.entries(pending).forEach(([key, p])=>{
+    // まず全解除
+    delete goodItems[key];
+    delete badItems[key];
+    delete watch1Items[key];
+    // 新しい評価を設定
+    if(p.newType==='good')  goodItems[key]  = {at:nowStr()};
+    else if(p.newType==='bad')   badItems[key]   = {at:nowStr()};
+    else if(p.newType==='watch1') watch1Items[key] = {at:nowStr()};
+  });
+  pending = {};
   saveGood(goodItems);
+  saveBad(badItems);
+  saveWatch1(watch1Items);
+  updatePendingBar();
   updateBadges();
-  refreshCard(key);
+  renderCurrentTab();
+  renderShops();
+}
+
+function cancelPending(){
+  pending = {};
+  updatePendingBar();
+  renderCurrentTab();
+  renderShops();
+}
+
+// 全選択チェックボックス管理
+let selectedItems = new Set();
+
+function toggleSelectAll(tabName){
+  const items = getTabItems(tabName);
+  const allSelected = items.every(it => selectedItems.has(it.item_id));
+  if(allSelected){
+    items.forEach(it => selectedItems.delete(it.item_id));
+  } else {
+    items.forEach(it => selectedItems.add(it.item_id));
+  }
+  renderCurrentTab();
+}
+
+function bulkMark(type){
+  if(selectedItems.size===0){ alert('商品を選択してください'); return; }
+  selectedItems.forEach(key => addPending(key, type));
+  selectedItems.clear();
+  renderCurrentTab();
+}
+
+function getTabItems(tabName){
+  const all = getAllItems();
+  if(tabName==='all-products') return all;
+  if(tabName==='unchecked') return all.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]);
+  if(tabName==='good') return all.filter(it=>goodItems[it.item_id]||pending[it.item_id]?.newType==='good');
+  if(tabName==='bad') return all.filter(it=>badItems[it.item_id]||pending[it.item_id]?.newType==='bad');
+  if(tabName==='watch1') return all.filter(it=>watch1Items[it.item_id]||pending[it.item_id]?.newType==='watch1');
+  return all;
+}
+
+function markGood(key){
+  addPending(key, pending[key]?.newType==='good' ? null : 'good');
+  renderCurrentTab();
+  renderShops();
 }
 
 function markBad(key){
-  if(badItems[key]){ delete badItems[key]; }
-  else { badItems[key]={at:nowStr()}; delete goodItems[key]; saveGood(goodItems); }
-  saveBad(badItems);
-  updateBadges();
-  refreshCard(key);
+  addPending(key, pending[key]?.newType==='bad' ? null : 'bad');
+  renderCurrentTab();
+  renderShops();
 }
 
 function markWatch1(key){
-  if(watch1Items[key]){ delete watch1Items[key]; }
-  else { watch1Items[key]={at:nowStr()}; }
-  saveWatch1(watch1Items);
-  updateBadges();
-  refreshCard(key);
+  addPending(key, pending[key]?.newType==='watch1' ? null : 'watch1');
+  renderCurrentTab();
+  renderShops();
+}
+
+function toggleItemSelect(key){
+  if(selectedItems.has(key)) selectedItems.delete(key);
+  else selectedItems.add(key);
+  renderCurrentTab();
 }
 
 function renderCurrentTab(){
@@ -1037,6 +1142,25 @@ function buildSidebar(elId, items, currentFilter, onSelect) {
   el.innerHTML = html;
 }
 
+
+// ── 一括操作バー ─────────────────────────────────────
+function bulkBarHtml(tabName){
+  const items = getTabItems(tabName);
+  const selCount = items.filter(it=>selectedItems.has(it.item_id)).length;
+  const allSel = items.length>0 && items.every(it=>selectedItems.has(it.item_id));
+  return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;flex-wrap:wrap">
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px">
+      <input type="checkbox" ${allSel?'checked':''} onchange="toggleSelectAll('${tabName}')" style="width:15px;height:15px;accent-color:#5b8ef0">
+      <span style="color:var(--muted)">全選択 ${selCount>0?'<b style=color:#5b8ef0>('+selCount+'件選択中)</b>':''}</span>
+    </label>
+    ${selCount>0?`<span style="font-size:11px;color:var(--muted)">→ 選択した商品を：</span>
+    <button onclick="bulkMark('watch1')" style="padding:3px 10px;border-radius:4px;border:1px solid #5b8ef0;background:#e8effe;color:#3a5ec0;font-size:11px;cursor:pointer">👀 注視</button>
+    <button onclick="bulkMark('good')" style="padding:3px 10px;border-radius:4px;border:1px solid #2ecc8a;background:#e8f5ef;color:#0f6e56;font-size:11px;cursor:pointer">👍 Good</button>
+    <button onclick="bulkMark('bad')" style="padding:3px 10px;border-radius:4px;border:1px solid #7c3aed;background:#f0e8ff;color:#7c3aed;font-size:11px;cursor:pointer">👎 微妙</button>
+    <button onclick="bulkMark(null)" style="padding:3px 10px;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:11px;cursor:pointer">✕ 解除</button>`:
+    ''}
+  </div>`;
+}
 function renderAllProducts(){
   const q=(document.getElementById('allSearch')?.value||'').toLowerCase();
   let items=getAllItems();
@@ -1049,7 +1173,7 @@ function renderAllProducts(){
   document.getElementById('allCnt').textContent=filtered.length+'件';
   const start=(allPage-1)*GPAGE;
   const page=filtered.slice(start,start+GPAGE);
-  document.getElementById('allGrid').innerHTML=page.map((it,i)=>productCard(it,start+i+1)).join('');
+  document.getElementById('allGrid').innerHTML=bulkBarHtml('all-products')+page.map((it,i)=>productCard(it,start+i+1)).join('');
   renderGlobalPagination('allPagination',filtered.length,allPage,p=>{allPage=p;renderAllProducts();});
 }
 
@@ -1062,9 +1186,9 @@ function renderUnchecked(){
   const filtered = uncShopFilter ? items.filter(it=>it.shop_name===uncShopFilter) : items;
   const start=(uncPage-1)*GPAGE;
   const page=filtered.slice(start,start+GPAGE);
-  document.getElementById('uncheckedGrid').innerHTML=filtered.length>0
+  document.getElementById('uncheckedGrid').innerHTML=bulkBarHtml('unchecked')+(filtered.length>0
     ?page.map((it,i)=>productCard(it,start+i+1)).join('')
-    :'<div class="empty-state">チェック前の商品はありません</div>';
+    :'<div class="empty-state">チェック前の商品はありません</div>');
   renderGlobalPagination('uncheckedPagination',filtered.length,uncPage,p=>{uncPage=p;renderUnchecked();});
 }
 
@@ -1076,9 +1200,9 @@ function renderGood(){
   const filtered = goodShopFilter ? items.filter(it=>it.shop_name===goodShopFilter) : items;
   const start=(goodPage-1)*GPAGE;
   const page=filtered.slice(start,start+GPAGE);
-  document.getElementById('goodGrid').innerHTML=filtered.length>0
+  document.getElementById('goodGrid').innerHTML=bulkBarHtml('good')+(filtered.length>0
     ?page.map((it,i)=>productCard(it,start+i+1)).join('')
-    :'<div class="empty-state">👍 Good評価の商品がありません。<br>商品カードの「👍 Good」を押してください。</div>';
+    :'<div class="empty-state">👍 Good評価の商品がありません。</div>');
   renderGlobalPagination('goodPagination',filtered.length,goodPage,p=>{goodPage=p;renderGood();});
 }
 
@@ -1104,9 +1228,9 @@ function renderBad(){
   const filtered = badShopFilter ? items.filter(it=>it.shop_name===badShopFilter) : items;
   const start=(badPage-1)*GPAGE;
   const page=filtered.slice(start,start+GPAGE);
-  document.getElementById('badGrid').innerHTML=filtered.length>0
+  document.getElementById('badGrid').innerHTML=bulkBarHtml('bad')+(filtered.length>0
     ?page.map((it,i)=>productCard(it,start+i+1)).join('')
-    :'<div class="empty-state">👎 微妙評価の商品がありません。<br>商品カードの「👎 微妙」を押してください。</div>';
+    :'<div class="empty-state">👎 微妙評価の商品がありません。</div>');
   renderGlobalPagination('badPagination',filtered.length,badPage,p=>{badPage=p;renderBad();});
 }
 
