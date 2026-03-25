@@ -22,9 +22,18 @@ async function enrichViaPage(browser,itemUrl,shopSid){
   if(!itemUrl)return null;const page=await browser.newPage();
   try{
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-    await page.setExtraHTTPHeaders({'Accept-Language':'ja,en-US;q=0.9,en;q=0.8'});
-    // networkidle2: 楽天商品ページはJS動的レンダリングのためnetworkidle2まで待つ必要がある
+    await page.setExtraHTTPHeaders({'Accept-Language':'ja,en-US;q=0.9,en;q=0.8','Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'});
     await page.goto(itemUrl,{waitUntil:'networkidle2',timeout:30000});
+    // デバッグ: 実際に取得できたページの情報をログ出力
+    const pageInfo=await page.evaluate(()=>({
+      title: document.title,
+      url: location.href,
+      ogTitle: (document.querySelector('meta[property="og:title"]')||{}).content||'',
+      ldCount: document.querySelectorAll('script[type="application/ld+json"]').length,
+      bodyLen: document.body ? document.body.innerText.length : 0,
+    }));
+    console.log('    [pageInfo] title="'+pageInfo.title.slice(0,50)+'" url='+pageInfo.url.slice(0,60));
+    console.log('    [pageInfo] ogTitle="'+pageInfo.ogTitle.slice(0,50)+'" ldCount='+pageInfo.ldCount+' bodyLen='+pageInfo.bodyLen);
     const detail=await page.evaluate(()=>{
       function ct(r){if(!r)return '';return r.replace(/^[\u300c\u300d\u3010\u3011]?\u697d\u5929\u5e02\u5834[\u300c\u300d\u3010\u3011]?\s*/u,'').replace(/[\s|\uff5c:\uff1a]+\u697d\u5929\u5e02\u5834.*$/u,'').replace(/\s*\u697d\u5929\u5e02\u5834$/u,'').trim().slice(0,80);}
       for(const s of document.querySelectorAll('script[type="application/ld+json"]')){try{const j=JSON.parse(s.textContent);const o=Array.isArray(j)?j.find(x=>x['@type']==='Product'):(j['@type']==='Product'?j:null);if(o){const name=ct(o.name||'');let price=0;if(o.offers){const of=Array.isArray(o.offers)?o.offers[0]:o.offers;price=parseInt(of.price||0);}const ir=o.image;const img=Array.isArray(ir)?(ir[0]||''):(ir||'');const rv=o.aggregateRating?parseInt(o.aggregateRating.reviewCount||0):0;if(name)return{name,price,image_url:typeof img==='string'?img:'',review_count:rv,source:'ld'};}}catch(e){}}
@@ -49,13 +58,8 @@ async function scrapeRankingPage(browser,url,topN){
     await sleep(1500);
     await page.evaluate(()=>{window.scrollTo(0,document.body.scrollHeight);});
     await sleep(2000);
-    const dbg=await page.evaluate(()=>({
-      topBg:document.querySelectorAll('.rnkRanking_topBgColor').length,
-      top3:document.querySelectorAll('.rnkRanking_top3box').length,
-      disp:document.querySelectorAll('.rnkRanking_dispRank').length,
-      links:document.querySelectorAll('a[href*="item.rakuten.co.jp"]').length,
-    }));
-    console.log('    [debug] topBg='+dbg.topBg+' top3='+dbg.top3+' disp='+dbg.disp+' links='+dbg.links);
+    const dbg=await page.evaluate(()=>({topBg:document.querySelectorAll('.rnkRanking_topBgColor').length,top3:document.querySelectorAll('.rnkRanking_top3box').length,links:document.querySelectorAll('a[href*="item.rakuten.co.jp"]').length}));
+    console.log('    [debug] topBg='+dbg.topBg+' top3='+dbg.top3+' links='+dbg.links);
     const items=await page.evaluate((maxN)=>{
       const seen=new Set(),results=[];
       function parse(href){const m=href.match(/https?:\/\/item\.rakuten\.co\.jp\/([^/]+)\/([^/?#]+)/);return m?{shopSid:m[1],itemCode:m[2]}:null;}
