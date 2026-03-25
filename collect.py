@@ -205,6 +205,13 @@ def scrape_rankings(now):
             with urllib.request.urlopen(req, timeout=15) as r:
                 html = r.read().decode("utf-8", errors="replace")
 
+            # デバッグ出力
+            print(f"      HTML: {len(html)}文字")
+            print(f"      topBgColor: {html.count('rnkRanking_topBgColor')}件")
+            print(f"      top3box: {html.count('rnkRanking_top3box')}件")
+            print(f"      dispRank: {html.count('rnkRanking_dispRank')}件")
+            print(f"      item.rakuten links: {html.count('item.rakuten.co.jp')}件")
+
             # ── ランキング順に商品URLを抽出 ──────────────
             # 楽天ランキングページの構造:
             #   1位: class="rnkRanking_topBgColor"
