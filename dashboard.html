@@ -717,7 +717,7 @@ async function loadFromGitHub() {
     if (state.sizeok)       { sizeokItems  = state.sizeok;       localStorage.setItem('rw_sizeok', JSON.stringify(sizeokItems)); }
     if (state.done)         { doneItems    = state.done;         localStorage.setItem('rw_done',   JSON.stringify(doneItems)); }
     if (state.stop)         { stopItems    = state.stop;         localStorage.setItem('rw_stop',   JSON.stringify(stopItems)); }
-    if (state.rankings)     { savedRankings = state.rankings;   localStorage.setItem('rw_rankings', JSON.stringify(savedRankings)); initRankingPool(); }
+    if (state.rankings && state.rankings.length > 0) { savedRankings = state.rankings; localStorage.setItem('rw_rankings', JSON.stringify(savedRankings)); initRankingPool(); }
     if (state.extra_shops)  { extraShops   = state.extra_shops;  localStorage.setItem('rw_extra_shops', JSON.stringify(extraShops)); }
     if (state.hidden_shops) { hiddenShops  = state.hidden_shops; saveHiddenShops(hiddenShops); }
     if (state.item_counts)  { itemCounts   = state.item_counts;  saveItemCounts(itemCounts); }
@@ -1782,6 +1782,12 @@ async function fetchRankings(){
   if(msg) msg.textContent = `${addedCount}件のランキングを追加しました`;
   rankingRows = [''];
   renderRankingRows();
+  // ランキング一覧タブに自動切り替え
+  if(addedCount > 0){
+    const rankTab = document.querySelector("[onclick*=\"switchTab('rankings'\"]");
+    if(rankTab) switchTab('rankings', rankTab);
+    else renderRankingList();
+  }
 }
 
 // ランキング一覧の描画
