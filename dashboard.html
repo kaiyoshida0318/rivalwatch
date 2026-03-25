@@ -485,7 +485,7 @@ tr:last-child td{border-bottom:none}
       <div style="font-size:13px;font-weight:500;margin-bottom:6px">楽天ランキングURLを入力</div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:16px">
         例: https://ranking.rakuten.co.jp/daily/565271/<br>
-        1行に1つのURLを入力してください。
+        1行に1つのURLを入力してください。登録後、「▶ 今すぐ更新」を押すと実際のランキングページから商品を取得します。
       </div>
       <div class="global-wrap" style="margin-bottom:16px;padding:0">
         <div id="rankingUrlList" style="padding:4px 0"></div>
@@ -500,17 +500,7 @@ tr:last-child td{border-bottom:none}
             style="width:60px;padding:4px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;text-align:center">
           <span style="font-size:12px">件</span>
         </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:12px">取得順：</span>
-          <select id="rankingSort" style="padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;background:var(--bg)">
-            <option value="-reviewCount">レビュー数順（定番商品）</option>
-            <option value="-updateTimestamp">最終更新順（新着・変動商品）</option>
-            <option value="-reviewAverage">評価平均順</option>
-            <option value="+itemPrice">価格が安い順</option>
-            <option value="-itemPrice">価格が高い順</option>
-          </select>
-        </div>
-        <button onclick="fetchRankings()" style="padding:7px 18px;border-radius:6px;background:#2ecc8a;color:#fff;border:none;font-size:12px;cursor:pointer;font-family:'Noto Sans JP',sans-serif">ランキングを取得・追加</button>
+        <button onclick="fetchRankings()" style="padding:7px 18px;border-radius:6px;background:#2ecc8a;color:#fff;border:none;font-size:12px;cursor:pointer;font-family:'Noto Sans JP',sans-serif">登録する</button>
       </div>
       <div id="rankingMsg" style="font-size:12px;color:var(--muted);margin-top:8px"></div>
     </div>
@@ -1680,10 +1670,44 @@ function goShopPage(p){currentPage=p;renderShops();window.scrollTo({top:0,behavi
 // ── ランキング機能 ────────────────────────────────────
 // ══════════════════════════════════════════════════════
 
-// ランキング設定をlocalStorageに保存
-function loadRankings()  { try{return JSON.parse(localStorage.getItem('rw_rankings')||'[]')}catch{return[]} }
-function saveRankings(a) { try{localStorage.setItem('rw_rankings',JSON.stringify(a));syncToGitHub()}catch{} }
-let savedRankings = loadRankings();
+// ランキング設定（URLリスト）をGitHub ranking_configs.jsonで管理
+function loadRankingConfigs() { try{return JSON.parse(localStorage.getItem('rw_ranking_configs')||'[]')}catch{return[]} }
+function saveRankingConfigs(a){ try{localStorage.setItem('rw_ranking_configs',JSON.stringify(a));}catch{} }
+// 後方互換
+function loadRankings()  { return loadRankingConfigs(); }
+function saveRankings(a) { saveRankingConfigs(a); writeRankingConfigsToGitHub(a); }
+let savedRankings = loadRankingConfigs();
+
+// ランキング結果（collect.pyが書き込む）
+let rankingResults = [];
+async function loadRankingResults(){
+  try {
+    const res = await fetch('data/ranking_results.json?t='+Date.now());
+    if(!res.ok) return;
+    const data = await res.json();
+    rankingResults = data.rankings || [];
+    // ランキング商品をプールに追加
+    rankingResults.forEach(r => injectRankingToItems(r));
+  } catch(e) {}
+}
+
+// ranking_configs.jsonをGitHubに書き込む
+async function writeRankingConfigsToGitHub(configs){
+  const pat = getPAT();
+  if(!pat) return;
+  try {
+    const api = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/data/ranking_configs.json`;
+    const getRes = await fetch(api, { headers:{ Authorization:`token ${pat}`, Accept:'application/vnd.github+json' }});
+    let sha = null;
+    if(getRes.ok){ const d=await getRes.json(); sha=d.sha; }
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(configs, null, 2))));
+    await fetch(api, {
+      method: 'PUT',
+      headers: { Authorization:`token ${pat}`, Accept:'application/vnd.github+json', 'Content-Type':'application/json' },
+      body: JSON.stringify({ message:'ランキング設定を更新', content, ...(sha?{sha}:{}) }),
+    });
+  } catch(e) { console.warn('ranking_configs write failed:', e); }
+}
 
 // getUserStateに追加済み → 同期対象
 function getRankingsState(){ return savedRankings; }
@@ -1717,43 +1741,7 @@ function parseRankingUrl(url){
   return m ? m[1] : null;
 }
 
-// 楽天APIでgenreIdのランキング上位N件を取得
-async function fetchRankingItems(genreId, topN, sortOrder='-reviewCount'){
-  const APP_ID    = '384a802a-c387-4cef-8369-16b0af9f47c9';
-  const ACCESS_KEY = 'pk_fWUk0zscbq3cKshgY8wJQHCge1NqULUqrLvs2mi6ydx';
-  const params = new URLSearchParams({
-    applicationId: APP_ID,
-    accessKey:     ACCESS_KEY,
-    format:        'json',
-    genreId:       genreId,
-    hits:          Math.min(topN, 30),
-    sort:          sortOrder,
-    page:          1,
-  });
-  const url = `https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20220601?${params}`;
-  const res = await fetch(url, {
-    headers: { 'Referer': 'https://kaiyoshida0318.github.io/rivalwatch/' }
-  });
-  const data = await res.json();
-  if(data.errors || !data.Items) throw new Error(JSON.stringify(data.errors||data));
-  return data.Items.map((entry,idx) => {
-    const it = entry.Item || entry;
-    const imgs = it.mediumImageUrls||[];
-    return {
-      item_id:      it.itemCode||'',
-      name:         (it.itemName||'').slice(0,80),
-      price:        parseInt(it.itemPrice||0),
-      review_count: parseInt(it.reviewCount||0),
-      review_avg:   parseFloat(it.reviewAverage||0),
-      url:          it.itemUrl||'',
-      image_url:    imgs[0]?.imageUrl||'',
-      ranking_pos:  idx+1,
-      shop_name:    it.shopName||'',
-      shop_sid:     it.shopCode||'',
-      review_delta: null, est_sales: null, out_of_rank: false,
-    };
-  });
-}
+// fetchRankingItems: collect.py方式に移行済み
 
 async function fetchRankings(){
   const topN = parseInt(document.getElementById('rankingTopN')?.value||'10');
@@ -1800,24 +1788,38 @@ function renderRankingList(){
   const el = document.getElementById('rankingListWrap');
   if(!el) return;
   if(!savedRankings.length){
-    el.innerHTML = '<div class="empty-state">登録されたランキングはありません。「📊 ランキング追加」タブから追加してください。</div>';
+    el.innerHTML = '<div class="empty-state">登録されたランキングはありません。「＋ ランキング追加」タブからURLを登録してください。</div>';
     return;
   }
-  el.innerHTML = savedRankings.map((r,ri)=>`
+
+  el.innerHTML = savedRankings.map((cfg,ci)=>{
+    // 対応する結果を検索
+    const result = rankingResults.find(r=>r.genreId===cfg.genreId);
+    const items = result?.items || [];
+    const fetchedAt = result?.fetchedAt ? new Date(result.fetchedAt).toLocaleString('ja-JP') : '未取得（「今すぐ更新」を押してください）';
+    return `
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-        <div style="font-size:13px;font-weight:500">${r.label}</div>
-        <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">genreId:${r.genreId} | 上位${r.topN}位 | 取得:${new Date(r.fetchedAt).toLocaleDateString('ja-JP')}</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+        <a href="${cfg.url}" target="_blank" style="font-size:13px;font-weight:500;color:var(--accent);text-decoration:none">${cfg.label}</a>
+        <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">上位${cfg.topN}位 | ${fetchedAt}</div>
         <div style="margin-left:auto;display:flex;gap:6px">
-          <button onclick="refreshRanking(${ri})" style="padding:3px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);font-size:11px;cursor:pointer">🔄 更新</button>
-          <button onclick="deleteRanking(${ri})" style="padding:3px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);font-size:11px;cursor:pointer;color:var(--muted)">削除</button>
+          <button onclick="deleteRankingConfig(${ci})" style="padding:3px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);font-size:11px;cursor:pointer;color:var(--muted)">削除</button>
         </div>
       </div>
+      ${items.length ? `
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px">
-        ${(r.items||[]).map((it,i)=>rankingCard(it, i+1)).join('')}
-      </div>
-    </div>
-  `).join('');
+        ${items.map((it,i)=>rankingCard(it, i+1)).join('')}
+      </div>` : `<div style="font-size:12px;color:var(--muted);padding:12px 0">商品データがありません。「今すぐ更新」を押してcollect.pyを実行してください。</div>`}
+    </div>`;
+  }).join('');
+}
+
+function deleteRankingConfig(idx){
+  if(!confirm('このランキング設定を削除しますか？')) return;
+  savedRankings.splice(idx, 1);
+  saveRankings(savedRankings);
+  renderRankingList();
+  updateBadges();
 }
 
 function rankingCard(item, rank){
@@ -1836,28 +1838,7 @@ function rankingCard(item, rank){
   </div>`;
 }
 
-async function refreshRanking(idx){
-  const r = savedRankings[idx];
-  if(!r) return;
-  try {
-    const items = await fetchRankingItems(r.genreId, r.topN, r.sortOrder||'-reviewCount');
-    savedRankings[idx].items = items;
-    savedRankings[idx].fetchedAt = new Date().toISOString();
-    saveRankings(savedRankings);
-    // チェック前に自動追加
-    injectRankingToItems(savedRankings[idx]);
-    renderRankingList();
-    updateBadges();
-  } catch(e) { alert('更新失敗: ' + e.message); }
-}
-
-function deleteRanking(idx){
-  if(!confirm('このランキングを削除しますか？')) return;
-  savedRankings.splice(idx, 1);
-  saveRankings(savedRankings);
-  renderRankingList();
-  updateBadges();
-}
+// refreshRanking/deleteRanking は deleteRankingConfig に統合済み
 
 // ランキング商品をSUMMARYの商品リストに注入（チェック前に表示させる）
 function injectRankingToItems(ranking){
@@ -2022,6 +2003,7 @@ function bulkAdd(){
     if(r.ok)SUMMARY=await r.json();
   }catch{}
   initRankingPool();
+  loadRankingResults();
   renderShops();
   updateBadges();
   buildUrlInputs();
