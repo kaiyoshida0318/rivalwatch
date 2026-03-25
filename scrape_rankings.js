@@ -20,21 +20,23 @@ async function enrichViaApi(shopSid,itemCode){
   }catch(e){}return null;}
 async function enrichViaPage(browser,itemUrl,shopSid){
   if(!itemUrl)return null;const page=await browser.newPage();
-  try{await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-  await page.setExtraHTTPHeaders({'Accept-Language':'ja,en-US;q=0.9,en;q=0.8'});
-  await page.goto(itemUrl,{waitUntil:'domcontentloaded',timeout:25000});
-  const detail=await page.evaluate(()=>{
-    function ct(r){if(!r)return '';return r.replace(/^[\u300c\u300d\u3010\u3011]?\u697d\u5929\u5e02\u5834[\u300c\u300d\u3010\u3011]?\s*/u,'').replace(/[\s|\uff5c:\uff1a]+\u697d\u5929\u5e02\u5834.*$/u,'').replace(/\s*\u697d\u5929\u5e02\u5834$/u,'').trim().slice(0,80);}
-    for(const s of document.querySelectorAll('script[type="application/ld+json"]')){try{const j=JSON.parse(s.textContent);const o=Array.isArray(j)?j.find(x=>x['@type']==='Product'):(j['@type']==='Product'?j:null);if(o){const name=ct(o.name||'');let price=0;if(o.offers){const of=Array.isArray(o.offers)?o.offers[0]:o.offers;price=parseInt(of.price||0);}const ir=o.image;const img=Array.isArray(ir)?(ir[0]||''):(ir||'');const rv=o.aggregateRating?parseInt(o.aggregateRating.reviewCount||0):0;if(name)return{name,price,image_url:typeof img==='string'?img:'',review_count:rv,source:'ld'};}}catch(e){}}
-    const ot=document.querySelector('meta[property="og:title"]');const oi=document.querySelector('meta[property="og:image"]');
-    const name=ct(ot?ot.content:'');const img=oi?oi.content:'';
-    const pe=document.querySelector('[itemprop="price"]');let price=0;if(pe){const v=pe.getAttribute('content')||pe.textContent;const m=v.replace(/,/g,'').match(/\d+/);if(m)price=parseInt(m[0]);}
-    if(name&&name.length>1)return{name,price,image_url:img,review_count:0,source:'ogp'};
-    const tn=ct(document.title||'');if(tn&&tn.length>1)return{name:tn,price,image_url:img,review_count:0,source:'title'};
-    return null;
-  });
-  if(detail&&detail.name&&detail.name.length>1){console.log('    [Page/'+detail.source+'] '+detail.name.slice(0,40)+' Y'+detail.price);return Object.assign(detail,{shop_name:shopSid});}
-  console.log('    [Page] not found: '+itemUrl);
+  try{
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+    await page.setExtraHTTPHeaders({'Accept-Language':'ja,en-US;q=0.9,en;q=0.8'});
+    // networkidle2: 楽天商品ページはJS動的レンダリングのためnetworkidle2まで待つ必要がある
+    await page.goto(itemUrl,{waitUntil:'networkidle2',timeout:30000});
+    const detail=await page.evaluate(()=>{
+      function ct(r){if(!r)return '';return r.replace(/^[\u300c\u300d\u3010\u3011]?\u697d\u5929\u5e02\u5834[\u300c\u300d\u3010\u3011]?\s*/u,'').replace(/[\s|\uff5c:\uff1a]+\u697d\u5929\u5e02\u5834.*$/u,'').replace(/\s*\u697d\u5929\u5e02\u5834$/u,'').trim().slice(0,80);}
+      for(const s of document.querySelectorAll('script[type="application/ld+json"]')){try{const j=JSON.parse(s.textContent);const o=Array.isArray(j)?j.find(x=>x['@type']==='Product'):(j['@type']==='Product'?j:null);if(o){const name=ct(o.name||'');let price=0;if(o.offers){const of=Array.isArray(o.offers)?o.offers[0]:o.offers;price=parseInt(of.price||0);}const ir=o.image;const img=Array.isArray(ir)?(ir[0]||''):(ir||'');const rv=o.aggregateRating?parseInt(o.aggregateRating.reviewCount||0):0;if(name)return{name,price,image_url:typeof img==='string'?img:'',review_count:rv,source:'ld'};}}catch(e){}}
+      const ot=document.querySelector('meta[property="og:title"]');const oi=document.querySelector('meta[property="og:image"]');
+      const name=ct(ot?ot.content:'');const img=oi?oi.content:'';
+      const pe=document.querySelector('[itemprop="price"]');let price=0;if(pe){const v=pe.getAttribute('content')||pe.textContent;const m=v.replace(/,/g,'').match(/\d+/);if(m)price=parseInt(m[0]);}
+      if(name&&name.length>1)return{name,price,image_url:img,review_count:0,source:'ogp'};
+      const tn=ct(document.title||'');if(tn&&tn.length>1)return{name:tn,price,image_url:img,review_count:0,source:'title'};
+      return null;
+    });
+    if(detail&&detail.name&&detail.name.length>1){console.log('    [Page/'+detail.source+'] '+detail.name.slice(0,40)+' Y'+detail.price);return Object.assign(detail,{shop_name:shopSid});}
+    console.log('    [Page] not found: '+itemUrl);
   }catch(e){console.log('    [Page] error: '+e.message);}finally{await page.close();}return null;}
 async function scrapeRankingPage(browser,url,topN){
   const page=await browser.newPage();
@@ -42,7 +44,6 @@ async function scrapeRankingPage(browser,url,topN){
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
     await page.setExtraHTTPHeaders({'Accept-Language':'ja,en-US;q=0.9,en;q=0.8'});
     console.log('  -> '+url);
-    // domcontentloaded で速く取得、その後スクロールで遅延ロードを発火
     await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
     await page.evaluate(()=>{window.scrollTo(0,document.body.scrollHeight/2);});
     await sleep(1500);
@@ -52,17 +53,15 @@ async function scrapeRankingPage(browser,url,topN){
       topBg:document.querySelectorAll('.rnkRanking_topBgColor').length,
       top3:document.querySelectorAll('.rnkRanking_top3box').length,
       disp:document.querySelectorAll('.rnkRanking_dispRank').length,
-      dataRank:document.querySelectorAll('[data-rank]').length,
       links:document.querySelectorAll('a[href*="item.rakuten.co.jp"]').length,
     }));
-    console.log('    [debug] topBg='+dbg.topBg+' top3='+dbg.top3+' disp='+dbg.disp+' dataRank='+dbg.dataRank+' links='+dbg.links);
+    console.log('    [debug] topBg='+dbg.topBg+' top3='+dbg.top3+' disp='+dbg.disp+' links='+dbg.links);
     const items=await page.evaluate((maxN)=>{
       const seen=new Set(),results=[];
       function parse(href){const m=href.match(/https?:\/\/item\.rakuten\.co\.jp\/([^/]+)\/([^/?#]+)/);return m?{shopSid:m[1],itemCode:m[2]}:null;}
       function add(rank,href){if(results.length>=maxN)return;const p=parse(href);if(!p)return;const k=p.shopSid+':'+p.itemCode;if(seen.has(k))return;seen.add(k);results.push({rank,...p,url:href.split('?')[0]});}
       const t1=document.querySelector('.rnkRanking_topBgColor a[href*="item.rakuten.co.jp"]');if(t1)add(1,t1.href);
       document.querySelectorAll('.rnkRanking_top3box a[href*="item.rakuten.co.jp"]').forEach(a=>add(results.length+1,a.href));
-      document.querySelectorAll('[data-rank]').forEach(el=>{const rn=parseInt(el.getAttribute('data-rank'));if(isNaN(rn)||rn<=3)return;const a=el.querySelector('a[href*="item.rakuten.co.jp"]');if(a)add(rn,a.href);});
       document.querySelectorAll('.rnkRanking_dispRank').forEach(el=>{const rn=parseInt(el.textContent);if(isNaN(rn))return;const c=el.closest('li')||el.parentElement;if(!c)return;const a=c.querySelector('a[href*="item.rakuten.co.jp"]');if(a)add(rn,a.href);});
       if(results.length<maxN)document.querySelectorAll('a[href*="item.rakuten.co.jp"]').forEach(a=>add(results.length+1,a.href));
       return results.slice(0,maxN);
@@ -92,7 +91,7 @@ async function main(){
           if(!detail||!detail.name){
             console.log('    -> page fallback: '+item.url);
             detail=await enrichViaPage(browser,item.url,item.shopSid);
-            await sleep(1500);
+            await sleep(1000);
           }
           enriched.push({rank:item.rank,item_id:item.shopSid+':'+item.itemCode,shop_sid:item.shopSid,shop_name:(detail&&detail.shop_name)||item.shopSid,item_code:item.itemCode,url:item.url,name:(detail&&detail.name)||'',image_url:(detail&&detail.image_url)||'',price:(detail&&detail.price)||0,review_count:(detail&&detail.review_count)||0});
         }
