@@ -888,8 +888,8 @@ function productCard(item, rank){
   const key=item.item_id;
   const isChecked=!!checkedItems[key];
   const imgHtml=item.image_url
-    ?`<img class="product-img" src="${item.image_url}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'product-img-placeholder\\'>📦</div>'">`
-    :`<div class="product-img-placeholder">📦</div>`;
+    ?`<img class="product-img" src="${item.image_url}" alt="" loading="lazy" style="cursor:pointer" onclick="toggleItemSelect('${key}')" onerror="this.outerHTML='<div class=\\'product-img-placeholder\\' onclick=\\'toggleItemSelect(\\\'${key}\\\')\\\'>📦</div>'">`
+    :`<div class="product-img-placeholder" style="cursor:pointer" onclick="toggleItemSelect('${key}')">📦</div>`;
 
   const delta = item.review_delta;
   const deltaHtml = delta != null && delta > 0
@@ -973,19 +973,29 @@ function updatePendingBar(){
 }
 
 function addPending(key, newType){
-  // 既にペンディング中なら前のペンディングの前状態を保持
+  // 現在の「表示上の」状態を取得（ペンディングがあればそれを優先）
+  const currentEffective = pending[key] !== undefined
+    ? pending[key].newType
+    : (goodItems[key] ? 'good' : badItems[key] ? 'bad' : watch1Items[key] ? 'watch1' : null);
+
   if(!pending[key]){
-    // 現在の確定状態を保存
+    // 初回：確定状態をprevとして保存
     const prev = goodItems[key] ? 'good' : badItems[key] ? 'bad' : watch1Items[key] ? 'watch1' : null;
-    const prevVal = prev==='good'?goodItems[key]:prev==='bad'?badItems[key]:prev==='watch1'?watch1Items[key]:null;
-    pending[key] = { newType, prev, prevVal };
+    pending[key] = { newType, prev };
   } else {
     pending[key].newType = newType;
   }
-  // 同じ型を再クリック → 解除
-  if(pending[key].prev === newType){
+
+  // 現在表示されている状態と同じ型をクリック → 解除（トグル）
+  if(currentEffective === newType){
     pending[key].newType = null;
   }
+
+  // ペンディングが不要（prev=nullでnewType=null）なら削除
+  if(pending[key].newType === null && pending[key].prev === null){
+    delete pending[key];
+  }
+
   updatePendingBar();
 }
 
@@ -1065,19 +1075,19 @@ function getTabItems(tabName){
 }
 
 function markGood(key){
-  addPending(key, pending[key]?.newType==='good' ? null : 'good');
+  addPending(key, 'good');
   renderCurrentTab();
   renderShops();
 }
 
 function markBad(key){
-  addPending(key, pending[key]?.newType==='bad' ? null : 'bad');
+  addPending(key, 'bad');
   renderCurrentTab();
   renderShops();
 }
 
 function markWatch1(key){
-  addPending(key, pending[key]?.newType==='watch1' ? null : 'watch1');
+  addPending(key, 'watch1');
   renderCurrentTab();
   renderShops();
 }
