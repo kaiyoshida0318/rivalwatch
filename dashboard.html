@@ -1784,6 +1784,21 @@ async function fetchRankings(){
 }
 
 // ランキング一覧の描画
+    // ランキング結果キャッシュ（fetchして再利用）
+    let _latestRankingResults = null;
+
+    async function loadLatestRankingResults() {
+      if (_latestRankingResults) return _latestRankingResults;
+      try {
+        const res = await fetch("data/ranking_results.json?v=" + Date.now());
+        const d = await res.json();
+        _latestRankingResults = d.rankings || [];
+      } catch(e) {
+        _latestRankingResults = [];
+      }
+      return _latestRankingResults;
+    }
+
     function renderRankingList() {
       const wrap = document.getElementById("rankingListWrap");
       if (!wrap) return;
@@ -1799,7 +1814,7 @@ async function fetchRankings(){
       h += '<th>商品一覧</th>';
       h += '</tr></thead><tbody>';
       rankings.forEach((r, idx) => {
-        const label = r.label || r.url || ("ランキング #" + (idx+1));
+        const label = r.label || r.url || ('ランキング #' + (idx+1));
         const itemCount = r.items ? r.items.length : 0;
         const topN = r.topN || 10;
         const rankUrl = r.url || "#";
@@ -1807,12 +1822,37 @@ async function fetchRankings(){
         h += `<td style="text-align:center">${idx+1}</td>`;
         h += `<td><a href="${rankUrl}" target="_blank" style="color:#38bdf8;text-decoration:none">${label}</a></td>`;
         h += `<td style="text-align:center">${itemCount}件 / 上位${topN}位</td>`;
-        h += `<td><button class="btn-sm" onclick="switchTab('all-products',this)">▼ 商品を見る</button>`;
-        h += ` <button class="btn-sm btn-danger" onclick="deleteRankingConfig(${idx})" style="background:#ef4444;マージン左:4px">削除</button></td>`;
+        h += `<td>
+          <button class="btn-sm" onclick="toggleRankingItems(${idx}, this)">▼ 商品を見る</button>
+          &nbsp;<button class="btn-sm btn-danger" onclick="deleteRankingConfig(${idx})" style="background:#ef4444">削除</button>
+        </td>`;
         h += `</tr>`;
+        h += `<tr id="ranking-items-row-${idx}" style="display:none"><td colspan="4"><div id="ranking-items-${idx}" class="product-grid" style="padding:8px"></div></td></tr>`;
       });
       h += '</tbody></table>';
       wrap.innerHTML = h;
+    }
+
+    async function toggleRankingItems(idx, btn) {
+      const row = document.getElementById('ranking-items-row-' + idx);
+      const container = document.getElementById('ranking-items-' + idx);
+      if (!row) return;
+      if (row.style.display !== 'none') {
+        row.style.display = 'none';
+        btn.textContent = '▼ 商品を見る';
+        return;
+      }
+      btn.textContent = '読み込み中...';
+      const results = await loadLatestRankingResults();
+      const ranking = results[idx] || getRankingsState()[idx];
+      const items = ranking ? (ranking.items || []) : [];
+      if (!items.length) {
+        container.innerHTML = '<p style="color:#888;padding:8px">商品データがありません。『今すぐ更新』を実行してください。</p>';
+      } else {
+        container.innerHTML = items.map((item, i) => rankingCard(item, i)).join('');
+      }
+      row.style.display = '';
+      btn.textContent = '▲ 閉じる';
     }
 
 function deleteRankingConfig(idx){
