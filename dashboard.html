@@ -1301,9 +1301,9 @@ function getTabItems(tabName){
   if(tabName==='unchecked') return all.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]&&!sizeokItems[it.item_id]&&!doneItems[it.item_id]&&!stopItems[it.item_id]);
   if(tabName==='good') return all.filter(it=>goodItems[it.item_id]||pending[it.item_id]?.newType==='good');
   if(tabName==='sizeok') return all.filter(it=>sizeokItems[it.item_id]||pending[it.item_id]?.newType==='sizeok');
-  if(tabName==='watch1') return all.filter(it=>watch1Items[it.item_id]||pending[it.item_id]?.newType==='watch1');
   if(tabName==='done')   return all.filter(it=>doneItems[it.item_id]||pending[it.item_id]?.newType==='done');
   if(tabName==='bad') return all.filter(it=>badItems[it.item_id]||pending[it.item_id]?.newType==='bad');
+  if(tabName==='watch1') return all.filter(it=>watch1Items[it.item_id]||pending[it.item_id]?.newType==='watch1');
   if(tabName==='stop')   return all.filter(it=>stopItems[it.item_id]||pending[it.item_id]?.newType==='stop');
   return all;
 }
