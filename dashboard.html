@@ -2066,10 +2066,7 @@ function bulkAdd(){
   updateBadges();
   buildUrlInputs();
   initRankingRows();
-})();
-</script>
-</body>
-</html>
+
     async function renderRankingList() {
       const wrap = document.getElementById("rankingListWrap");
       if (!wrap) return;
@@ -2120,7 +2117,6 @@ function bulkAdd(){
       h += '</tbody></table>';
       wrap.innerHTML = h;
     }
-
     window.triggerRankingUpdate = async function(btn) {
       const pat = localStorage.getItem('rw_pat');
       if (!pat) {
@@ -2142,3 +2138,8 @@ function bulkAdd(){
             btn.textContent = '待機中 ' + n + 's';
             setTimeout(() => countDown(n - 1), 1000);
           };
+
+})();
+</script>
+</body>
+</html>
