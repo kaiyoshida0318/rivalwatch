@@ -1,3 +1,27 @@
+
+    window.triggerRankingUpdate = async function(btn) {
+      const pat = localStorage.getItem('rw_pat');
+      if (!pat) { alert('PATが未登録です。画面上部の設定からGitHub PATを登録してください。'); return; }
+      btn.disabled = true; btn.textContent = '実行中...';
+      try {
+        const res = await fetch('https://api.github.com/repos/kaiyoshida0318/rivalwatch/actions/workflows/weekly.yml/dispatches', {
+          method: 'POST',
+          headers: { 'Authorization': 'token ' + pat, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ref: 'main' })
+        });
+        if (res.ok || res.status === 204) {
+          btn.style.background = '#16a34a';
+          let n = 180;
+          const t = setInterval(() => {
+            if (n <= 0) { clearInterval(t); _latestRankingResults = null; renderRankingList(); btn.textContent = '▶ 今すぐ更新'; btn.style.background='#0ea5e9'; btn.disabled=false; }
+            else { btn.textContent = '待機中 ' + (n--) + 's'; }
+          }, 1000);
+          btn.textContent = '待機中 180s';
+        } else {
+          btn.textContent = 'エラー(' + res.status + ')'; btn.disabled = false;
+        }
+      } catch(e) { btn.textContent = '通信エラー'; btn.disabled = false; }
+    };
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -1799,7 +1823,7 @@ async function fetchRankings(){
       return _latestRankingResults;
     }
 
-    async function switchTab('rankings'); await renderRankingList() {
+    async function renderRankingList() {
       const wrap = document.getElementById("rankingListWrap");
       if (!wrap) return;
       const configs = getRankingsState() || [];
@@ -1809,7 +1833,15 @@ async function fetchRankings(){
       }
       // ranking_results.json（最新スクレイピング結果）を取得してrankingTitle/breadcrumbを補完
       const latestResults = await loadLatestRankingResults();
-      let h = '<table class="shop-table"><thead><tr>';
+      let updatedAt = '';
+      if (latestResults.length && latestResults[0].fetchedAt) {
+        updatedAt = new Date(latestResults[0].fetchedAt).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+      }
+      h = '<div style="margin-bottom:10px;display:flex;align-items:center;gap:12px">';
+      h += '<button class="btn-sm" onclick="triggerRankingUpdate(this)" style="background:#0ea5e9;color:#fff;padding:4px 16px">▶ 今すぐ更新</button>';
+      h += '<small style="color:#888">最終取得: ' + (updatedAt || '未取得') + '</small>';
+      h += '</div>';
+      h += '<table class="shop-table"><thead><tr>';
       h += '<th>#</th><th>ランキング名</th><th>測定数</th><th>商品一覧</th>';
       h += '</tr></thead><tbody>';
       configs.forEach((cfg, idx) => {
@@ -1840,14 +1872,6 @@ async function fetchRankings(){
       h += '</tbody></table>';
       wrap.innerHTML = h;
     }
-
-          countDown(180);
-        } else {
-          btn.textContent = 'エラー(' + res.status + ')';
-          btn.disabled = false;
-        }
-      } catch(e) { btn.textContent = '通信エラー'; btn.disabled = false; }
-    };
 
     window.toggleRankingItems = async function(idx, btn) {
       const row = document.getElementById('ranking-items-row-' + idx);
@@ -1993,7 +2017,6 @@ function bulkFetch(){
   bulkResults = urls.map(url=>{
     const code = extractShopCodeFromUrl(url);
     if(!code) return {url, code:'', status:'error', msg:'URLが無効です', checked:false};
-
     const dup = allShops.find(s=>(s.shopCode||s.sid)===code);
     if(dup) return {url, code, status:'dup', msg:`登録済み（${dup.name}）`, checked:false};
     return {url, code, status:'ok', msg:'追加できます', checked:true};
@@ -2066,79 +2089,6 @@ function bulkAdd(){
   updateBadges();
   buildUrlInputs();
   initRankingRows();
-
-    async function renderRankingList() {
-      const wrap = document.getElementById("rankingListWrap");
-      if (!wrap) return;
-      const configs = getRankingsState() || [];
-      if (!configs.length) {
-        wrap.innerHTML = '<p style="color:#888;padding:16px">ランキングが登録されていません。「ランキング追加」タブからURLを登録してください。</p>';
-        return;
-      }
-      // ranking_results.json から最新メタ情報を取得
-      const latestResults = await loadLatestRankingResults();
-      // 最終更新日時
-      const updatedAt = latestResults.length && latestResults[0].fetchedAt
-        ? new Date(latestResults[0].fetchedAt).toLocaleString("ja-JP",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})
-        : "未取得";
-      let h = '<div style="margin-bottom:10px;display:flex;align-items:center;gap:12px">';
-      h += `<button class="btn-sm" id="btnUpdateRanking" onclick="triggerRankingUpdate(this)" style="background:#0ea5e9;color:#fff;padding:4px 16px">▶ 今すぐ更新</button>`;
-      h += `<small style="color:#888">最終取得: ${updatedAt}</small>`;
-      h += '</div>';
-      h += '<table class="shop-table"><thead><tr>';
-      h += '<th>#</th><th>ランキング名</th><th>測定数</th><th>商品一覧</th>';
-      h += '</tr></thead><tbody>';
-      configs.forEach((cfg, idx) => {
-        const latest = latestResults.find(r => r.url === cfg.url) || {};
-        const periodType = latest.periodType || (cfg.url && cfg.url.includes('/weekly/') ? 'Weekly' : cfg.url && cfg.url.includes('/monthly/') ? 'Monthly' : 'Daily');
-        const rankingTitle = latest.rankingTitle || latest.categoryName || '';
-        const breadcrumb = latest.breadcrumb || '';
-        const displayName = rankingTitle
-          ? (periodType + ' | ' + rankingTitle)
-          : (periodType + ' | ' + (cfg.label || cfg.url || ''));
-        const itemCount = latest.items ? latest.items.length : (cfg.items ? cfg.items.length : 0);
-        const topN = cfg.topN || 10;
-        const rankUrl = cfg.url || '#';
-        h += `<tr>`;
-        h += `<td style="text-align:center">${idx+1}</td>`;
-        h += `<td>`,
-        h += `  <a href="${rankUrl}" target="_blank" style="color:#38bdf8;text-decoration:none;font-weight:bold">${displayName}</a>`;
-        if (breadcrumb) h += `<br><small style="color:#888;font-size:0.78em">${breadcrumb}</small>`;
-        h += `</td>`;
-        h += `<td style="text-align:center">${itemCount}件 / 上位${topN}位</td>`;
-        h += `<td style="white-space:nowrap">`,
-        h += `  <button class="btn-sm" onclick="toggleRankingItems(${idx}, this)">▼ 商品を見る</button>`;
-        h += `  <span style="display:inline-block;width:16px"></span>`;
-        h += `  <button class="btn-sm" onclick="deleteRankingConfig(${idx})" style="background:#ef4444;color:#fff">削除</button>`;
-        h += `</td>`;
-        h += `</tr>`;
-        h += `<tr id="ranking-items-row-${idx}" style="display:none"><td colspan="4"><div id="ranking-items-${idx}" class="product-grid" style="padding:8px"></div></td></tr>`;
-      });
-      h += '</tbody></table>';
-      wrap.innerHTML = h;
-    }
-    window.triggerRankingUpdate = async function(btn) {
-      const pat = localStorage.getItem('rw_pat');
-      if (!pat) {
-        alert('「PAT」が未設定です。画面上部の設定アイコンからGitHub PATを登録してください。');
-        return;
-      }
-      btn.disabled = true; btn.textContent = '実行中...';
-      try {
-        const res = await fetch('https://api.github.com/repos/kaiyoshida0318/rivalwatch/actions/workflows/weekly.yml/dispatches', {
-          method: 'POST',
-          headers: { 'Authorization': 'token ' + pat, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ref: 'main' })
-        });
-        if (res.ok || res.status === 204) {
-          btn.textContent = '✅ 実行開始！';
-          btn.style.background = '#16a34a';
-          const countDown = (n) => {
-            if (n <= 0) { _latestRankingResults = null; renderRankingList(); btn.textContent = '▶ 今すぐ更新'; btn.style.background='#0ea5e9'; btn.disabled=false; return; }
-            btn.textContent = '待機中 ' + n + 's';
-            setTimeout(() => countDown(n - 1), 1000);
-          };
-
 })();
 </script>
 </body>
