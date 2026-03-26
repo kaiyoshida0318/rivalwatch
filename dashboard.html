@@ -1799,26 +1799,29 @@ async function fetchRankings(){
       return _latestRankingResults;
     }
 
-    function renderRankingList() {
+    async function renderRankingList() {
       const wrap = document.getElementById("rankingListWrap");
       if (!wrap) return;
-      const rankings = getRankingsState() || [];
-      if (!rankings.length) {
+      const configs = getRankingsState() || [];
+      if (!configs.length) {
         wrap.innerHTML = '<p style="color:#888;padding:16px">ランキングが登録されていません。「ランキング追加」タブからURLを登録してください。</p>';
         return;
       }
+      // ranking_results.json（最新スクレイピング結果）を取得してrankingTitle/breadcrumbを補完
+      const latestResults = await loadLatestRankingResults();
       let h = '<table class="shop-table"><thead><tr>';
       h += '<th>#</th><th>ランキング名</th><th>測定数</th><th>商品一覧</th>';
       h += '</tr></thead><tbody>';
-      rankings.forEach((r, idx) => {
-        // 期間タイプ + ランキング名（scrape_rankings.jsが取得したものを優先）
-        const periodType = r.periodType || (r.url && r.url.includes('/weekly/') ? 'Weekly' : 'Daily');
-        const rankingTitle = r.rankingTitle || r.categoryName || r.label || r.url || '';
-        const displayName = periodType + ' | ' + rankingTitle;
-        const breadcrumb = r.breadcrumb || '';
-        const itemCount = r.items ? r.items.length : 0;
-        const topN = r.topN || 10;
-        const rankUrl = r.url || '#';
+      configs.forEach((cfg, idx) => {
+        // latestResultsからURL一致するデータを探してmeta情報を取得
+        const latest = latestResults.find(r => r.url === cfg.url) || {};
+        const periodType = latest.periodType || (cfg.url && cfg.url.includes('/weekly/') ? 'Weekly' : 'Daily');
+        const rankingTitle = latest.rankingTitle || latest.categoryName || '';
+        const breadcrumb = latest.breadcrumb || '';
+        const displayName = rankingTitle ? (periodType + ' | ' + rankingTitle) : (periodType + ' | ' + (cfg.label || cfg.url || ''));
+        const itemCount = latest.items ? latest.items.length : (cfg.items ? cfg.items.length : 0);
+        const topN = cfg.topN || 10;
+        const rankUrl = cfg.url || '#';
         h += `<tr>`;
         h += `<td style="text-align:center">${idx+1}</td>`;
         h += `<td>
@@ -1829,7 +1832,7 @@ async function fetchRankings(){
         h += `<td style="white-space:nowrap">
           <button class="btn-sm" onclick="toggleRankingItems(${idx}, this)">▼ 商品を見る</button>
           <span style="display:inline-block;width:16px"></span>
-          <button class="btn-sm btn-danger" onclick="deleteRankingConfig(${idx})" style="background:#ef4444">削除</button>
+          <button class="btn-sm" onclick="deleteRankingConfig(${idx})" style="background:#ef4444;color:#fff">削除</button>
         </td>`;
         h += `</tr>`;
         h += `<tr id="ranking-items-row-${idx}" style="display:none"><td colspan="4"><div id="ranking-items-${idx}" class="product-grid" style="padding:8px"></div></td></tr>`;
