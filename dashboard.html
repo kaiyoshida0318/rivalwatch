@@ -1833,7 +1833,7 @@ async function fetchRankings(){
       wrap.innerHTML = h;
     }
 
-    async function toggleRankingItems(idx, btn) {
+    window.toggleRankingItems = async function(idx, btn) {
       const row = document.getElementById('ranking-items-row-' + idx);
       const container = document.getElementById('ranking-items-' + idx);
       if (!row) return;
