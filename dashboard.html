@@ -1994,27 +1994,6 @@ function bulkFetch(){
     const code = extractShopCodeFromUrl(url);
     if(!code) return {url, code:'', status:'error', msg:'URLが無効です', checked:false};
 
-    window.triggerRankingUpdate = async function(btn) {
-      const pat = localStorage.getItem('rw_pat');
-      if (!pat) {
-        alert('「PAT」が未設定です。画面上部の設定アイコンからGitHub PATを登録してください。');
-        return;
-      }
-      btn.disabled = true; btn.textContent = '実行中...';
-      try {
-        const res = await fetch('https://api.github.com/repos/kaiyoshida0318/rivalwatch/actions/workflows/weekly.yml/dispatches', {
-          method: 'POST',
-          headers: { 'Authorization': 'token ' + pat, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ref: 'main' })
-        });
-        if (res.ok || res.status === 204) {
-          btn.textContent = '✅ 実行開始！';
-          btn.style.background = '#16a34a';
-          const countDown = (n) => {
-            if (n <= 0) { _latestRankingResults = null; renderRankingList(); btn.textContent = '▶ 今すぐ更新'; btn.style.background='#0ea5e9'; btn.disabled=false; return; }
-            btn.textContent = '待機中 ' + n + 's';
-            setTimeout(() => countDown(n - 1), 1000);
-          };
     const dup = allShops.find(s=>(s.shopCode||s.sid)===code);
     if(dup) return {url, code, status:'dup', msg:`登録済み（${dup.name}）`, checked:false};
     return {url, code, status:'ok', msg:'追加できます', checked:true};
@@ -2141,3 +2120,25 @@ function bulkAdd(){
       h += '</tbody></table>';
       wrap.innerHTML = h;
     }
+
+    window.triggerRankingUpdate = async function(btn) {
+      const pat = localStorage.getItem('rw_pat');
+      if (!pat) {
+        alert('「PAT」が未設定です。画面上部の設定アイコンからGitHub PATを登録してください。');
+        return;
+      }
+      btn.disabled = true; btn.textContent = '実行中...';
+      try {
+        const res = await fetch('https://api.github.com/repos/kaiyoshida0318/rivalwatch/actions/workflows/weekly.yml/dispatches', {
+          method: 'POST',
+          headers: { 'Authorization': 'token ' + pat, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ref: 'main' })
+        });
+        if (res.ok || res.status === 204) {
+          btn.textContent = '✅ 実行開始！';
+          btn.style.background = '#16a34a';
+          const countDown = (n) => {
+            if (n <= 0) { _latestRankingResults = null; renderRankingList(); btn.textContent = '▶ 今すぐ更新'; btn.style.background='#0ea5e9'; btn.disabled=false; return; }
+            btn.textContent = '待機中 ' + n + 's';
+            setTimeout(() => countDown(n - 1), 1000);
+          };
