@@ -1808,23 +1808,28 @@ async function fetchRankings(){
         return;
       }
       let h = '<table class="shop-table"><thead><tr>';
-      h += '<th>#</th>';
-      h += '<th>ランキング名</th>';
-      h += '<th>測定数</th>';
-      h += '<th>商品一覧</th>';
+      h += '<th>#</th><th>ランキング名</th><th>測定数</th><th>商品一覧</th>';
       h += '</tr></thead><tbody>';
       rankings.forEach((r, idx) => {
-        const label = r.label || r.url || ('ランキング #' + (idx+1));
+        // 期間タイプ + ランキング名（scrape_rankings.jsが取得したものを優先）
+        const periodType = r.periodType || (r.url && r.url.includes('/weekly/') ? 'Weekly' : 'Daily');
+        const rankingTitle = r.rankingTitle || r.categoryName || r.label || r.url || '';
+        const displayName = periodType + ' | ' + rankingTitle;
+        const breadcrumb = r.breadcrumb || '';
         const itemCount = r.items ? r.items.length : 0;
         const topN = r.topN || 10;
-        const rankUrl = r.url || "#";
+        const rankUrl = r.url || '#';
         h += `<tr>`;
         h += `<td style="text-align:center">${idx+1}</td>`;
-        h += `<td><a href="${rankUrl}" target="_blank" style="color:#38bdf8;text-decoration:none">${label}</a></td>`;
-        h += `<td style="text-align:center">${itemCount}件 / 上位${topN}位</td>`;
         h += `<td>
+          <a href="${rankUrl}" target="_blank" style="color:#38bdf8;text-decoration:none;font-weight:bold">${displayName}</a>
+          ${breadcrumb ? `<br><small style="color:#888;font-size:0.78em">${breadcrumb}</small>` : ""}
+        </td>`;
+        h += `<td style="text-align:center">${itemCount}件 / 上位${topN}位</td>`;
+        h += `<td style="white-space:nowrap">
           <button class="btn-sm" onclick="toggleRankingItems(${idx}, this)">▼ 商品を見る</button>
-          &nbsp;<button class="btn-sm btn-danger" onclick="deleteRankingConfig(${idx})" style="background:#ef4444">削除</button>
+          <span style="display:inline-block;width:16px"></span>
+          <button class="btn-sm btn-danger" onclick="deleteRankingConfig(${idx})" style="background:#ef4444">削除</button>
         </td>`;
         h += `</tr>`;
         h += `<tr id="ranking-items-row-${idx}" style="display:none"><td colspan="4"><div id="ranking-items-${idx}" class="product-grid" style="padding:8px"></div></td></tr>`;
