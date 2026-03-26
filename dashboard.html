@@ -980,11 +980,11 @@ function renderShops(){
       </td>
       <td style="text-align:center">${cntStyle(uncCnt,'#f0ede8','#555')}</td>
       <td style="text-align:center">${cntStyle(w1Cnt,'#e8effe','#3a5ec0')}</td>
+      <td style="text-align:center">${cntStyle(stopCnt,'#fee2e2','#991b1b')}</td>
       <td style="text-align:center">${cntStyle(goodCnt,'#e8f5ef','#0f6e56')}</td>
-      <td style="text-align:center">${cntStyle(badCnt,'#f0e8ff','#7c3aed')}</td>
       <td style="text-align:center">${cntStyle(sizeokCnt,'#e0f7fa','#0e7490')}</td>
       <td style="text-align:center">${cntStyle(doneCnt,'#ede9fe','#5b21b6')}</td>
-      <td style="text-align:center">${cntStyle(stopCnt,'#fee2e2','#991b1b')}</td>
+      <td style="text-align:center">${cntStyle(badCnt,'#f0e8ff','#7c3aed')}</td>
       <td><button class="expand-btn ${ps.open?'open':''}" onclick="togglePanel('${key}')">▼ 商品を見る</button></td>
       <td><button class="del-btn" onclick="deleteShop('${key}','${s.isBase?'base':'extra'}')">価値なし</button>`;
     tbody.appendChild(tr);
