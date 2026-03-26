@@ -64,5 +64,5 @@ jobs:
           git config user.email "bot@rivalwatch"
           git add data/
           git diff --staged --quiet || git commit -m "週次観測 $(date '+%Y/%m/%d')"
-          git pull --rebase origin main
+          git pull --rebase -X theirs origin main
           git push
