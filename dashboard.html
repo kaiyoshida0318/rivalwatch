@@ -1787,28 +1787,32 @@ async function fetchRankings(){
     function renderRankingList() {
       const wrap = document.getElementById("rankingListWrap");
       if (!wrap) return;
-      const rankingResults = window._rankingResults || [];
-      if (!rankingResults.length) {
+      const rankings = getRankingsState() || [];
+      if (!rankings.length) {
         wrap.innerHTML = '<p style="color:#888;padding:16px">ランキングが登録されていません。「ランキング追加」タブからURLを登録してください。</p>';
         return;
       }
-      let html = '<table class="shop-table"><thead><tr>';
-      html += '<th>#</th><th>ランキング名</th><th>測定数</th><th>商品一覧</th>';
-      html += '</tr></thead><tbody>';
-      rankingResults.forEach((r, idx) => {
+      let h = '<table class="shop-table"><thead><tr>';
+      h += '<th>#</th>';
+      h += '<th>ランキング名</th>';
+      h += '<th>測定数</th>';
+      h += '<th>商品一覧</th>';
+      h += '</tr></thead><tbody>';
+      rankings.forEach((r, idx) => {
+        const label = r.label || r.url || ("ランキング #" + (idx+1));
         const itemCount = r.items ? r.items.length : 0;
-        const label = r.label || r.url || (' ランキング' + (idx+1));
-        const fetchedAt = r.fetchedAt ? new Date(r.fetchedAt).toLocaleString("ja-JP", {month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "-";
-        html += `<tr>`;
-        html += `<td>${idx+1}</td>`;
-        html += `<td><a href="${r.url||'#'}" target="_blank" style="color:#38bdf8;text-decoration:none">${label}</a><br><small style="color:#888">${fetchedAt}</small></td>`;
-        html += `<td style="text-align:center">${itemCount}件</td>`;
-        html += `<td><button class="btn-sm" onclick="switchTab('all-products',this)">▼ 商品を見る</button>`;
-        html += `&nbsp;<button class="btn-sm btn-danger" onclick="deleteRanking(${idx})" style="background:#ef4444">削除</button></td>`;
-        html += `</tr>`;
+        const topN = r.topN || 10;
+        const rankUrl = r.url || "#";
+        h += `<tr>`;
+        h += `<td style="text-align:center">${idx+1}</td>`;
+        h += `<td><a href="${rankUrl}" target="_blank" style="color:#38bdf8;text-decoration:none">${label}</a></td>`;
+        h += `<td style="text-align:center">${itemCount}件 / 上位${topN}位</td>`;
+        h += `<td><button class="btn-sm" onclick="switchTab('all-products',this)">▼ 商品を見る</button>`;
+        h += ` <button class="btn-sm btn-danger" onclick="deleteRankingConfig(${idx})" style="background:#ef4444;マージン左:4px">削除</button></td>`;
+        h += `</tr>`;
       });
-      html += '</tbody></table>';
-      wrap.innerHTML = html;
+      h += '</tbody></table>';
+      wrap.innerHTML = h;
     }
 
 function deleteRankingConfig(idx){
