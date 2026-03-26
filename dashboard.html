@@ -2066,7 +2066,7 @@ function bulkAdd(){
   updateBadges();
   buildUrlInputs();
   initRankingRows();
-
+})();
     window.triggerRankingUpdate = async function(btn) {
       const pat = localStorage.getItem('rw_pat');
       if (!pat) { alert('PATが未登録です。画面上部の設定からGitHub PATを登録してください。'); return; }
@@ -2081,7 +2081,7 @@ function bulkAdd(){
           btn.style.background = '#16a34a';
           let n = 180;
           const t = setInterval(() => {
-            if (n <= 0) { clearInterval(t); _latestRankingResults = null; renderRankingList(); btn.textContent = '▶ 今すぐ更新'; btn.style.background='#0ea5e9'; btn.disabled=false; }
+            if (n <= 0) { clearInterval(t); window._latestRankingResults = null; renderRankingList(); btn.textContent = '▶ 今すぐ更新'; btn.style.background='#0ea5e9'; btn.disabled=false; }
             else { btn.textContent = '待機中 ' + (n--) + 's'; }
           }, 1000);
           btn.textContent = '待機中 180s';
@@ -2090,7 +2090,7 @@ function bulkAdd(){
         }
       } catch(e) { btn.textContent = '通信エラー'; btn.disabled = false; }
     };
-})();
+
 </script>
 </body>
 </html>
