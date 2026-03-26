@@ -1,27 +1,4 @@
 
-    window.triggerRankingUpdate = async function(btn) {
-      const pat = localStorage.getItem('rw_pat');
-      if (!pat) { alert('PATが未登録です。画面上部の設定からGitHub PATを登録してください。'); return; }
-      btn.disabled = true; btn.textContent = '実行中...';
-      try {
-        const res = await fetch('https://api.github.com/repos/kaiyoshida0318/rivalwatch/actions/workflows/weekly.yml/dispatches', {
-          method: 'POST',
-          headers: { 'Authorization': 'token ' + pat, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ref: 'main' })
-        });
-        if (res.ok || res.status === 204) {
-          btn.style.background = '#16a34a';
-          let n = 180;
-          const t = setInterval(() => {
-            if (n <= 0) { clearInterval(t); _latestRankingResults = null; renderRankingList(); btn.textContent = '▶ 今すぐ更新'; btn.style.background='#0ea5e9'; btn.disabled=false; }
-            else { btn.textContent = '待機中 ' + (n--) + 's'; }
-          }, 1000);
-          btn.textContent = '待機中 180s';
-        } else {
-          btn.textContent = 'エラー(' + res.status + ')'; btn.disabled = false;
-        }
-      } catch(e) { btn.textContent = '通信エラー'; btn.disabled = false; }
-    };
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -2089,6 +2066,30 @@ function bulkAdd(){
   updateBadges();
   buildUrlInputs();
   initRankingRows();
+
+    window.triggerRankingUpdate = async function(btn) {
+      const pat = localStorage.getItem('rw_pat');
+      if (!pat) { alert('PATが未登録です。画面上部の設定からGitHub PATを登録してください。'); return; }
+      btn.disabled = true; btn.textContent = '実行中...';
+      try {
+        const res = await fetch('https://api.github.com/repos/kaiyoshida0318/rivalwatch/actions/workflows/weekly.yml/dispatches', {
+          method: 'POST',
+          headers: { 'Authorization': 'token ' + pat, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ref: 'main' })
+        });
+        if (res.ok || res.status === 204) {
+          btn.style.background = '#16a34a';
+          let n = 180;
+          const t = setInterval(() => {
+            if (n <= 0) { clearInterval(t); _latestRankingResults = null; renderRankingList(); btn.textContent = '▶ 今すぐ更新'; btn.style.background='#0ea5e9'; btn.disabled=false; }
+            else { btn.textContent = '待機中 ' + (n--) + 's'; }
+          }, 1000);
+          btn.textContent = '待機中 180s';
+        } else {
+          btn.textContent = 'エラー(' + res.status + ')'; btn.disabled = false;
+        }
+      } catch(e) { btn.textContent = '通信エラー'; btn.disabled = false; }
+    };
 })();
 </script>
 </body>
