@@ -219,9 +219,9 @@ tr:last-child td{border-bottom:none}
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('unchecked')" id="th_unchecked">チェック前 <span style="font-size:9px;color:var(--muted)" id="sort_unchecked"></span></th>
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('watch1')" id="th_watch1">🔥すぐやる <span style="font-size:9px;color:var(--muted)" id="sort_watch1"></span></th>
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('stop')" id="th_stop">❌やる中止 <span style="font-size:9px;color:var(--muted)" id="sort_stop"></span></th>
-  <th style="cursor:pointer;user-select:none" onclick="setShopSort('good')" id="th_good">👍Good <span style="font-size:9px;color:var(--muted)" id="sort_good"></span></th>
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('bad')" id="th_bad">👎微妙 <span style="font-size:9px;color:var(--muted)" id="sort_bad"></span></th>
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('sizeok')" id="th_sizeok">📐sizeOK微妙 <span style="font-size:9px;color:var(--muted)" id="sort_sizeok"></span></th>
+  <th style="cursor:pointer;user-select:none" onclick="setShopSort('good')" id="th_good">👍Good <span style="font-size:9px;color:var(--muted)" id="sort_good"></span></th>
   <th style="cursor:pointer;user-select:none" onclick="setShopSort('done')" id="th_done">✅やってる <span style="font-size:9px;color:var(--muted)" id="sort_done"></span></th>
   <th>商品一覧</th>
   <th></th>
@@ -1300,10 +1300,10 @@ function getTabItems(tabName){
   if(tabName==='all-products') return all;
   if(tabName==='unchecked') return all.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]&&!sizeokItems[it.item_id]&&!doneItems[it.item_id]&&!stopItems[it.item_id]);
   if(tabName==='good') return all.filter(it=>goodItems[it.item_id]||pending[it.item_id]?.newType==='good');
-  if(tabName==='bad') return all.filter(it=>badItems[it.item_id]||pending[it.item_id]?.newType==='bad');
-  if(tabName==='watch1') return all.filter(it=>watch1Items[it.item_id]||pending[it.item_id]?.newType==='watch1');
   if(tabName==='sizeok') return all.filter(it=>sizeokItems[it.item_id]||pending[it.item_id]?.newType==='sizeok');
+  if(tabName==='watch1') return all.filter(it=>watch1Items[it.item_id]||pending[it.item_id]?.newType==='watch1');
   if(tabName==='done')   return all.filter(it=>doneItems[it.item_id]||pending[it.item_id]?.newType==='done');
+  if(tabName==='bad') return all.filter(it=>badItems[it.item_id]||pending[it.item_id]?.newType==='bad');
   if(tabName==='stop')   return all.filter(it=>stopItems[it.item_id]||pending[it.item_id]?.newType==='stop');
   return all;
 }
@@ -1784,35 +1784,32 @@ async function fetchRankings(){
 }
 
 // ランキング一覧の描画
-function renderRankingList(){
-  const el = document.getElementById('rankingListWrap');
-  if(!el) return;
-  if(!savedRankings.length){
-    el.innerHTML = '<div class="empty-state">登録されたランキングはありません。「＋ ランキング追加」タブからURLを登録してください。</div>';
-    return;
-  }
-
-  el.innerHTML = savedRankings.map((cfg,ci)=>{
-    // 対応する結果を検索
-    const result = rankingResults.find(r=>r.genreId===cfg.genreId);
-    const items = result?.items || [];
-    const fetchedAt = result?.fetchedAt ? new Date(result.fetchedAt).toLocaleString('ja-JP') : '未取得（「今すぐ更新」を押してください）';
-    return `
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
-        <a href="${cfg.url}" target="_blank" style="font-size:13px;font-weight:500;color:var(--accent);text-decoration:none">${cfg.label}</a>
-        <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">上位${cfg.topN}位 | ${fetchedAt}</div>
-        <div style="margin-left:auto;display:flex;gap:6px">
-          <button onclick="deleteRankingConfig(${ci})" style="padding:3px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);font-size:11px;cursor:pointer;color:var(--muted)">削除</button>
-        </div>
-      </div>
-      ${items.length ? `
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px">
-        ${items.map((it,i)=>rankingCard(it, i+1)).join('')}
-      </div>` : `<div style="font-size:12px;color:var(--muted);padding:12px 0">商品データがありません。「今すぐ更新」を押してcollect.pyを実行してください。</div>`}
-    </div>`;
-  }).join('');
-}
+    function renderRankingList() {
+      const wrap = document.getElementById("rankingListWrap");
+      if (!wrap) return;
+      const rankingResults = window._rankingResults || [];
+      if (!rankingResults.length) {
+        wrap.innerHTML = '<p style="color:#888;padding:16px">ランキングが登録されていません。「ランキング追加」タブからURLを登録してください。</p>';
+        return;
+      }
+      let html = '<table class="shop-table"><thead><tr>';
+      html += '<th>#</th><th>ランキング名</th><th>測定数</th><th>商品一覧</th>';
+      html += '</tr></thead><tbody>';
+      rankingResults.forEach((r, idx) => {
+        const itemCount = r.items ? r.items.length : 0;
+        const label = r.label || r.url || (' ランキング' + (idx+1));
+        const fetchedAt = r.fetchedAt ? new Date(r.fetchedAt).toLocaleString("ja-JP", {month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "-";
+        html += `<tr>`;
+        html += `<td>${idx+1}</td>`;
+        html += `<td><a href="${r.url||'#'}" target="_blank" style="color:#38bdf8;text-decoration:none">${label}</a><br><small style="color:#888">${fetchedAt}</small></td>`;
+        html += `<td style="text-align:center">${itemCount}件</td>`;
+        html += `<td><button class="btn-sm" onclick="switchTab('all-products',this)">▼ 商品を見る</button>`;
+        html += `&nbsp;<button class="btn-sm btn-danger" onclick="deleteRanking(${idx})" style="background:#ef4444">削除</button></td>`;
+        html += `</tr>`;
+      });
+      html += '</tbody></table>';
+      wrap.innerHTML = html;
+    }
 
 function deleteRankingConfig(idx){
   if(!confirm('このランキング設定を削除しますか？')) return;
