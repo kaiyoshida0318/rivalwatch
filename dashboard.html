@@ -2258,6 +2258,9 @@ window._candExecute = function() {
   if (saveExtra && addCount) saveExtra(extra);
   if (saveWorthlessShops && wCount) saveWorthlessShops(worthless);
   if (renderShops && addCount) renderShops();
+  if (typeof _updateShopsBadge === "function") _updateShopsBadge();
+  if (typeof _updateCandidatesBadge === "function") _updateCandidatesBadge();
+  if (typeof updateBadges === "function") updateBadges();
   // 実行済みの候補をlocalStoragから削除
   var _remain = JSON.parse(localStorage.getItem('rw_candidate_shops')||'[]').filter(function(s){ return !_candSelections[s.sid]; });
   localStorage.setItem('rw_candidate_shops', JSON.stringify(_remain));
