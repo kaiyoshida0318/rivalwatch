@@ -2545,14 +2545,17 @@ setTimeout(function(){ _updateShopsBadge(); if(typeof _updateCandidatesBadge==='
 <script>
 function _applyFromCandBadges() {
   var extra = loadExtra ? loadExtra() : [];
-  // extraに登録された全ショップにNEWオレンジを適用
   var candSids = extra.map(function(s){ return s.shopCode||s.sid||""; }).filter(Boolean);
   if (!candSids.length) return;
   document.querySelectorAll("#tabShops tbody tr").forEach(function(row) {
-    var link = row.querySelector("a[href*=\"rakuten\"]");
-    if (!link) return;
-    var href = link.getAttribute("href") || "";
-    var sid = href.replace(/.*\/([^\/]+)\/?$/, "$1");
+    // deleteShopのonclickからsidを取得
+    var deleteBtn = Array.from(row.querySelectorAll("[onclick]")).find(function(el){
+      return (el.getAttribute("onclick")||"").includes("deleteShop");
+    });
+    if (!deleteBtn) return;
+    var m = (deleteBtn.getAttribute("onclick")||"").match(/deleteShop\(['"]([^'"]+)['"]/);
+    if (!m) return;
+    var sid = m[1];
     if (candSids.indexOf(sid) < 0) return;
     var badge = row.querySelector(".badge-new");
     if (badge) badge.className = "badge-new-cand";
