@@ -168,6 +168,7 @@ tr:last-child td{border-bottom:none}
 <div class="tabs">
   <div class="tabs-row row1">
     <div class="tab active" onclick="switchTab('shops',this)">ショップ一覧</div>
+    <button class="btn-sm" id="btnShowCandidates" onclick="showRankingCandidates()" style="margin-left:4px;background:var(--card);border:1px solid var(--accent);color:var(--accent);padding:3px 10px;font-size:0.8em">🌟 候補</button>
     <div class="tab" onclick="switchTab('rankings',this)">📊 ランキング一覧 <span id="rankingBadge"></span></div>
     <div class="tab" onclick="switchTab('add-shops',this)">＋ ショップ追加</div>
     <div class="tab" onclick="switchTab('add-ranking',this)">＋ ランキング追加</div>
@@ -208,7 +209,19 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <main>
-  <div id="tabShops">
+  <div id="rankingCandidatePanel" style="display:none;margin-bottom:16px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <strong style="color:var(--fg);font-size:0.95em">🎯 ランキングからのショップ追加候補</strong>
+    <span id="candidateCount" style="color:var(--muted);font-size:0.85em"></span>
+  </div>
+  <div id="candidateList" style="margin-bottom:12px"></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn-sm" onclick="addCandidatesToShops()" style="background:#0ea5e9;color:#fff;padding:4px 14px">➕ ショップ一覧に追加</button>
+    <button class="btn-sm" onclick="addCandidatesToWorthless()" style="background:#64748b;color:#fff;padding:4px 14px">🚫 価値なしへ</button>
+    <button class="btn-sm" onclick="document.getElementById('rankingCandidatePanel').style.display='none'" style="background:none;border:1px solid var(--border);color:var(--muted);padding:4px 12px">閉じる</button>
+  </div>
+</div>
+<div id="tabShops">
     <div class="notice">⏱ <div><strong>Week 0 — 初回スナップショット</strong>。週次収集後に商品データ・画像・販売推定が自動更新されます。</div></div>
     <div class="tbl-wrap">
       <table>
@@ -2210,6 +2223,95 @@ setTimeout(_rw_logSave, 3000);
     logBtn.style.display = productTabs.indexOf(name) >= 0 ? 'none' : '';
   };
 })();
+</script>
+
+
+<script>
+window.showRankingCandidates = async function() {
+  var panel = document.getElementById('rankingCandidatePanel');
+  var list = document.getElementById('candidateList');
+  var countEl = document.getElementById('candidateCount');
+  panel.style.display = 'block';
+  list.innerHTML = '<p style="color:var(--muted);font-size:0.85em">読み込み中...</p>';
+
+  // ranking_results.jsonを取得
+  var res, data;
+  try {
+    res = await fetch('data/ranking_results.json?v=' + Date.now());
+    data = await res.json();
+  } catch(e) { list.innerHTML = '<p style="color:#f87171">取得失敗</p>'; return; }
+
+  // ショップごとに集約
+  var rankShops = {};
+  data.rankings.forEach(function(r) {
+    r.items.forEach(function(item) {
+      if (!item.shop_sid) return;
+      if (!rankShops[item.shop_sid]) rankShops[item.shop_sid] = {
+        sid: item.shop_sid,
+        name: item.shop_name || item.shop_sid,
+        topItem: item.name || '',
+        topRank: item.rank,
+        rankingLabel: r.label || r.url
+      };
+    });
+  });
+
+  // 既登録ショップを除外
+  var existing = loadExtra ? loadExtra() : [];
+  var worthless = loadWorthlessShops ? loadWorthlessShops() : [];
+  var existingCodes = existing.map(function(s){ return s.shopCode||s.sid||''; });
+  var worthlessCodes = worthless.map(function(s){ return s.shopCode||s.sid||''; });
+  var allKnown = existingCodes.concat(worthlessCodes);
+
+  var candidates = Object.values(rankShops).filter(function(s){ return allKnown.indexOf(s.sid) < 0; });
+
+  if (!candidates.length) {
+    list.innerHTML = '<p style="color:var(--muted);font-size:0.85em">新しい候補はありません（全て登録済み）</p>';
+    countEl.textContent = '0件';
+    return;
+  }
+
+  countEl.textContent = candidates.length + '件';
+  list.innerHTML = candidates.map(function(s) {
+    return '<label style="display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer">' +
+      '<input type="checkbox" data-sid="' + s.sid + '" data-name="' + s.name.replace(/"/g,"&quot;") + '" style="margin-top:3px;flex-shrink:0">' +
+      '<span>' +
+        '<a href="https://www.rakuten.co.jp/shop/' + s.sid + '/" target="_blank" style="color:var(--accent);font-weight:bold;font-size:0.9em">' + s.name + '</a>' +
+        '<span style="color:var(--muted);font-size:0.75em;margin-left:6px">' + s.sid + '</span>' +
+        '<br><span style="color:var(--muted);font-size:0.78em">ランキング' + s.topRank + '位: ' + s.topItem.slice(0,40) + '</span>' +
+      '</span>' +
+    '</label>';
+  }).join('');
+};
+
+window.addCandidatesToShops = function() {
+  var checks = document.querySelectorAll('#candidateList input[type=checkbox]:checked');
+  if (!checks.length) { alert('ショップを選択してください。'); return; }
+  var extra = loadExtra ? loadExtra() : [];
+  checks.forEach(function(cb) {
+    var sid = cb.dataset.sid, name = cb.dataset.name;
+    if (extra.find(function(s){ return (s.shopCode||s.sid)===sid; })) return;
+    extra.push({ shopCode: sid, name: name, reviews: 0, topItems: [], isNew: true, no: '—', sid: sid, addedAt: new Date().toISOString() });
+  });
+  if (saveExtra) saveExtra(extra);
+  if (renderShops) renderShops();
+  document.getElementById('rankingCandidatePanel').style.display = 'none';
+  alert('✅ ' + checks.length + '件のショップを追加しました。');
+};
+
+window.addCandidatesToWorthless = function() {
+  var checks = document.querySelectorAll('#candidateList input[type=checkbox]:checked');
+  if (!checks.length) { alert('ショップを選択してください。'); return; }
+  var worthless = loadWorthlessShops ? loadWorthlessShops() : [];
+  checks.forEach(function(cb) {
+    var sid = cb.dataset.sid, name = cb.dataset.name;
+    if (worthless.find(function(s){ return (s.shopCode||s.sid)===sid; })) return;
+    worthless.push({ shopCode: sid, name: name, sid: sid, addedAt: new Date().toISOString() });
+  });
+  if (saveWorthlessShops) saveWorthlessShops(worthless);
+  document.getElementById('rankingCandidatePanel').style.display = 'none';
+  alert('🚫 ' + checks.length + '件を価値なしに移動しました。');
+};
 </script>
 
 </body>
