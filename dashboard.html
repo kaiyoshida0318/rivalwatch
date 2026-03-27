@@ -2201,115 +2201,115 @@ setTimeout(_rw_logSave, 3000);
 
 
 
-<script>
-// switchTab 拡張（candidates タブ対応）
-(function(){
-  var _orig = window.switchTab;
-  window.switchTab = function(name, el) {
-    if (_orig) _orig(name, el);
-    // 候補タブのコンテンツ表示制御
-    var cand = document.getElementById('tabCandidates');
-    var shops = document.getElementById('tabShops');
-    if (cand) cand.style.display = (name === 'candidates') ? '' : 'none';
-    if (shops) shops.style.display = (name === 'shops') ? '' : 'none';
-    // ログボタン非表示制御
-    var logBtn = document.getElementById('btnDailyLog');
-    if (logBtn) {
-      var hideTabs = ['all-products','unchecked','watch1','stop','good','sizeok','done','bad'];
-      logBtn.style.display = hideTabs.indexOf(name) >= 0 ? 'none' : '';
-    }
-    // candidates タブが選ばれたら候補を読み込む
-    if (name === 'candidates') window._loadCandidates();
-  };
-})();
 
+<script>
+function _candidateAddToShops(sid, name) {
+  var extra = loadExtra ? loadExtra() : [];
+  if (extra.find(function(s){ return (s.shopCode||s.sid)===sid; })) return false;
+  extra.push({ shopCode:sid, name:name, reviews:0, topItems:[], isNew:true, no:'—', sid:sid, addedAt:new Date().toISOString() });
+  if (saveExtra) saveExtra(extra);
+  return true;
+}
+function _candidateAddToWorthless(sid, name) {
+  var w = loadWorthlessShops ? loadWorthlessShops() : {};
+  if (Array.isArray(w)) w = {};
+  if (w[sid]) return false;
+  w[sid] = { name:name, date:new Date().toLocaleDateString('ja-JP') };
+  if (saveWorthlessShops) saveWorthlessShops(w);
+  return true;
+}
+window._candAddOne = function(sid, name, btn) {
+  _candidateAddToShops(sid, name);
+  if (renderShops) renderShops();
+  var row = btn.closest('tr');
+  if (row) { row.style.opacity = '0.4'; Array.from(row.querySelectorAll('button')).forEach(function(b){ b.disabled=true; }); }
+  btn.textContent = '✅ 追加済';
+};
+window._candWorthlessOne = function(sid, name, btn) {
+  _candidateAddToWorthless(sid, name);
+  var row = btn.closest('tr');
+  if (row) { row.style.opacity = '0.4'; Array.from(row.querySelectorAll('button')).forEach(function(b){ b.disabled=true; }); }
+  btn.textContent = '🚫 完了';
+};
+window._addCandidatesToShops = function() {
+  var checks = document.querySelectorAll('#candidatesInner input[type=checkbox]:checked');
+  if (!checks.length) { alert('ショップを選択してください。'); return; }
+  var count = 0;
+  checks.forEach(function(cb) {
+    if (_candidateAddToShops(cb.dataset.sid, cb.dataset.name)) count++;
+    var row = cb.closest('tr');
+    if (row) { row.style.opacity='0.4'; Array.from(row.querySelectorAll('button')).forEach(function(b){ b.disabled=true; }); }
+    cb.checked = false;
+  });
+  if (renderShops) renderShops();
+  if (count) alert('✅ ' + count + '件をショップ一覧に追加しました。');
+};
+window._addCandidatesToWorthless = function() {
+  var checks = document.querySelectorAll('#candidatesInner input[type=checkbox]:checked');
+  if (!checks.length) { alert('ショップを選択してください。'); return; }
+  var count = 0;
+  checks.forEach(function(cb) {
+    if (_candidateAddToWorthless(cb.dataset.sid, cb.dataset.name)) count++;
+    var row = cb.closest('tr');
+    if (row) { row.style.opacity='0.4'; Array.from(row.querySelectorAll('button')).forEach(function(b){ b.disabled=true; }); }
+    cb.checked = false;
+  });
+  if (count) alert('🚫 ' + count + '件を価値なしに移動しました。');
+};
 window._loadCandidates = async function() {
   var inner = document.getElementById('candidatesInner');
   if (!inner) return;
   inner.innerHTML = '<p style="color:var(--muted);padding:16px">読み込み中...</p>';
-
   var data;
   try {
     var res = await fetch('data/ranking_results.json?v=' + Date.now());
     data = await res.json();
   } catch(e) { inner.innerHTML = '<p style="color:#f87171;padding:16px">取得失敗</p>'; return; }
-
-  // ランキングのショップを集約
   var rankShops = {};
   data.rankings.forEach(function(r) {
     r.items.forEach(function(item) {
       if (!item.shop_sid) return;
       if (!rankShops[item.shop_sid]) rankShops[item.shop_sid] = {
-        sid: item.shop_sid, name: item.shop_name || item.shop_sid,
-        topItem: item.name || '', topRank: item.rank, label: r.label || r.url
+        sid:item.shop_sid, name:item.shop_name||item.shop_sid,
+        topItem:item.name||'', topRank:item.rank, label:r.label||r.url
       };
     });
   });
-
-  // 既登録を除外
   var extra = loadExtra ? loadExtra() : [];
   var existingCodes = extra.map(function(s){ return s.shopCode||s.sid||''; });
-  var worthlessRaw = loadWorthlessShops ? loadWorthlessShops() : {};
-  var worthlessCodes = Array.isArray(worthlessRaw) ? worthlessRaw.map(function(s){ return s.shopCode||s.sid||''; }) : Object.keys(worthlessRaw);
+  var wr = loadWorthlessShops ? loadWorthlessShops() : {};
+  var worthlessCodes = Array.isArray(wr) ? wr.map(function(s){ return s.shopCode||s.sid||''; }) : Object.keys(wr);
   var allKnown = existingCodes.concat(worthlessCodes);
   var candidates = Object.values(rankShops).filter(function(s){ return allKnown.indexOf(s.sid) < 0; });
-
   if (!candidates.length) {
-    inner.innerHTML = '<p style="color:var(--muted);padding:16px">新しい候補はありません（全て登録済み）</p>';
+    inner.innerHTML = '<p style="color:var(--muted);padding:16px">新しい候補はありません。</p>';
     return;
   }
-
   var rows = candidates.map(function(s) {
+    var esc = s.sid.replace(/\/g,'\\').replace(/'/g,"\'");
+    var escN = s.name.replace(/\/g,'\\').replace(/'/g,"\'").replace(/"/g,'&quot;');
     return '<tr>' +
-      '<td style="padding:8px 12px;text-align:center"><input type="checkbox" data-sid="' + s.sid + '" data-name="' + s.name.replace(/"/g,'&quot;') + '"></td>' +
-      '<td style="padding:8px 12px"><a href="https://www.rakuten.co.jp/shop/' + s.sid + '/" target="_blank" style="color:var(--accent);font-weight:bold">' + s.name + '</a><br><small style="color:var(--muted)">' + s.sid + '</small></td>' +
-      '<td style="padding:8px 12px;color:var(--muted);font-size:0.85em">' + s.label + '</td>' +
-      '<td style="padding:8px 12px;color:var(--muted);font-size:0.85em">' + s.topRank + '位: ' + s.topItem.slice(0,40) + '</td>' +
+      '<td style="padding:8px 10px;width:36px;text-align:center"><input type="checkbox" data-sid="' + s.sid + '" data-name="' + s.name.replace(/"/g,'&quot;') + '"></td>' +
+      '<td style="padding:8px 10px"><a href="https://www.rakuten.co.jp/shop/' + s.sid + '/" target="_blank" style="color:var(--accent);font-weight:bold">' + s.name + '</a><br><small style="color:var(--muted)">' + s.sid + '</small></td>' +
+      '<td style="padding:8px 10px;color:var(--muted);font-size:0.83em;white-space:nowrap">' + s.label + '</td>' +
+      '<td style="padding:8px 10px;color:var(--muted);font-size:0.83em">' + s.topRank + '位: ' + s.topItem.slice(0,35) + '</td>' +
+      '<td style="padding:8px 10px;white-space:nowrap;text-align:center">' +
+        '<button class="btn-sm" onclick="_candAddOne('' + esc + '','' + escN + '',this)" style="background:#0ea5e9;color:#fff;padding:2px 10px;margin-right:4px">追加</button>' +
+        '<button class="btn-sm" onclick="_candWorthlessOne('' + esc + '','' + escN + '',this)" style="background:#64748b;color:#fff;padding:2px 10px">価値なし</button>' +
+      '</td>' +
     '</tr>';
   }).join('');
-
   inner.innerHTML =
-    '<div style="margin-bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
-      '<span style="color:var(--muted);font-size:0.85em">' + candidates.length + '件の候補</span>' +
-      '<button class="btn-sm" onclick="window._addCandidatesToShops()" style="background:#0ea5e9;color:#fff;padding:4px 14px">➕ ショップ一覧に追加</button>' +
-      '<button class="btn-sm" onclick="window._addCandidatesToWorthless()" style="background:#64748b;color:#fff;padding:4px 14px">🚫 価値なしへ</button>' +
+    '<div style="margin-bottom:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
+      '<span style="color:var(--muted);font-size:0.84em">' + candidates.length + '件の候補 &mdash; チェックして一括実行:</span>' +
+      '<button class="btn-sm" onclick="_addCandidatesToShops()" style="background:#0ea5e9;color:#fff;padding:3px 12px">✅ 選択済みをショップ一覧に追加</button>' +
+      '<button class="btn-sm" onclick="_addCandidatesToWorthless()" style="background:#64748b;color:#fff;padding:3px 12px">🚫 選択済みを価値なしへ</button>' +
     '</div>' +
-    '<table class="shop-table"><thead><tr>' +
-      '<th style="width:40px">選択</th>' +
-      '<th>ショップ名</th>' +
-      '<th>ランキング</th>' +
-      '<th>代表商品</th>' +
-    '</tr></thead><tbody>' + rows + '</tbody></table>';
-};
-
-window._addCandidatesToShops = function() {
-  var checks = document.querySelectorAll('#candidatesInner input[type=checkbox]:checked');
-  if (!checks.length) { alert('ショップを選択してください。'); return; }
-  var extra = loadExtra ? loadExtra() : [];
-  checks.forEach(function(cb) {
-    var sid = cb.dataset.sid, name = cb.dataset.name;
-    if (extra.find(function(s){ return (s.shopCode||s.sid)===sid; })) return;
-    extra.push({ shopCode: sid, name: name, reviews: 0, topItems: [], isNew: true, no: '—', sid: sid, addedAt: new Date().toISOString() });
-  });
-  if (saveExtra) saveExtra(extra);
-  if (renderShops) renderShops();
-  alert('✅ ' + checks.length + '件のショップを追加しました。');
-  window._loadCandidates(); // 候補リストを再描画
-};
-
-window._addCandidatesToWorthless = function() {
-  var checks = document.querySelectorAll('#candidatesInner input[type=checkbox]:checked');
-  if (!checks.length) { alert('ショップを選択してください。'); return; }
-  var worthless = loadWorthlessShops ? loadWorthlessShops() : {};
-  if (Array.isArray(worthless)) worthless = {};
-  checks.forEach(function(cb) {
-    var sid = cb.dataset.sid, name = cb.dataset.name;
-    if (worthless[sid]) return;
-    worthless[sid] = { name: name, date: new Date().toLocaleDateString('ja-JP') };
-  });
-  if (saveWorthlessShops) saveWorthlessShops(worthless);
-  alert('🚫 ' + checks.length + '件を価値なしに移動しました。');
-  window._loadCandidates();
+    '<div style="overflow-x:auto"><table class="shop-table"><thead><tr>' +
+      '<th style="width:36px"></th>' +
+      '<th>ショップ名</th><th>ランキング</th><th>代表商品</th>' +
+      '<th style="text-align:center">操作</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table></div>';
 };
 </script>
 
