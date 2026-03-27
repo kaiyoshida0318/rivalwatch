@@ -183,7 +183,7 @@ tr:last-child td{border-bottom:none}
     <div class="tab" onclick="switchTab('done',this)">✅ もうやってる <span id="doneBadge"></span></div>
     <div class="tab" onclick="switchTab('bad',this)">👎 微妙商品 <span id="badBadge"></span></div>
 
-    <div class="tab" onclick="showDailyLog()" style="margin-left:auto;background:#334155;border:1px solid #475569">📋 日別ログ</div>    <div id="tabSelectUI" style="display:none;margin-left:auto;flex-shrink:0;align-items:center;gap:6px;padding:0 10px">
+    <div class="tab" id="btnDailyLog" onclick="showDailyLog()" style="margin-left:auto">📋 日別ログ</div>    <div id="tabSelectUI" style="display:none;margin-left:auto;flex-shrink:0;align-items:center;gap:6px;padding:0 10px">
     <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;white-space:nowrap;color:var(--muted)">
       <input type="checkbox" id="selectAllChk" onchange="handleSelectAll(currentTab)" style="width:21px;height:21px;accent-color:#5b8ef0;cursor:pointer">
       <span id="selectAllText">全選択</span>
@@ -2198,5 +2198,19 @@ function _rw_logSave() {
 }
 setTimeout(_rw_logSave, 3000);
 </script>
+
+<script>
+(function() {
+  var _origSwitchTab = window.switchTab;
+  window.switchTab = function(name, el) {
+    if (_origSwitchTab) _origSwitchTab(name, el);
+    var logBtn = document.getElementById('btnDailyLog');
+    if (!logBtn) return;
+    var productTabs = ['all-products','unchecked','watch1','stop','good','sizeok','done','bad'];
+    logBtn.style.display = productTabs.indexOf(name) >= 0 ? 'none' : '';
+  };
+})();
+</script>
+
 </body>
 </html>
