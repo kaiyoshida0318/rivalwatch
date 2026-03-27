@@ -163,7 +163,7 @@ tr:last-child td{border-bottom:none}
 <div class="tabs">
   <div class="tabs-row row1">
     <div class="tab active" onclick="switchTab('shops',this)">ショップ一覧</div>
-    <div class="tab" onclick="var tc=document.getElementById('tabCandidates'),ts=document.getElementById('tabShops');if(tc)tc.style.display='';if(ts)ts.style.display='none';switchTab('candidates',this);setTimeout(function(){if(typeof window._loadCandidates==='function')window._loadCandidates();},50)">🎯 ショップ追加候補</div>
+    <div class="tab" onclick="var tc=document.getElementById('tabCandidates'),ts=document.getElementById('tabShops');if(tc)tc.style.display='';if(ts)ts.style.display='none';switchTab('candidates',this);setTimeout(function(){if(typeof window._loadCandidates==='function')window._loadCandidates();},50)">🎯 ショップ追加候補<span id="candidatesBadge"></span></div>
     <div class="tab" onclick="switchTab('rankings',this)">📊 ランキング一覧 <span id="rankingBadge"></span></div>
     <div class="tab" onclick="switchTab('add-shops',this)">＋ ショップ追加</div>
     <div class="tab" onclick="switchTab('add-ranking',this)">＋ ランキング追加</div>
@@ -2192,6 +2192,8 @@ function _rw_logSave() {
     if (i===0) allCnt = n;
   });
   if (!allCnt) return;
+  // 候補ショップ数をlocalStorageから取得
+  try { var _cands = JSON.parse(localStorage.getItem('rw_candidate_shops')||'[]'); entry['candidates'] = _cands.length; } catch(_e) { entry['candidates'] = 0; }
   logs.push(entry);
   if (logs.length > 30) logs = logs.slice(-30);
   localStorage.setItem(K, JSON.stringify(logs));
@@ -2254,6 +2256,9 @@ window._candExecute = function() {
   if (saveExtra && addCount) saveExtra(extra);
   if (saveWorthlessShops && wCount) saveWorthlessShops(worthless);
   if (renderShops && addCount) renderShops();
+  // 実行済みの候補をlocalStoragから削除
+  var _remain = JSON.parse(localStorage.getItem('rw_candidate_shops')||'[]').filter(function(s){ return !_candSelections[s.sid]; });
+  localStorage.setItem('rw_candidate_shops', JSON.stringify(_remain));
   _candSelections = {};
   var msg = [];
   if (addCount) msg.push("✅ " + addCount + "件をショップ一覧に追加");
@@ -2299,6 +2304,14 @@ window._loadCandidates = async function() {
   var wk = Array.isArray(wr) ? wr.map(function(s){ return s.shopCode||s.sid||""; }) : Object.keys(wr);
   known = known.concat(wk);
   var cands = Object.values(shops).filter(function(s){ return known.indexOf(s.sid) < 0; });
+  // localStorageの永続候補とマージ（新規候補のみ追加）
+  var _storedCands = JSON.parse(localStorage.getItem('rw_candidate_shops')||'[]');
+  var _storedUrls = _storedCands.map(function(s){return s.sid;});
+  cands.forEach(function(s){
+    if (_storedUrls.indexOf(s.sid) < 0) _storedCands.push(s);
+  });
+  cands = _storedCands;
+  localStorage.setItem('rw_candidate_shops', JSON.stringify(cands));
   _candNames = {};
   cands.forEach(function(s){ _candNames[s.sid] = s.name; });
   _candSelections = {};
@@ -2429,6 +2442,30 @@ window._loadCandidates = async function() {
     }
   };
 })();
+</script>
+
+<script>
+// 候補ショップバッジを更新
+function _updateCandidatesBadge() {
+  var el = document.getElementById('candidatesBadge');
+  if (!el) return;
+  var stored = JSON.parse(localStorage.getItem('rw_candidate_shops')||'[]');
+  // 登録済み・価値なしを除外した件数
+  var extra = loadExtra ? loadExtra() : [];
+  var wr = loadWorthlessShops ? loadWorthlessShops() : {};
+  var wk = Array.isArray(wr) ? wr.map(function(s){return s.shopCode||s.sid||'';}) : Object.keys(wr);
+  var known = extra.map(function(s){return s.shopCode||s.sid||'';}).concat(wk);
+  var count = stored.filter(function(s){return known.indexOf(s.sid)<0;}).length;
+  el.textContent = count > 0 ? ' ' + count : '';
+}
+// 候補タブに切り替えたときにバッジも更新
+var _origLoadCands = window._loadCandidates;
+window._loadCandidates = async function() {
+  await _origLoadCands.apply(this, arguments);
+  _updateCandidatesBadge();
+};
+// 起動時にバッジ更新
+setTimeout(_updateCandidatesBadge, 2000);
 </script>
 </body>
 </html>
