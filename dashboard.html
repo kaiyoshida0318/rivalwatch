@@ -2128,92 +2128,83 @@ window.triggerRankingUpdate = async function(btn) {
   </div>
 </div>
 
+
 <script>
-(function() {
-  var LOG_KEY = 'rw_daily_log';
-  var MAX_DAYS = 30;
+var _LOG_KEY = 'rw_daily_log';
+var _LOG_MAX = 30;
+var _LOG_CATS = [
+  {key:'all',label:'商品全体',tab:'all-products'},
+  {key:'unchecked',label:'チェック前',tab:'unchecked'},
+  {key:'watch1',label:'🔥すぐやる',tab:'watch1'},
+  {key:'stop',label:'❌やるの中止',tab:'stop'},
+  {key:'good',label:'⭐ 70点',tab:'good'},
+  {key:'sizeok',label:'📐sizeOK',tab:'sizeok'},
+  {key:'done',label:'✅もうやってる',tab:'done'},
+  {key:'bad',label:'👎微妙',tab:'bad'}
+];
 
-  // カテゴリ定義
-  var CATS = [
-    { key: 'all',       label: '商品全体',       tab: 'all-products' },
-    { key: 'unchecked', label: 'チェック前', tab: 'unchecked' },
-    { key: 'watch1',    label: '🔥すぐやる',     tab: 'watch1' },
-    { key: 'stop',      label: '❌やるの中止', tab: 'stop' },
-    { key: 'good',      label: '⭐ 70点',      tab: 'good' },
-    { key: 'sizeok',    label: '📐sizeOK',      tab: 'sizeok' },
-    { key: 'done',      label: '✅もうやってる', tab: 'done' },
-    { key: 'bad',       label: '👎微妙',       tab: 'bad' },
-  ];
+function _logGetCounts() {
+  var counts = {};
+  _LOG_CATS.forEach(function(c) {
+    var sel = '[onclick*="switchTab('' + c.tab + ''"]';
+    var el = document.querySelector(sel);
+    if (!el) { counts[c.key] = 0; return; }
+    var m = el.textContent.match(/[d,]+/);
+    counts[c.key] = m ? parseInt(m[0].replace(/,/g,'')) : 0;
+  });
+  return counts;
+}
 
-  // タブの数値を取得
-  function getCounts() {
-    var counts = {};
-    CATS.forEach(function(c) {
-      var el = document.querySelector('[onclick*="switchTab('' + c.tab + ''"]');
-      if (el) {
-        var m = el.textContent.match(/d+/);
-        counts[c.key] = m ? parseInt(m[0]) : 0;
-      } else {
-        counts[c.key] = 0;
-      }
-    });
-    return counts;
-  }
+function _logSaveToday() {
+  var today = new Date().toISOString().slice(0,10);
+  var logs = JSON.parse(localStorage.getItem(_LOG_KEY) || '[]');
+  if (logs.length && logs[logs.length-1].date === today) return;
+  var counts = _logGetCounts();
+  // 全商品が0なら未ロード：保存しない
+  if (!counts.all) return;
+  counts.date = today;
+  logs.push(counts);
+  if (logs.length > _LOG_MAX) logs = logs.slice(-_LOG_MAX);
+  localStorage.setItem(_LOG_KEY, JSON.stringify(logs));
+}
 
-  // 今日のログを保存（まだなければ）
-  function saveTodayLog() {
-    var today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-    var logs = JSON.parse(localStorage.getItem(LOG_KEY) || '[]');
-    if (logs.length && logs[logs.length - 1].date === today) return; // 今日は既に保存済み
-    var counts = getCounts();
-    counts.date = today;
-    counts.savedAt = new Date().toISOString();
-    logs.push(counts);
-    if (logs.length > MAX_DAYS) logs = logs.slice(-MAX_DAYS); // 直近30日のみ保持
-    localStorage.setItem(LOG_KEY, JSON.stringify(logs));
-  }
-
-  // ログモーダルを表示
-  window.showDailyLog = function() {
-    var logs = JSON.parse(localStorage.getItem(LOG_KEY) || '[]');
-    var modal = document.getElementById('logModal');
-    var content = document.getElementById('logContent');
-    if (!logs.length) {
-      content.innerHTML = '<p style="color:#94a3b8">ログがまだありません。ページを開くたびに自動記録されます。</p>';
-      modal.style.display = 'flex';
-      return;
-    }
-    // テーブル生成（新しい日付が上）
-    var reversed = logs.slice().reverse();
-    var thead = '<tr><th style="text-align:left;padding:6px 10px;color:#94a3b8;font-weight:normal;font-size:0.85em">日付</th>';
-    CATS.forEach(function(c) { thead += '<th style="text-align:right;padding:6px 8px;color:#94a3b8;font-weight:normal;font-size:0.85em">' + c.label + '</th>'; });
-    thead += '</tr>';
-
-    var rows = reversed.map(function(log, i) {
-      var prev = reversed[i + 1]; // 一つ前（古い）のログ
-      var dateFmt = log.date.slice(5); // MM-DD
-      var cells = '<td style="padding:6px 10px;color:#cbd5e1;font-size:0.9em;white-space:nowrap">' + dateFmt + '</td>';
-      CATS.forEach(function(c) {
-        var val = log[c.key] || 0;
-        var diff = prev ? val - (prev[c.key] || 0) : null;
-        var diffHtml = '';
-        if (diff !== null) {
-          var color = diff > 0 ? '#4ade80' : diff < 0 ? '#f87171' : '#64748b';
-          var sign = diff > 0 ? '+' : '';
-          diffHtml = '<br><span style="font-size:0.75em;color:' + color + '">' + sign + diff + '</span>';
-        }
-        cells += '<td style="text-align:right;padding:6px 8px;color:#f1f5f9;font-size:0.9em">' + val + diffHtml + '</td>';
-      });
-      return '<tr style="border-top:1px solid #1e293b">' + cells + '</tr>';
-    }).join('');
-
-    content.innerHTML = '<table style="width:100%;border-collapse:collapse;background:#0f172a;border-radius:8px;overflow:hidden"><thead style="background:#1e293b">' + thead + '</thead><tbody>' + rows + '</tbody></table>';
+window.showDailyLog = function() {
+  var logs = JSON.parse(localStorage.getItem(_LOG_KEY) || '[]');
+  var modal = document.getElementById('logModal');
+  var content = document.getElementById('logContent');
+  if (!logs.length) {
+    content.innerHTML = '<p style="color:#94a3b8;padding:12px">まだログがありません。ページを開くたびに自動記録されます。</p>';
     modal.style.display = 'flex';
-  };
+    return;
+  }
+  var reversed = logs.slice().reverse();
+  var thStyle = 'text-align:right;padding:6px 10px;color:#94a3b8;font-weight:normal;font-size:0.82em;white-space:nowrap';
+  var thead = '<tr><th style="text-align:left;padding:6px 10px;color:#94a3b8;font-weight:normal;font-size:0.82em">日付</th>';
+  _LOG_CATS.forEach(function(c) { thead += '<th style="' + thStyle + '">' + c.label + '</th>'; });
+  thead += '</tr>';
+  var rows = reversed.map(function(log, i) {
+    var prev = reversed[i+1];
+    var dateFmt = log.date.slice(5).replace('-','/');
+    var cells = '<td style="padding:6px 10px;color:#cbd5e1;font-size:0.9em;white-space:nowrap">' + dateFmt + '</td>';
+    _LOG_CATS.forEach(function(c) {
+      var val = log[c.key] || 0;
+      var diff = prev != null ? val - (prev[c.key] || 0) : null;
+      var diffHtml = '';
+      if (diff !== null && diff !== 0) {
+        var color = diff > 0 ? '#4ade80' : '#f87171';
+        diffHtml = '<span style="font-size:0.75em;color:' + color + ';margin-left:4px">' + (diff>0?'+':'') + diff + '</span>';
+      }
+      cells += '<td style="text-align:right;padding:6px 10px;color:#f1f5f9;font-size:0.9em;white-space:nowrap">' + val + diffHtml + '</td>';
+    });
+    return '<tr style="border-top:1px solid #1e293b">' + cells + '</tr>';
+  }).join('');
+  content.innerHTML = '<table style="width:100%;border-collapse:collapse;background:#0f172a;border-radius:8px;overflow:hidden"><thead style="background:#1e293b">' + thead + '</thead><tbody>' + rows + '</tbody></table>';
+  modal.style.display = 'flex';
+};
 
-  // 初回読み込み時に今日のログを保存（DOMが揃ってから）
-  setTimeout(saveTodayLog, 3000);
-})();
+// ページ読み込み完了後3秒で今日のログを保存
+setTimeout(_logSaveToday, 3000);
 </script>
+
 </body>
 </html>
