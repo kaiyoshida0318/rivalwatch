@@ -2517,10 +2517,11 @@ window.showDailyLog = function() {
 function _updateShopsBadge() {
   var el = document.getElementById('shopsBadge');
   if (!el) return;
-  // kpiShopsの値を充てる（updateBadges実行後に正確）
-  var kpi = document.getElementById('kpiShops');
-  var count = kpi ? parseInt(kpi.textContent) || 0 : (typeof getAllShops === 'function' ? getAllShops().length : 0);
-  el.textContent = count > 0 ? ' ' + count : '';
+  // ショップ数 = SUMMARYのshops数 + extraShops数
+  var baseCount = (typeof SUMMARY !== "undefined" && SUMMARY && SUMMARY.shops) ? SUMMARY.shops.length : 0;
+  var extraCount = typeof loadExtra === "function" ? loadExtra().length : 0;
+  var count = baseCount + extraCount;
+  el.textContent = count > 0 ? " " + count : "";
 }
 // updateBadgesにフック
 (function() {
