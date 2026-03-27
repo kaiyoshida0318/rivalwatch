@@ -182,7 +182,8 @@ tr:last-child td{border-bottom:none}
     <div class="tab" onclick="switchTab('sizeok',this)">📐 sizeOK微妙 <span id="sizeokBadge"></span></div>
     <div class="tab" onclick="switchTab('done',this)">✅ もうやってる <span id="doneBadge"></span></div>
     <div class="tab" onclick="switchTab('bad',this)">👎 微妙商品 <span id="badBadge"></span></div>
-    <div id="tabSelectUI" style="display:none;margin-left:auto;flex-shrink:0;align-items:center;gap:6px;padding:0 10px">
+
+    <div class="tab" onclick="showDailyLog()" style="margin-left:auto;background:#334155;border:1px solid #475569">📋 日別ログ</div>    <div id="tabSelectUI" style="display:none;margin-left:auto;flex-shrink:0;align-items:center;gap:6px;padding:0 10px">
     <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;white-space:nowrap;color:var(--muted)">
       <input type="checkbox" id="selectAllChk" onchange="handleSelectAll(currentTab)" style="width:21px;height:21px;accent-color:#5b8ef0;cursor:pointer">
       <span id="selectAllText">全選択</span>
@@ -2115,6 +2116,104 @@ window.triggerRankingUpdate = async function(btn) {
     }
   }).catch(function(e) { btn.textContent = '通信エラー'; btn.disabled = false; });
 };
+</script>
+
+<div id="logModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:24px;width:min(700px,95vw);max-height:85vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h2 style="color:#f8fafc;margin:0;font-size:1.1em">📋 日別ログ</h2>
+      <button onclick="document.getElementById('logModal').style.display='none'" style="background:none;border:none;color:#94a3b8;font-size:1.4em;cursor:pointer">✕</button>
+    </div>
+    <div id="logContent"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var LOG_KEY = 'rw_daily_log';
+  var MAX_DAYS = 30;
+
+  // カテゴリ定義
+  var CATS = [
+    { key: 'all',       label: '商品全体',       tab: 'all-products' },
+    { key: 'unchecked', label: 'チェック前', tab: 'unchecked' },
+    { key: 'watch1',    label: '🔥すぐやる',     tab: 'watch1' },
+    { key: 'stop',      label: '❌やるの中止', tab: 'stop' },
+    { key: 'good',      label: '⭐ 70点',      tab: 'good' },
+    { key: 'sizeok',    label: '📐sizeOK',      tab: 'sizeok' },
+    { key: 'done',      label: '✅もうやってる', tab: 'done' },
+    { key: 'bad',       label: '👎微妙',       tab: 'bad' },
+  ];
+
+  // タブの数値を取得
+  function getCounts() {
+    var counts = {};
+    CATS.forEach(function(c) {
+      var el = document.querySelector('[onclick*="switchTab('' + c.tab + ''"]');
+      if (el) {
+        var m = el.textContent.match(/d+/);
+        counts[c.key] = m ? parseInt(m[0]) : 0;
+      } else {
+        counts[c.key] = 0;
+      }
+    });
+    return counts;
+  }
+
+  // 今日のログを保存（まだなければ）
+  function saveTodayLog() {
+    var today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    var logs = JSON.parse(localStorage.getItem(LOG_KEY) || '[]');
+    if (logs.length && logs[logs.length - 1].date === today) return; // 今日は既に保存済み
+    var counts = getCounts();
+    counts.date = today;
+    counts.savedAt = new Date().toISOString();
+    logs.push(counts);
+    if (logs.length > MAX_DAYS) logs = logs.slice(-MAX_DAYS); // 直近30日のみ保持
+    localStorage.setItem(LOG_KEY, JSON.stringify(logs));
+  }
+
+  // ログモーダルを表示
+  window.showDailyLog = function() {
+    var logs = JSON.parse(localStorage.getItem(LOG_KEY) || '[]');
+    var modal = document.getElementById('logModal');
+    var content = document.getElementById('logContent');
+    if (!logs.length) {
+      content.innerHTML = '<p style="color:#94a3b8">ログがまだありません。ページを開くたびに自動記録されます。</p>';
+      modal.style.display = 'flex';
+      return;
+    }
+    // テーブル生成（新しい日付が上）
+    var reversed = logs.slice().reverse();
+    var thead = '<tr><th style="text-align:left;padding:6px 10px;color:#94a3b8;font-weight:normal;font-size:0.85em">日付</th>';
+    CATS.forEach(function(c) { thead += '<th style="text-align:right;padding:6px 8px;color:#94a3b8;font-weight:normal;font-size:0.85em">' + c.label + '</th>'; });
+    thead += '</tr>';
+
+    var rows = reversed.map(function(log, i) {
+      var prev = reversed[i + 1]; // 一つ前（古い）のログ
+      var dateFmt = log.date.slice(5); // MM-DD
+      var cells = '<td style="padding:6px 10px;color:#cbd5e1;font-size:0.9em;white-space:nowrap">' + dateFmt + '</td>';
+      CATS.forEach(function(c) {
+        var val = log[c.key] || 0;
+        var diff = prev ? val - (prev[c.key] || 0) : null;
+        var diffHtml = '';
+        if (diff !== null) {
+          var color = diff > 0 ? '#4ade80' : diff < 0 ? '#f87171' : '#64748b';
+          var sign = diff > 0 ? '+' : '';
+          diffHtml = '<br><span style="font-size:0.75em;color:' + color + '">' + sign + diff + '</span>';
+        }
+        cells += '<td style="text-align:right;padding:6px 8px;color:#f1f5f9;font-size:0.9em">' + val + diffHtml + '</td>';
+      });
+      return '<tr style="border-top:1px solid #1e293b">' + cells + '</tr>';
+    }).join('');
+
+    content.innerHTML = '<table style="width:100%;border-collapse:collapse;background:#0f172a;border-radius:8px;overflow:hidden"><thead style="background:#1e293b">' + thead + '</thead><tbody>' + rows + '</tbody></table>';
+    modal.style.display = 'flex';
+  };
+
+  // 初回読み込み時に今日のログを保存（DOMが揃ってから）
+  setTimeout(saveTodayLog, 3000);
+})();
 </script>
 </body>
 </html>
