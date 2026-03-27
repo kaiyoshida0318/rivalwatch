@@ -2129,82 +2129,65 @@ window.triggerRankingUpdate = async function(btn) {
 </div>
 
 
+
 <script>
-var _LOG_KEY = 'rw_daily_log';
-var _LOG_MAX = 30;
-var _LOG_CATS = [
-  {key:'all',label:'商品全体',tab:'all-products'},
-  {key:'unchecked',label:'チェック前',tab:'unchecked'},
-  {key:'watch1',label:'🔥すぐやる',tab:'watch1'},
-  {key:'stop',label:'❌やるの中止',tab:'stop'},
-  {key:'good',label:'⭐ 70点',tab:'good'},
-  {key:'sizeok',label:'📐sizeOK',tab:'sizeok'},
-  {key:'done',label:'✅もうやってる',tab:'done'},
-  {key:'bad',label:'👎微妙',tab:'bad'}
-];
-
-function _logGetCounts() {
-  var counts = {};
-  _LOG_CATS.forEach(function(c) {
-    var sel = '[onclick*="switchTab('' + c.tab + ''"]';
-    var el = document.querySelector(sel);
-    if (!el) { counts[c.key] = 0; return; }
-    var m = el.textContent.match(/[d,]+/);
-    counts[c.key] = m ? parseInt(m[0].replace(/,/g,'')) : 0;
-  });
-  return counts;
-}
-
-function _logSaveToday() {
-  var today = new Date().toISOString().slice(0,10);
-  var logs = JSON.parse(localStorage.getItem(_LOG_KEY) || '[]');
-  if (logs.length && logs[logs.length-1].date === today) return;
-  var counts = _logGetCounts();
-  // 全商品が0なら未ロード：保存しない
-  if (!counts.all) return;
-  counts.date = today;
-  logs.push(counts);
-  if (logs.length > _LOG_MAX) logs = logs.slice(-_LOG_MAX);
-  localStorage.setItem(_LOG_KEY, JSON.stringify(logs));
-}
-
 window.showDailyLog = function() {
-  var logs = JSON.parse(localStorage.getItem(_LOG_KEY) || '[]');
-  var modal = document.getElementById('logModal');
-  var content = document.getElementById('logContent');
+  var K = "rw_daily_log";
+  var logs = JSON.parse(localStorage.getItem(K) || "[]");
+  var modal = document.getElementById("logModal");
+  var content = document.getElementById("logContent");
+  if (!modal || !content) return;
   if (!logs.length) {
-    content.innerHTML = '<p style="color:#94a3b8;padding:12px">まだログがありません。ページを開くたびに自動記録されます。</p>';
-    modal.style.display = 'flex';
-    return;
+    content.innerHTML = "<p style='color:#94a3b8;padding:12px'>まだログがありません。</p>";
+    modal.style.display = "flex"; return;
   }
-  var reversed = logs.slice().reverse();
-  var thStyle = 'text-align:right;padding:6px 10px;color:#94a3b8;font-weight:normal;font-size:0.82em;white-space:nowrap';
-  var thead = '<tr><th style="text-align:left;padding:6px 10px;color:#94a3b8;font-weight:normal;font-size:0.82em">日付</th>';
-  _LOG_CATS.forEach(function(c) { thead += '<th style="' + thStyle + '">' + c.label + '</th>'; });
-  thead += '</tr>';
-  var rows = reversed.map(function(log, i) {
-    var prev = reversed[i+1];
-    var dateFmt = log.date.slice(5).replace('-','/');
-    var cells = '<td style="padding:6px 10px;color:#cbd5e1;font-size:0.9em;white-space:nowrap">' + dateFmt + '</td>';
-    _LOG_CATS.forEach(function(c) {
-      var val = log[c.key] || 0;
-      var diff = prev != null ? val - (prev[c.key] || 0) : null;
-      var diffHtml = '';
-      if (diff !== null && diff !== 0) {
-        var color = diff > 0 ? '#4ade80' : '#f87171';
-        diffHtml = '<span style="font-size:0.75em;color:' + color + ';margin-left:4px">' + (diff>0?'+':'') + diff + '</span>';
-      }
-      cells += '<td style="text-align:right;padding:6px 10px;color:#f1f5f9;font-size:0.9em;white-space:nowrap">' + val + diffHtml + '</td>';
+  var CATS = [
+    ["all","商品全体"],["unchecked","チェック前"],
+    ["watch1","🔥すぐやる"],["stop","❌中止"],
+    ["good","⭐ 70点"],["sizeok","sizeOK"],
+    ["done","✅やってる"],["bad","👎微妙"]
+  ];
+  var rev = logs.slice().reverse();
+  var th = "<tr><th style='text-align:left;padding:6px 10px;color:#94a3b8;font-size:0.82em'>日付</th>";
+  CATS.forEach(function(c){th+="<th style='text-align:right;padding:6px 8px;color:#94a3b8;font-size:0.82em;white-space:nowrap'>"+c[1]+"</th>";});
+  th += "</tr>";
+  var tbody = rev.map(function(log,i){
+    var prev = rev[i+1];
+    var r = "<td style='padding:6px 10px;color:#cbd5e1;font-size:0.88em'>"+log.date.slice(5).replace("-","/")+"</td>";
+    CATS.forEach(function(c){
+      var v = log[c[0]]||0;
+      var d = prev!=null ? v-(prev[c[0]]||0) : null;
+      var dh = (d!==null&&d!==0) ? "<span style='font-size:0.75em;color:"+(d>0?"#4ade80":"#f87171")+";margin-left:3px'>"+(d>0?"+":"")+d+"</span>" : "";
+      r += "<td style='text-align:right;padding:6px 8px;color:#f1f5f9;font-size:0.88em'>"+v+dh+"</td>";
     });
-    return '<tr style="border-top:1px solid #1e293b">' + cells + '</tr>';
-  }).join('');
-  content.innerHTML = '<table style="width:100%;border-collapse:collapse;background:#0f172a;border-radius:8px;overflow:hidden"><thead style="background:#1e293b">' + thead + '</thead><tbody>' + rows + '</tbody></table>';
-  modal.style.display = 'flex';
+    return "<tr style='border-top:1px solid #1e293b'>"+r+"</tr>";
+  }).join("");
+  content.innerHTML = "<div style='overflow-x:auto'><table style='width:100%;border-collapse:collapse;background:#0f172a;border-radius:8px;overflow:hidden'><thead style='background:#1e293b'>"+th+"</thead><tbody>"+tbody+"</tbody></table></div>";
+  modal.style.display = "flex";
 };
 
-// ページ読み込み完了後3秒で今日のログを保存
-setTimeout(_logSaveToday, 3000);
+function _rw_logSave() {
+  var K = "rw_daily_log";
+  var today = new Date().toISOString().slice(0,10);
+  var logs = JSON.parse(localStorage.getItem(K)||"[]");
+  if (logs.length && logs[logs.length-1].date === today) return;
+  var tabs = ["all-products","unchecked","watch1","stop","good","sizeok","done","bad"];
+  var keys = ["all","unchecked","watch1","stop","good","sizeok","done","bad"];
+  var entry = {date:today};
+  var allCnt = 0;
+  tabs.forEach(function(tab,i){
+    var el = document.querySelector("[onclick*=\"switchTab('"+tab+"'\"]");
+    var m = el ? el.textContent.match(/[\d]+/) : null;
+    var n = m ? parseInt(m[0]) : 0;
+    entry[keys[i]] = n;
+    if (i===0) allCnt = n;
+  });
+  if (!allCnt) return;
+  logs.push(entry);
+  if (logs.length > 30) logs = logs.slice(-30);
+  localStorage.setItem(K, JSON.stringify(logs));
+}
+setTimeout(_rw_logSave, 3000);
 </script>
-
 </body>
 </html>
