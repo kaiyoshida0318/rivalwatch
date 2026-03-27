@@ -1781,7 +1781,8 @@ async function fetchRankings(){
   if(addedCount > 0){
     const rankTab = document.querySelector("[onclick*=\"switchTab('rankings'\"]");
     if(rankTab) switchTab('rankings', rankTab);
-    else switchTab('rankings'); await renderRankingList();
+    switchTab('rankings');
+    else await renderRankingList();
   }
 }
 
