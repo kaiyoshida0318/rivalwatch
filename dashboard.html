@@ -54,7 +54,7 @@ tr:last-child td{border-bottom:none}
 .expand-btn:hover,.expand-btn.open{background:var(--accent);color:#fff;border-color:var(--accent)}
 .del-btn{padding:3px 8px;border:1px solid var(--border);border-radius:5px;background:var(--bg);font-size:10px;cursor:pointer;font-family:var(--mono);color:var(--muted);transition:all .15s}
 .del-btn:hover{background:var(--down);color:#fff;border-color:var(--down)}
-.badge-new-cand{background:#fff3e0;color:#e65100;border-radius:4px;font-size:10px;padding:2px 6px;font-family:var(--mono);margin-left:4px}
+.badge-new-cand{background:#fff3e0;color:#e65100;border-radius:4px;font-size:10px;padding:2px 6px;font-family:var(--mono);margin-left:4px}.new-shop-row-cand{background:rgba(255,152,0,0.06)}
 .badge-new{background:#e1f5ee;color:#0f6e56;border-radius:4px;font-size:10px;padding:2px 6px;font-family:var(--mono);margin-left:4px}
 
 /* Product panel */
@@ -2545,7 +2545,8 @@ setTimeout(function(){ _updateShopsBadge(); if(typeof _updateCandidatesBadge==='
 <script>
 function _applyFromCandBadges() {
   var extra = loadExtra ? loadExtra() : [];
-  var candSids = extra.map(function(s){ return s.shopCode||s.sid||""; }).filter(Boolean);
+  // fromCand:trueのショップのみオレンジに変更
+  var candSids = extra.filter(function(s){ return s.fromCand; }).map(function(s){ return s.shopCode||s.sid||""; }).filter(Boolean);
   if (!candSids.length) return;
   document.querySelectorAll("#tabShops tbody tr").forEach(function(row) {
     // deleteShopのonclickからsidを取得
@@ -2559,6 +2560,7 @@ function _applyFromCandBadges() {
     if (candSids.indexOf(sid) < 0) return;
     var badge = row.querySelector(".badge-new");
     if (badge) badge.className = "badge-new-cand";
+    row.classList.add("new-shop-row-cand");
   });
 }
 var _origRS2 = window.renderShops;
