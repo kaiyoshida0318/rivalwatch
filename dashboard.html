@@ -1773,7 +1773,6 @@ async function fetchRankings(){
     }
   }
   saveRankings(savedRankings);
-        _latestRankingResults = null; // キャッシュクリアで最新データを取得
   updateBadges();
   if(msg) msg.textContent = `${addedCount}件のランキングを追加しました`;
   rankingRows = [''];
