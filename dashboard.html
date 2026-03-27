@@ -2411,5 +2411,24 @@ window._loadCandidates = async function() {
   };
 })();
 </script>
+
+<script>
+(function() {
+  var _origLoad = window.loadFromGitHub;
+  if (!_origLoad) return;
+  window.loadFromGitHub = async function() {
+    var localBefore = loadRankingConfigs ? loadRankingConfigs() : [];
+    await _origLoad.apply(this, arguments);
+    if (localBefore.length > savedRankings.length) {
+      localBefore.forEach(function(r) {
+        if (!savedRankings.find(function(s){ return s.url === r.url; })) {
+          savedRankings.push(r);
+        }
+      });
+      if (saveRankingConfigs) saveRankingConfigs(savedRankings);
+    }
+  };
+})();
+</script>
 </body>
 </html>
