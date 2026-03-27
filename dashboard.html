@@ -162,7 +162,7 @@ tr:last-child td{border-bottom:none}
 
 <div class="tabs">
   <div class="tabs-row row1">
-    <div class="tab active" onclick="switchTab('shops',this)">ショップ一覧</div>
+    <div class="tab active" onclick="switchTab('shops',this)">ショップ一覧<span id="shopsBadge"></span></div>
     <div class="tab" onclick="var tc=document.getElementById('tabCandidates'),ts=document.getElementById('tabShops');if(tc)tc.style.display='';if(ts)ts.style.display='none';switchTab('candidates',this);setTimeout(function(){if(typeof window._loadCandidates==='function')window._loadCandidates();},50)">🎯 ショップ追加候補<span id="candidatesBadge"></span></div>
     <div class="tab" onclick="switchTab('rankings',this)">📊 ランキング一覧 <span id="rankingBadge"></span></div>
     <div class="tab" onclick="switchTab('add-shops',this)">＋ ショップ追加</div>
@@ -1603,7 +1603,7 @@ function updateBadges(){
   const worthlessCount=Object.keys(worthlessShops).length;
   (document.getElementById('kpiGood')||{}).textContent=goodCount;
   (document.getElementById('kpiItems')||{}).textContent=all.length.toLocaleString();
-  (document.getElementById('kpiShops')||{}).textContent=getAllShops().length;
+  (document.getElementById('kpiShops')||{}).textContent; var _sb=document.getElementById('shopsBadge'); if(_sb) _sb.textContent=' '+(getAllShops?getAllShops().length:0)=getAllShops().length;
   document.getElementById('allBadge').innerHTML=`<span style="background:var(--muted);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${all.length}</span>`;
   document.getElementById('uncheckedBadge').innerHTML=`<span style="background:var(--warn);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${unchecked}</span>`;
   document.getElementById('goodBadge').innerHTML=goodCount>0?`<span style="background:var(--up);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${goodCount}</span>`:'';
@@ -2245,6 +2245,8 @@ window._candExecute = function() {
     var sid = e[0], type = e[1];
     var name = _candNames[sid] || sid;
     if (type === "shop") {
+      // ranking URLパターンのショップコードは登録しない
+      if (['weekly','monthly','daily'].indexOf(sid) >= 0) return;
       if (!extra.find(function(s){ return (s.shopCode||s.sid)===sid; })) {
         extra.push({shopCode:sid,name:name,reviews:0,topItems:[],isNew:true,no:"-",sid:sid,addedAt:new Date().toISOString()});
         addCount++;
