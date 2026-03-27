@@ -713,7 +713,7 @@ async function loadFromGitHub() {
     if (state.sizeok)       { sizeokItems  = state.sizeok;       localStorage.setItem('rw_sizeok', JSON.stringify(sizeokItems)); }
     if (state.done)         { doneItems    = state.done;         localStorage.setItem('rw_done',   JSON.stringify(doneItems)); }
     if (state.stop)         { stopItems    = state.stop;         localStorage.setItem('rw_stop',   JSON.stringify(stopItems)); }
-    if (state.rankings && state.rankings.length > 0) { savedRankings = state.rankings; localStorage.setItem('rw_rankings', JSON.stringify(savedRankings)); initRankingPool(); }
+    if (state.rankings && state.rankings.length > 0) { savedRankings = (function(gh,local){ var merged=gh.slice(); local.forEach(function(r){ if(!merged.find(function(m){ return m.url===r.url; })) merged.push(r); }); return merged; })(state.rankings, savedRankings); localStorage.setItem('rw_rankings', JSON.stringify(savedRankings)); initRankingPool(); }
     if (state.extra_shops)  { extraShops   = state.extra_shops;  localStorage.setItem('rw_extra_shops', JSON.stringify(extraShops)); }
     if (state.hidden_shops) { hiddenShops  = state.hidden_shops; saveHiddenShops(hiddenShops); }
     if (state.item_counts)  { itemCounts   = state.item_counts;  saveItemCounts(itemCounts); }
