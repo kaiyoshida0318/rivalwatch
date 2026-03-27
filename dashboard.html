@@ -1758,7 +1758,7 @@ async function fetchRankings(){
     const genreId = parseRankingUrl(url.trim());
     if(!genreId){ continue; }
     // 既存チェック
-    if(savedRankings.find(r=>r.genreId===genreId)){
+    if(savedRankings.find(r=>r.url===url.trim())){
       continue; // 既に登録済み
     }
     // ジャンル名を取得
