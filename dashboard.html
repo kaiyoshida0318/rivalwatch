@@ -2212,7 +2212,7 @@ window._candSelect = function(btn) {
   var type = btn.dataset.type;
   var row = document.getElementById("cand-row-" + sid);
   var addBtn = row ? row.querySelector("[data-type=shop]") : null;
-  var wBtn = row ? row.querySelector("[data-type=worthless]") : null;
+  var wBtn   = row ? row.querySelector("[data-type=worthless]") : null;
   if (_candSelections[sid] === type) {
     delete _candSelections[sid];
     if (addBtn) { addBtn.style.background=""; addBtn.style.color=""; }
@@ -2271,13 +2271,26 @@ window._loadCandidates = async function() {
     var r = await fetch("data/ranking_results.json?v=" + Date.now());
     data = await r.json();
   } catch(e) { inner.innerHTML = "<p style='color:#f87171;padding:16px'>取得失敗</p>"; return; }
+
+  // ショップごとに集約（代表商品URL・パンくずも保存）
   var shops = {};
   data.rankings.forEach(function(r) {
+    var crumb = r.breadcrumb || r.label || r.url;
     r.items.forEach(function(item) {
-      if (!item.shop_sid || shops[item.shop_sid]) return;
-      shops[item.shop_sid] = {sid:item.shop_sid,name:item.shop_name||item.shop_sid,topItem:item.name||"",topRank:item.rank,label:r.label||r.url};
+      if (!item.shop_sid) return;
+      if (!shops[item.shop_sid]) {
+        shops[item.shop_sid] = {
+          sid: item.shop_sid,
+          name: item.shop_name || item.shop_sid,
+          topItem: item.name || "",
+          topItemUrl: item.url || "",
+          topRank: item.rank,
+          breadcrumb: crumb
+        };
+      }
     });
   });
+
   var extra = loadExtra ? loadExtra() : [];
   var known = extra.map(function(s){ return s.shopCode||s.sid||""; });
   var wr = loadWorthlessShops ? loadWorthlessShops() : {};
@@ -2287,20 +2300,40 @@ window._loadCandidates = async function() {
   _candNames = {};
   cands.forEach(function(s){ _candNames[s.sid] = s.name; });
   _candSelections = {};
+
   if (!cands.length) {
     inner.innerHTML = "<p style='color:var(--muted);padding:16px'>新しい候補はありません。</p>";
     return;
   }
+
   var rows = cands.map(function(s) {
+    var shopUrl = "https://www.rakuten.co.jp/shop/" + s.sid + "/";
+    // パンくずの最後の数個だけ表示（全体は title 属性で）
+    var crumbParts = s.breadcrumb ? s.breadcrumb.split(">").map(function(p){return p.trim();}).filter(Boolean) : [];
+    var crumbShort = crumbParts.length >= 2 ? crumbParts.slice(-2).join(" > ") : s.breadcrumb;
+    var crumbFull  = s.breadcrumb || "";
     return '<tr id="cand-row-' + s.sid + '">' +
-      '<td style="padding:8px 10px"><a href="https://www.rakuten.co.jp/shop/' + s.sid + '/" target="_blank" style="color:var(--accent);font-weight:bold">' + s.name + '</a><br><small style="color:var(--muted)">' + s.sid + '</small></td>' +
-      '<td style="padding:8px 10px;color:var(--muted);font-size:0.83em;white-space:nowrap">' + s.label + '</td>' +
-      '<td style="padding:8px 10px;color:var(--muted);font-size:0.83em">' + s.topRank + "位: " + s.topItem.slice(0,35) + '</td>' +
+      // ショップ名（ショップTOPリンク）
+      '<td style="padding:8px 10px">' +
+        '<a href="' + shopUrl + '" target="_blank" style="color:var(--accent);font-weight:bold">' + s.name + '</a>' +
+        '<br><small style="color:var(--muted)">' + s.sid + '</small>' +
+      '</td>' +
+      // パンくず（短縮表示、ホバーで全体表示）
+      '<td style="padding:8px 10px;color:var(--muted);font-size:0.83em" title="' + crumbFull + '">' + crumbShort + '</td>' +
+      // 代表商品（商品ページリンク）
+      '<td style="padding:8px 10px;font-size:0.83em">' +
+        (s.topItemUrl
+          ? '<a href="' + s.topItemUrl + '" target="_blank" style="color:var(--muted)">' + s.topRank + "位: " + s.topItem.slice(0,35) + '</a>'
+          : '<span style="color:var(--muted)">' + s.topRank + "位: " + s.topItem.slice(0,35) + '</span>'
+        ) +
+      '</td>' +
+      // 操作ボタン
       '<td style="padding:8px 10px;white-space:nowrap;text-align:center">' +
         '<button class="btn-sm" data-sid="' + s.sid + '" data-type="shop" onclick="_candSelect(this)" style="padding:2px 10px;margin-right:4px">追加</button>' +
         '<button class="btn-sm" data-sid="' + s.sid + '" data-type="worthless" onclick="_candSelect(this)" style="padding:2px 10px">価値なし</button>' +
       '</td></tr>';
   }).join("");
+
   inner.innerHTML =
     '<div style="margin-bottom:12px;display:flex;gap:8px;align-items:center">' +
       '<span style="color:var(--muted);font-size:0.84em">' + cands.length + "件の候補 &mdash; 選んで更新:" + '</span>' +
