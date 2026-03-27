@@ -1601,9 +1601,9 @@ function updateBadges(){
   const stopCount=Object.keys(stopItems).length;
   const unchecked=all.filter(it=>!goodItems[it.item_id]&&!badItems[it.item_id]&&!watch1Items[it.item_id]&&!sizeokItems[it.item_id]&&!doneItems[it.item_id]&&!stopItems[it.item_id]).length;
   const worthlessCount=Object.keys(worthlessShops).length;
-  document.getElementById('kpiGood').textContent=goodCount;
-  document.getElementById('kpiItems').textContent=all.length.toLocaleString();
-  document.getElementById('kpiShops').textContent=getAllShops().length;
+  (document.getElementById('kpiGood')||{}).textContent=goodCount;
+  (document.getElementById('kpiItems')||{}).textContent=all.length.toLocaleString();
+  (document.getElementById('kpiShops')||{}).textContent=getAllShops().length;
   document.getElementById('allBadge').innerHTML=`<span style="background:var(--muted);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${all.length}</span>`;
   document.getElementById('uncheckedBadge').innerHTML=`<span style="background:var(--warn);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${unchecked}</span>`;
   document.getElementById('goodBadge').innerHTML=goodCount>0?`<span style="background:var(--up);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${goodCount}</span>`:'';
