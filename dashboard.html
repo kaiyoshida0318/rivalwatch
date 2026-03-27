@@ -2118,17 +2118,19 @@ window.triggerRankingUpdate = async function(btn) {
 };
 </script>
 
-<div id="logModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center">
-  <div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:24px;width:min(700px,95vw);max-height:85vh;overflow-y:auto">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <h2 style="color:#f8fafc;margin:0;font-size:1.1em">📋 日別ログ</h2>
-      <button onclick="document.getElementById('logModal').style.display='none'" style="background:none;border:none;color:#94a3b8;font-size:1.4em;cursor:pointer">✕</button>
+
+
+
+
+<div id="logModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:9999;align-items:center;justify-content:justify-content">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;width:min(780px,96vw);max-height:82vh;overflow-y:auto;margin:auto;margin-top:5vh;box-shadow:0 8px 32px rgba(0,0,0,0.12)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <h2 style="color:var(--text);margin:0;font-size:1em;font-weight:700">📋 日別ログ</h2>
+      <button onclick="document.getElementById('logModal').style.display='none'" style="background:none;border:none;color:var(--muted);font-size:1.3em;cursor:pointer;line-height:1">&times;</button>
     </div>
     <div id="logContent"></div>
   </div>
 </div>
-
-
 
 <script>
 window.showDailyLog = function() {
@@ -2138,31 +2140,38 @@ window.showDailyLog = function() {
   var content = document.getElementById("logContent");
   if (!modal || !content) return;
   if (!logs.length) {
-    content.innerHTML = "<p style='color:#94a3b8;padding:12px'>まだログがありません。</p>";
+    content.innerHTML = "<p style='color:var(--muted);padding:8px 0;font-size:0.9em'>まだログがありません。ページを開くたびに自動記録されます。</p>";
     modal.style.display = "flex"; return;
   }
   var CATS = [
     ["all","商品全体"],["unchecked","チェック前"],
     ["watch1","🔥すぐやる"],["stop","❌中止"],
-    ["good","⭐ 70点"],["sizeok","sizeOK"],
+    ["good","⭐ 70点"],["sizeok","size微妙"],
     ["done","✅やってる"],["bad","👎微妙"]
   ];
   var rev = logs.slice().reverse();
-  var th = "<tr><th style='text-align:left;padding:6px 10px;color:#94a3b8;font-size:0.82em'>日付</th>";
-  CATS.forEach(function(c){th+="<th style='text-align:right;padding:6px 8px;color:#94a3b8;font-size:0.82em;white-space:nowrap'>"+c[1]+"</th>";});
+  var TH = "padding:7px 12px;font-size:0.8em;font-weight:600;color:var(--muted);white-space:nowrap;border-bottom:2px solid var(--border)";
+  var th = "<tr><th style='" + TH + ";text-align:left'>日付</th>";
+  CATS.forEach(function(c) { th += "<th style='" + TH + ";text-align:right'>" + c[1] + "</th>"; });
   th += "</tr>";
-  var tbody = rev.map(function(log,i){
+  var tbody = rev.map(function(log, i) {
     var prev = rev[i+1];
-    var r = "<td style='padding:6px 10px;color:#cbd5e1;font-size:0.88em'>"+log.date.slice(5).replace("-","/")+"</td>";
-    CATS.forEach(function(c){
-      var v = log[c[0]]||0;
-      var d = prev!=null ? v-(prev[c[0]]||0) : null;
-      var dh = (d!==null&&d!==0) ? "<span style='font-size:0.75em;color:"+(d>0?"#4ade80":"#f87171")+";margin-left:3px'>"+(d>0?"+":"")+d+"</span>" : "";
-      r += "<td style='text-align:right;padding:6px 8px;color:#f1f5f9;font-size:0.88em'>"+v+dh+"</td>";
-    });
-    return "<tr style='border-top:1px solid #1e293b'>"+r+"</tr>";
+    var isToday = (i === 0);
+    var rowBg = isToday ? "background:var(--bg)" : "";
+    var dateTd = "<td style='padding:7px 12px;font-size:0.85em;color:var(--text);white-space:nowrap;border-top:1px solid var(--border);font-weight:" + (isToday?"700":"400") + "'>" + log.date.slice(5).replace("-","/") + (isToday ? " <span style='font-size:0.75em;color:var(--warn)'>今日</span>" : "") + "</td>";
+    var cells = CATS.map(function(c) {
+      var v = log[c[0]] || 0;
+      var d = prev != null ? v - (prev[c[0]] || 0) : null;
+      var dh = "";
+      if (d !== null && d !== 0) {
+        var col = d > 0 ? "#16a34a" : "#dc2626";
+        dh = "<span style='font-size:0.72em;color:" + col + ";margin-left:3px;font-weight:500'>" + (d > 0 ? "+" : "") + d + "</span>";
+      }
+      return "<td style='text-align:right;padding:7px 12px;font-size:0.88em;color:var(--text);border-top:1px solid var(--border)'>" + v + dh + "</td>";
+    }).join("");
+    return "<tr style='" + rowBg + "'>" + dateTd + cells + "</tr>";
   }).join("");
-  content.innerHTML = "<div style='overflow-x:auto'><table style='width:100%;border-collapse:collapse;background:#0f172a;border-radius:8px;overflow:hidden'><thead style='background:#1e293b'>"+th+"</thead><tbody>"+tbody+"</tbody></table></div>";
+  content.innerHTML = "<div style='overflow-x:auto'><table style='width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:8px;overflow:hidden'><thead style='background:var(--bg)'>" + th + "</thead><tbody>" + tbody + "</tbody></table></div>";
   modal.style.display = "flex";
 };
 
@@ -2177,7 +2186,7 @@ function _rw_logSave() {
   var allCnt = 0;
   tabs.forEach(function(tab,i){
     var el = document.querySelector("[onclick*=\"switchTab('"+tab+"'\"]");
-    var m = el ? el.textContent.match(/[\d]+/) : null;
+    var m = el ? el.textContent.match(/[0-9]+/) : null;
     var n = m ? parseInt(m[0]) : 0;
     entry[keys[i]] = n;
     if (i===0) allCnt = n;
