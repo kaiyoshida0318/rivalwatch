@@ -2258,9 +2258,11 @@ window._candExecute = function() {
   if (saveExtra && addCount) saveExtra(extra);
   if (saveWorthlessShops && wCount) saveWorthlessShops(worthless);
   if (renderShops && addCount) renderShops();
-  if (typeof _updateShopsBadge === "function") _updateShopsBadge();
   if (typeof _updateCandidatesBadge === "function") _updateCandidatesBadge();
-  if (typeof updateBadges === "function") updateBadges();
+  setTimeout(function(){
+    if (typeof updateBadges === "function") updateBadges();
+    if (typeof _updateShopsBadge === "function") _updateShopsBadge();
+  }, 300);
   // 実行済みの候補をlocalStoragから削除
   var _remain = JSON.parse(localStorage.getItem('rw_candidate_shops')||'[]').filter(function(s){ return !_candSelections[s.sid]; });
   localStorage.setItem('rw_candidate_shops', JSON.stringify(_remain));
@@ -2515,8 +2517,10 @@ window.showDailyLog = function() {
 function _updateShopsBadge() {
   var el = document.getElementById('shopsBadge');
   if (!el) return;
-  var shops = typeof getAllShops === 'function' ? getAllShops() : [];
-  el.textContent = shops.length > 0 ? ' ' + shops.length : '';
+  // kpiShopsの値を充てる（updateBadges実行後に正確）
+  var kpi = document.getElementById('kpiShops');
+  var count = kpi ? parseInt(kpi.textContent) || 0 : (typeof getAllShops === 'function' ? getAllShops().length : 0);
+  el.textContent = count > 0 ? ' ' + count : '';
 }
 // updateBadgesにフック
 (function() {
