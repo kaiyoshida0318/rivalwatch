@@ -1603,7 +1603,7 @@ function updateBadges(){
   const worthlessCount=Object.keys(worthlessShops).length;
   (document.getElementById('kpiGood')||{}).textContent=goodCount;
   (document.getElementById('kpiItems')||{}).textContent=all.length.toLocaleString();
-  (document.getElementById('kpiShops')||{}).textContent; var _sb=document.getElementById('shopsBadge'); if(_sb) _sb.textContent=' '+(getAllShops?getAllShops().length:0)=getAllShops().length;
+  (document.getElementById('kpiShops')||{}).textContent=getAllShops().length;
   document.getElementById('allBadge').innerHTML=`<span style="background:var(--muted);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${all.length}</span>`;
   document.getElementById('uncheckedBadge').innerHTML=`<span style="background:var(--warn);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${unchecked}</span>`;
   document.getElementById('goodBadge').innerHTML=goodCount>0?`<span style="background:var(--up);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${goodCount}</span>`:'';
@@ -2505,6 +2505,27 @@ window.showDailyLog = function() {
     }
   });
 };
+</script>
+
+<script>
+// ショップ一覧バッジを更新
+function _updateShopsBadge() {
+  var el = document.getElementById('shopsBadge');
+  if (!el) return;
+  var shops = typeof getAllShops === 'function' ? getAllShops() : [];
+  el.textContent = shops.length > 0 ? ' ' + shops.length : '';
+}
+// updateBadgesにフック
+(function() {
+  var _origUB = window.updateBadges;
+  if (!_origUB) return;
+  window.updateBadges = function() {
+    _origUB.apply(this, arguments);
+    _updateShopsBadge();
+    _updateCandidatesBadge();
+  };
+})();
+setTimeout(function(){ _updateShopsBadge(); if(typeof _updateCandidatesBadge==='function') _updateCandidatesBadge(); }, 2500);
 </script>
 </body>
 </html>
