@@ -2307,7 +2307,7 @@ window._loadCandidates = async function() {
   }
 
   var rows = cands.map(function(s) {
-    var shopUrl = "https://www.rakuten.co.jp/shop/" + s.sid + "/";
+    var shopUrl = "https://www.rakuten.co.jp/" + s.sid + "/";
     // パンくずの最後の数個だけ表示（全体は title 属性で）
     var crumbParts = s.breadcrumb ? s.breadcrumb.split(">").map(function(p){return p.trim();}).filter(Boolean) : [];
     var crumbShort = crumbParts.length >= 2 ? crumbParts.slice(-2).join(" > ") : s.breadcrumb;
