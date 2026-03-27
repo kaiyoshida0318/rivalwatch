@@ -2392,5 +2392,24 @@ window._loadCandidates = async function() {
   setTimeout(updateKpis, 2000);
 })();
 </script>
+
+<script>
+(function() {
+  var _o = window.fetchRankings;
+  if (!_o) return;
+  window.fetchRankings = async function() {
+    await _o.apply(this, arguments);
+    setTimeout(async function() {
+      var tabs = document.querySelectorAll('[onclick]');
+      for (var i=0; i<tabs.length; i++) {
+        var oc = tabs[i].getAttribute('onclick') || '';
+        if (oc.indexOf('rankings') >= 0 && oc.indexOf('switchTab') >= 0) { tabs[i].click(); break; }
+      }
+      await new Promise(function(r){ setTimeout(r,300); });
+      if (typeof renderRankingList === 'function') await renderRankingList();
+    }, 200);
+  };
+})();
+</script>
 </body>
 </html>
