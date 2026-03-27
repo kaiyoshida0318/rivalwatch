@@ -1745,7 +1745,7 @@ function parseRankingUrl(url){
 
 // fetchRankingItems: collect.py方式に移行済み
 
-async function fetchRankings(){
+function fetchRankings(){
   const topN = parseInt(document.getElementById('rankingTopN')?.value||'10');
   const sortOrder = document.getElementById('rankingSort')?.value || '-reviewCount';
   const msg = document.getElementById('rankingMsg');
@@ -1802,7 +1802,7 @@ async function fetchRankings(){
       return _latestRankingResults;
     }
 
-    async function switchTab('rankings'); await renderRankingList() {
+    async function renderRankingList() {
       const wrap = document.getElementById("rankingListWrap");
       if (!wrap) return;
       const configs = getRankingsState() || [];
@@ -2391,6 +2391,21 @@ window._loadCandidates = async function() {
   }
   // DOMロード完了後に実行
   setTimeout(updateKpis, 2000);
+})();
+</script>
+
+<script>
+(function() {
+  var _origFetch = window.fetchRankings;
+  if (!_origFetch) return;
+  window.fetchRankings = async function() {
+    await _origFetch.apply(this, arguments);
+    // 登録完了後にランキング一覧へ遷移して再読み込み
+    setTimeout(async function() {
+      if (typeof switchTab === 'function') switchTab('rankings');
+      if (typeof renderRankingList === 'function') await renderRankingList();
+    }, 300);
+  };
 })();
 </script>
 </body>
