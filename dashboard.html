@@ -1739,8 +1739,8 @@ function renderRankingRows(){
 
 // URLからgenreId・ラベルを抽出
 function parseRankingUrl(url){
-  const m = url.match(/ranking\.rakuten\.co\.jp\/daily\/(\d+)/);
-  return m ? m[1] : null;
+  const m = url.match(/ranking\.rakuten\.co\.jp\/(daily|weekly|monthly)\/(\d+)/);
+  return m ? m[2] : null;
 }
 
 // fetchRankingItems: collect.py方式に移行済み
