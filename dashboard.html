@@ -2302,11 +2302,12 @@ window.addCandidatesToShops = function() {
 window.addCandidatesToWorthless = function() {
   var checks = document.querySelectorAll('#candidateList input[type=checkbox]:checked');
   if (!checks.length) { alert('ショップを選択してください。'); return; }
-  var worthless = loadWorthlessShops ? loadWorthlessShops() : [];
+  var worthless = loadWorthlessShops ? loadWorthlessShops() : {};
+  if (Array.isArray(worthless)) worthless = {};
   checks.forEach(function(cb) {
     var sid = cb.dataset.sid, name = cb.dataset.name;
-    if (worthless.find(function(s){ return (s.shopCode||s.sid)===sid; })) return;
-    worthless.push({ shopCode: sid, name: name, sid: sid, addedAt: new Date().toISOString() });
+    if (worthless[sid]) return;
+    worthless[sid] = { name: name, date: new Date().toLocaleDateString('ja-JP') };
   });
   if (saveWorthlessShops) saveWorthlessShops(worthless);
   document.getElementById('rankingCandidatePanel').style.display = 'none';
