@@ -158,12 +158,7 @@ tr:last-child td{border-bottom:none}
   </div>
 </header>
 
-<div class="kpi-strip">
-  <div class="kpi"><div class="kpi-lbl">登録ショップ</div><div class="kpi-val" id="kpiShops">67</div><div class="kpi-sub">追跡中</div></div>
-  <div class="kpi"><div class="kpi-lbl">追跡商品数</div><div class="kpi-val" id="kpiItems">—</div><div class="kpi-sub">上位20商品/店</div></div>
-  <div class="kpi"><div class="kpi-lbl">70点</div><div class="kpi-val" id="kpiGood">0</div><div class="kpi-sub">70点タブ</div></div>
-  <div class="kpi"><div class="kpi-lbl">観測ステータス</div><div class="kpi-val" id="kpiWeek" style="color:var(--warn)">W0</div><div class="kpi-sub">4週後に精度↑</div></div>
-</div>
+<div class="kpi-strip"><div class="kpi"><div class="kpi-lbl">登録ショップ</div><div class="kpi-val" id="kpiShops">—</div><div class="kpi-sub">ショップ</div></div><div class="kpi"><div class="kpi-lbl">追跡商品数</div><div class="kpi-val" id="kpiItems">—</div><div class="kpi-sub">商品</div></div><div class="kpi"><div class="kpi-lbl">商品最終更新</div><div class="kpi-val kpi-val--sm" id="kpiItemDate">—</div><div class="kpi-sub">items</div></div><div class="kpi"><div class="kpi-lbl">ショップ最終更新</div><div class="kpi-val kpi-val--sm" id="kpiShopDate">—</div><div class="kpi-sub">shops</div></div><div class="kpi"><div class="kpi-lbl">観測ステータス</div><div class="kpi-val" id="kpiWeek" style="color:var(--warn)">—</div><div class="kpi-sub">4週後に精度↑</div></div></div>
 
 <div class="tabs">
   <div class="tabs-row row1">
@@ -203,8 +198,8 @@ tr:last-child td{border-bottom:none}
 
 <div class="controls" id="mainControls">
   <input class="search" id="searchInput" placeholder="ショップ名で検索..." oninput="onSearch()">
-  <button class="sort-btn active" onclick="sortBy('reviews',this)">レビュー数順</button>
-  <button class="sort-btn" onclick="sortBy('no',this)">No順</button>
+  
+  
   <span class="cnt" id="cntLabel">67件</span>
 </div>
 
@@ -2316,6 +2311,39 @@ window._addCandidatesToWorthless = function() {
   alert('🚫 ' + checks.length + '件を価値なしに移動しました。');
   window._loadCandidates();
 };
+</script>
+
+<script>
+(function() {
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    var d = new Date(iso);
+    return (d.getMonth()+1) + '/' + d.getDate() + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  }
+  async function updateKpiDates() {
+    try {
+      var res = await fetch('data/latest_summary.json?v=' + Date.now());
+      var d = await res.json();
+      var shopDateEl = document.getElementById('kpiShopDate');
+      if (shopDateEl && d.generated_at) shopDateEl.textContent = fmtDate(d.generated_at);
+    } catch(e) {}
+    try {
+      var res2 = await fetch('data/snapshots.json?v=' + Date.now());
+      var d2 = await res2.json();
+      // 最新のスナップショット日付を取得
+      var latestTs = '';
+      Object.values(d2).forEach(function(shop) {
+        if (shop.history && shop.history.length) {
+          var last = shop.history[shop.history.length-1];
+          if (last.timestamp && last.timestamp > latestTs) latestTs = last.timestamp;
+        }
+      });
+      var itemDateEl = document.getElementById('kpiItemDate');
+      if (itemDateEl && latestTs) itemDateEl.textContent = fmtDate(latestTs);
+    } catch(e) {}
+  }
+  setTimeout(updateKpiDates, 1500);
+})();
 </script>
 </body>
 </html>
