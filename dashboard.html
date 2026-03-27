@@ -2279,9 +2279,11 @@ window._loadCandidates = async function() {
     r.items.forEach(function(item) {
       if (!item.shop_sid) return;
       if (!shops[item.shop_sid]) {
+        var shopTop = item.url ? item.url.replace(/\/[^\/]+\/?$/, "/") : "https://item.rakuten.co.jp/" + item.shop_sid + "/";
         shops[item.shop_sid] = {
           sid: item.shop_sid,
           name: item.shop_name || item.shop_sid,
+          shopUrl: shopTop,
           topItem: item.name || "",
           topItemUrl: item.url || "",
           topRank: item.rank,
@@ -2307,7 +2309,7 @@ window._loadCandidates = async function() {
   }
 
   var rows = cands.map(function(s) {
-    var shopUrl = "https://www.rakuten.co.jp/" + s.sid + "/";
+    var shopUrl = s.shopUrl || ("https://item.rakuten.co.jp/" + s.sid + "/");
     // パンくずの最後の数個だけ表示（全体は title 属性で）
     var crumbParts = s.breadcrumb ? s.breadcrumb.split(">").map(function(p){return p.trim();}).filter(Boolean) : [];
     var crumbShort = crumbParts.length >= 2 ? crumbParts.slice(-2).join(" > ") : s.breadcrumb;
