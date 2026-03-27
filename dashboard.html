@@ -2568,7 +2568,16 @@ if (_origRS2) {
     setTimeout(_applyFromCandBadges, 100);
   };
 }
-setTimeout(_applyFromCandBadges, 2500);
+// ページ読み込み後とショップ一覧表示後に実行
+setTimeout(_applyFromCandBadges, 4000);
+// switchTab'shops'時にも実行
+var _origSwitchTabForBadge = window.switchTab;
+if (_origSwitchTabForBadge) {
+  window.switchTab = function(name, el) {
+    _origSwitchTabForBadge.apply(this, arguments);
+    if (name === "shops") setTimeout(_applyFromCandBadges, 200);
+  };
+}
 </script>
 </body>
 </html>
