@@ -2545,23 +2545,23 @@ setTimeout(function(){ _updateShopsBadge(); if(typeof _updateCandidatesBadge==='
 <script>
 function _applyFromCandBadges() {
   var extra = loadExtra ? loadExtra() : [];
-  var candSids = extra.filter(function(s){ return s.fromCand; }).map(function(s){ return s.shopCode||s.sid||''; });
+  // extraに登録された全ショップにNEWオレンジを適用
+  var candSids = extra.map(function(s){ return s.shopCode||s.sid||""; }).filter(Boolean);
   if (!candSids.length) return;
-  document.querySelectorAll('#tabShops tbody tr').forEach(function(row) {
-    var link = row.querySelector('a[href*="rakuten"]');
+  document.querySelectorAll("#tabShops tbody tr").forEach(function(row) {
+    var link = row.querySelector("a[href*=\"rakuten\"]");
     if (!link) return;
-    var href = link.getAttribute('href') || '';
-    var sid = href.replace(/.*\/([^\/]+)\/?$/, '$1');
+    var href = link.getAttribute("href") || "";
+    var sid = href.replace(/.*\/([^\/]+)\/?$/, "$1");
     if (candSids.indexOf(sid) < 0) return;
-    var badge = row.querySelector('.badge-new');
-    if (badge) badge.className = 'badge-new-cand';
+    var badge = row.querySelector(".badge-new");
+    if (badge) badge.className = "badge-new-cand";
   });
 }
-// renderShopsの後に実行
-var _origRS = window.renderShops;
-if (_origRS) {
+var _origRS2 = window.renderShops;
+if (_origRS2) {
   window.renderShops = function() {
-    _origRS.apply(this, arguments);
+    _origRS2.apply(this, arguments);
     setTimeout(_applyFromCandBadges, 100);
   };
 }
