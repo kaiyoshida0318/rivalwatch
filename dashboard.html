@@ -2545,8 +2545,8 @@ setTimeout(function(){ _updateShopsBadge(); if(typeof _updateCandidatesBadge==='
 <script>
 function _applyFromCandBadges() {
   var extra = loadExtra ? loadExtra() : [];
-  // fromCand:trueのショップのみオレンジに変更
-  var candSids = extra.filter(function(s){ return s.fromCand; }).map(function(s){ return s.shopCode||s.sid||""; }).filter(Boolean);
+  // extraShops全件をオレンジ（候補・手動追加区別）、SUMMARY.shopsは緑
+  var candSids = extra.map(function(s){ return s.shopCode||s.sid||""; }).filter(Boolean);
   if (!candSids.length) return;
   document.querySelectorAll("#tabShops tbody tr").forEach(function(row) {
     // deleteShopのonclickからsidを取得
