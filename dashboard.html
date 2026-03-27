@@ -163,7 +163,7 @@ tr:last-child td{border-bottom:none}
 <div class="tabs">
   <div class="tabs-row row1">
     <div class="tab active" onclick="switchTab('shops',this)">ショップ一覧</div>
-    <div class="tab" onclick="switchTab('candidates',this); setTimeout(function(){if(typeof window._loadCandidates==='function')window._loadCandidates();},50)">🎯 ショップ追加候補</div>
+    <div class="tab" onclick="var tc=document.getElementById('tabCandidates'),ts=document.getElementById('tabShops');if(tc)tc.style.display='';if(ts)ts.style.display='none';switchTab('candidates',this);setTimeout(function(){if(typeof window._loadCandidates==='function')window._loadCandidates();},50)">🎯 ショップ追加候補</div>
     <div class="tab" onclick="switchTab('rankings',this)">📊 ランキング一覧 <span id="rankingBadge"></span></div>
     <div class="tab" onclick="switchTab('add-shops',this)">＋ ショップ追加</div>
     <div class="tab" onclick="switchTab('add-ranking',this)">＋ ランキング追加</div>
