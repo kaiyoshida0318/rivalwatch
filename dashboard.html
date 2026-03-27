@@ -2517,11 +2517,16 @@ window.showDailyLog = function() {
 function _updateShopsBadge() {
   var el = document.getElementById('shopsBadge');
   if (!el) return;
-  // ショップ数 = SUMMARYのshops数 + extraShops数
-  var baseCount = (typeof SUMMARY !== "undefined" && SUMMARY && SUMMARY.shops) ? SUMMARY.shops.length : 0;
-  var extraCount = typeof loadExtra === "function" ? loadExtra().length : 0;
-  var count = baseCount + extraCount;
-  el.textContent = count > 0 ? " " + count : "";
+  // SUMMARY.shopsのsidとextraのsidを合わせたユニークsetでカウント
+  var sids = new Set();
+  if (typeof SUMMARY !== "undefined" && SUMMARY && SUMMARY.shops) {
+    SUMMARY.shops.forEach(function(s){ sids.add(s.sid||s.shopCode||""); });
+  }
+  if (typeof loadExtra === "function") {
+    loadExtra().forEach(function(s){ sids.add(s.shopCode||s.sid||""); });
+  }
+  sids.delete("");
+  el.textContent = sids.size > 0 ? " " + sids.size : "";
 }
 // updateBadgesにフック
 (function() {
