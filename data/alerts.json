@@ -1299,5 +1299,56 @@
     "detail": {
       "price": 1000
     }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "ddice",
+    "week": "W2026-03-27",
+    "message": "新商品：≪クーポン利用で680円!!≫ iPhone ケース iPhone13 iPho",
+    "detail": {
+      "price": 980
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "PolaPola楽天市場店",
+    "week": "W2026-03-27",
+    "message": "値下げ -74.1%：＼最大50％OFF！店内対象商品／【楽天1位】 保証付き 角質取り 電動角質リム",
+    "detail": {
+      "prev": 2698,
+      "curr": 698
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "シェリーショップ",
+    "week": "W2026-03-27",
+    "message": "新商品：【送料無料】アイクレバーカード Suica PASMO ICカード2枚 切替えカ",
+    "detail": {
+      "price": 1408
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "シェリーショップ",
+    "week": "W2026-03-27",
+    "message": "新商品：スキミング 防止カード 永久磁石対応 磁気防止 ウルトラシェリーカード 3枚組 ",
+    "detail": {
+      "price": 1320
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "firstmarket",
+    "week": "W2026-03-27",
+    "message": "新商品：【高品質のオックスフォード生地】吊り下げ収納 吊り下げ ラック 折りたたみ クロ",
+    "detail": {
+      "price": 1180
+    }
   }
 ]
