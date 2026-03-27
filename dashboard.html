@@ -2204,56 +2204,51 @@ setTimeout(_rw_logSave, 3000);
 
 
 <script>
-// 選択状態を管理するMap: { sid -> 'shop' | 'worthless' }
 var _candSelections = {};
+var _candNames = {};
 
-// ボタンクリック：追加 or 価値なし を選択/解除
-window._candSelect = function(sid, type, addBtn, wBtn) {
+window._candSelect = function(btn) {
+  var sid = btn.dataset.sid;
+  var type = btn.dataset.type;
+  var row = document.getElementById("cand-row-" + sid);
+  var addBtn = row ? row.querySelector("[data-type=shop]") : null;
+  var wBtn = row ? row.querySelector("[data-type=worthless]") : null;
   if (_candSelections[sid] === type) {
-    // 同じボタンを再度押したら解除
     delete _candSelections[sid];
-    addBtn.style.background = '';
-    addBtn.style.color = '';
-    wBtn.style.background = '';
-    wBtn.style.color = '';
+    if (addBtn) { addBtn.style.background=""; addBtn.style.color=""; }
+    if (wBtn)   { wBtn.style.background=""; wBtn.style.color=""; }
   } else {
     _candSelections[sid] = type;
-    if (type === 'shop') {
-      addBtn.style.background = '#0ea5e9'; addBtn.style.color = '#fff';
-      wBtn.style.background = ''; wBtn.style.color = '';
+    if (type === "shop") {
+      if (addBtn) { addBtn.style.background="#0ea5e9"; addBtn.style.color="#fff"; }
+      if (wBtn)   { wBtn.style.background=""; wBtn.style.color=""; }
     } else {
-      wBtn.style.background = '#64748b'; wBtn.style.color = '#fff';
-      addBtn.style.background = ''; addBtn.style.color = '';
+      if (wBtn)   { wBtn.style.background="#64748b"; wBtn.style.color="#fff"; }
+      if (addBtn) { addBtn.style.background=""; addBtn.style.color=""; }
     }
   }
-  // 更新ボタンのカウント更新
   var count = Object.keys(_candSelections).length;
-  var execBtn = document.getElementById('candExecBtn');
-  if (execBtn) execBtn.textContent = count > 0 ? '更新 (' + count + '件)' : '更新';
+  var execBtn = document.getElementById("candExecBtn");
+  if (execBtn) execBtn.textContent = count > 0 ? "更新 (" + count + "件)" : "更新";
 };
 
-// 更新ボタン：選択内容を一括実行
 window._candExecute = function() {
   var entries = Object.entries(_candSelections);
-  if (!entries.length) { alert('ショップを選択してください。'); return; }
+  if (!entries.length) { alert("ショップを選択してください。"); return; }
   var extra = loadExtra ? loadExtra() : [];
   var worthless = loadWorthlessShops ? loadWorthlessShops() : {};
   if (Array.isArray(worthless)) worthless = {};
   var addCount = 0, wCount = 0;
   entries.forEach(function(e) {
     var sid = e[0], type = e[1];
-    // sid -> name を _candNames から取得
-    var name = window._candNames && window._candNames[sid] ? window._candNames[sid] : sid;
-    if (type === 'shop') {
+    var name = _candNames[sid] || sid;
+    if (type === "shop") {
       if (!extra.find(function(s){ return (s.shopCode||s.sid)===sid; })) {
-        extra.push({ shopCode:sid, name:name, reviews:0, topItems:[], isNew:true, no:'-', sid:sid, addedAt:new Date().toISOString() });
+        extra.push({shopCode:sid,name:name,reviews:0,topItems:[],isNew:true,no:"-",sid:sid,addedAt:new Date().toISOString()});
         addCount++;
       }
     } else {
-      if (!worthless[sid]) {
-        worthless[sid] = { name:name, date:new Date().toLocaleDateString('ja-JP') };
-        wCount++;
-      }
+      if (!worthless[sid]) { worthless[sid]={name:name,date:new Date().toLocaleDateString("ja-JP")}; wCount++; }
     }
   });
   if (saveExtra && addCount) saveExtra(extra);
@@ -2261,65 +2256,54 @@ window._candExecute = function() {
   if (renderShops && addCount) renderShops();
   _candSelections = {};
   var msg = [];
-  if (addCount) msg.push('✅ ' + addCount + '件をショップ一覧に追加');
-  if (wCount)   msg.push('🚫 ' + wCount + '件を価値なしに移動');
-  alert(msg.join('
-'));
-  window._loadCandidates(); // 再描画
+  if (addCount) msg.push("✅ " + addCount + "件をショップ一覧に追加");
+  if (wCount)   msg.push("🚫 " + wCount + "件を価値なしに移動");
+  alert(msg.join("\n"));
+  window._loadCandidates();
 };
 
 window._loadCandidates = async function() {
-  var inner = document.getElementById('candidatesInner');
+  var inner = document.getElementById("candidatesInner");
   if (!inner) return;
-  inner.innerHTML = '<p style="color:var(--muted);padding:16px">読み込み中...</p>';
+  inner.innerHTML = "<p style='color:var(--muted);padding:16px'>読み込み中...</p>";
   var data;
   try {
-    var r = await fetch('data/ranking_results.json?v=' + Date.now());
+    var r = await fetch("data/ranking_results.json?v=" + Date.now());
     data = await r.json();
-  } catch(e) { inner.innerHTML = '<p style="color:#f87171;padding:16px">取得失敗</p>'; return; }
-
+  } catch(e) { inner.innerHTML = "<p style='color:#f87171;padding:16px'>取得失敗</p>"; return; }
   var shops = {};
   data.rankings.forEach(function(r) {
     r.items.forEach(function(item) {
       if (!item.shop_sid || shops[item.shop_sid]) return;
-      shops[item.shop_sid] = { sid:item.shop_sid, name:item.shop_name||item.shop_sid, topItem:item.name||'', topRank:item.rank, label:r.label||r.url };
+      shops[item.shop_sid] = {sid:item.shop_sid,name:item.shop_name||item.shop_sid,topItem:item.name||"",topRank:item.rank,label:r.label||r.url};
     });
   });
-
   var extra = loadExtra ? loadExtra() : [];
-  var known = extra.map(function(s){ return s.shopCode||s.sid||''; });
+  var known = extra.map(function(s){ return s.shopCode||s.sid||""; });
   var wr = loadWorthlessShops ? loadWorthlessShops() : {};
-  var wk = Array.isArray(wr) ? wr.map(function(s){ return s.shopCode||s.sid||''; }) : Object.keys(wr);
+  var wk = Array.isArray(wr) ? wr.map(function(s){ return s.shopCode||s.sid||""; }) : Object.keys(wr);
   known = known.concat(wk);
   var cands = Object.values(shops).filter(function(s){ return known.indexOf(s.sid) < 0; });
-
-  // 名前マップを保存
-  window._candNames = {};
-  cands.forEach(function(s){ window._candNames[s.sid] = s.name; });
-  // 選択状態もリセット（再読み込み時）
+  _candNames = {};
+  cands.forEach(function(s){ _candNames[s.sid] = s.name; });
   _candSelections = {};
-
   if (!cands.length) {
-    inner.innerHTML = '<p style="color:var(--muted);padding:16px">新しい候補はありません。</p>';
+    inner.innerHTML = "<p style='color:var(--muted);padding:16px'>新しい候補はありません。</p>";
     return;
   }
-
   var rows = cands.map(function(s) {
-    var e = s.sid.replace(/\/g,'\\').replace(/"/g,'\x22');
     return '<tr id="cand-row-' + s.sid + '">' +
       '<td style="padding:8px 10px"><a href="https://www.rakuten.co.jp/shop/' + s.sid + '/" target="_blank" style="color:var(--accent);font-weight:bold">' + s.name + '</a><br><small style="color:var(--muted)">' + s.sid + '</small></td>' +
       '<td style="padding:8px 10px;color:var(--muted);font-size:0.83em;white-space:nowrap">' + s.label + '</td>' +
-      '<td style="padding:8px 10px;color:var(--muted);font-size:0.83em">' + s.topRank + '位: ' + s.topItem.slice(0,35) + '</td>' +
+      '<td style="padding:8px 10px;color:var(--muted);font-size:0.83em">' + s.topRank + "位: " + s.topItem.slice(0,35) + '</td>' +
       '<td style="padding:8px 10px;white-space:nowrap;text-align:center">' +
-        '<button id="add-' + s.sid + '" class="btn-sm" onclick="_candSelect(\x27' + e + '\x27,\x27shop\x27,this,document.getElementById(\x27w-' + s.sid + '\x27))" style="padding:2px 10px;margin-right:4px">追加</button>' +
-        '<button id="w-' + s.sid + '" class="btn-sm" onclick="_candSelect(\x27' + e + '\x27,\x27worthless\x27,document.getElementById(\x27add-' + s.sid + '\x27),this)" style="padding:2px 10px">価値なし</button>' +
-      '</td>' +
-    '</tr>';
-  }).join('');
-
+        '<button class="btn-sm" data-sid="' + s.sid + '" data-type="shop" onclick="_candSelect(this)" style="padding:2px 10px;margin-right:4px">追加</button>' +
+        '<button class="btn-sm" data-sid="' + s.sid + '" data-type="worthless" onclick="_candSelect(this)" style="padding:2px 10px">価値なし</button>' +
+      '</td></tr>';
+  }).join("");
   inner.innerHTML =
     '<div style="margin-bottom:12px;display:flex;gap:8px;align-items:center">' +
-      '<span style="color:var(--muted);font-size:0.84em">' + cands.length + '件の候補 &mdash; 追加 or 価値なしを選んで更新:</span>' +
+      '<span style="color:var(--muted);font-size:0.84em">' + cands.length + "件の候補 &mdash; 選んで更新:" + '</span>' +
       '<button id="candExecBtn" class="btn-sm" onclick="_candExecute()" style="background:#0ea5e9;color:#fff;padding:3px 16px;font-weight:bold">更新</button>' +
     '</div>' +
     '<div style="overflow-x:auto"><table class="shop-table"><thead><tr>' +
