@@ -1773,22 +1773,7 @@ async function fetchRankings(){
     }
   }
   saveRankings(savedRankings);
-      // 登録直後：rranking_results.jsonからパンくず・タイトルを補完
-      try {
-        var _rr = await fetch('data/ranking_results.json?v=' + Date.now());
-        var _rd = await _rr.json();
-        var _saved = saveRankings ? (getRankingsState ? getRankingsState() : []) : [];
-        var _updated = false;
-        (_rd.rankings || []).forEach(function(_r) {
-          var _idx = _saved.findIndex(function(s){ return s.url === _r.url; });
-          if (_idx >= 0) {
-            if (_r.rankingTitle) { _saved[_idx].rankingTitle = _r.rankingTitle; _updated = true; }
-            if (_r.breadcrumb)   { _saved[_idx].breadcrumb   = _r.breadcrumb;   _updated = true; }
-            if (_r.periodType)   { _saved[_idx].periodType   = _r.periodType;   _updated = true; }
-          }
-        });
-        if (_updated && saveRankings) saveRankings(_saved);
-      } catch(_e) {}
+        _latestRankingResults = null; // キャッシュクリアで最新データを取得
   updateBadges();
   if(msg) msg.textContent = `${addedCount}件のランキングを追加しました`;
   rankingRows = [''];
