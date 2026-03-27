@@ -168,7 +168,7 @@ tr:last-child td{border-bottom:none}
 <div class="tabs">
   <div class="tabs-row row1">
     <div class="tab active" onclick="switchTab('shops',this)">ショップ一覧</div>
-    <button class="btn-sm" id="btnShowCandidates" onclick="showRankingCandidates()" style="margin-left:4px;background:var(--card);border:1px solid var(--accent);color:var(--accent);padding:3px 10px;font-size:0.8em">🌟 候補</button>
+    <div class="tab" onclick="switchTab('candidates',this)">🎯 ショップ追加候補</div>
     <div class="tab" onclick="switchTab('rankings',this)">📊 ランキング一覧 <span id="rankingBadge"></span></div>
     <div class="tab" onclick="switchTab('add-shops',this)">＋ ショップ追加</div>
     <div class="tab" onclick="switchTab('add-ranking',this)">＋ ランキング追加</div>
@@ -209,17 +209,8 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <main>
-  <div id="rankingCandidatePanel" style="display:none;margin-bottom:16px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-    <strong style="color:var(--fg);font-size:0.95em">🎯 ランキングからのショップ追加候補</strong>
-    <span id="candidateCount" style="color:var(--muted);font-size:0.85em"></span>
-  </div>
-  <div id="candidateList" style="margin-bottom:12px"></div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <button class="btn-sm" onclick="addCandidatesToShops()" style="background:#0ea5e9;color:#fff;padding:4px 14px">➕ ショップ一覧に追加</button>
-    <button class="btn-sm" onclick="addCandidatesToWorthless()" style="background:#64748b;color:#fff;padding:4px 14px">🚫 価値なしへ</button>
-    <button class="btn-sm" onclick="document.getElementById('rankingCandidatePanel').style.display='none'" style="background:none;border:1px solid var(--border);color:var(--muted);padding:4px 12px">閉じる</button>
-  </div>
+  <div id="tabCandidates" style="display:none">
+  <div id="candidatesInner" style="padding:8px 0"><p style="color:var(--muted);padding:16px">読み込み中...</p></div>
 </div>
 <div id="tabShops">
     <div class="notice">⏱ <div><strong>Week 0 — 初回スナップショット</strong>。週次収集後に商品データ・画像・販売推定が自動更新されます。</div></div>
@@ -2212,65 +2203,92 @@ function _rw_logSave() {
 setTimeout(_rw_logSave, 3000);
 </script>
 
+
+
+
 <script>
-(function() {
-  var _origSwitchTab = window.switchTab;
+// switchTab 拡張（candidates タブ対応）
+(function(){
+  var _orig = window.switchTab;
   window.switchTab = function(name, el) {
-    if (_origSwitchTab) _origSwitchTab(name, el);
+    if (_orig) _orig(name, el);
+    // 候補タブのコンテンツ表示制御
+    var cand = document.getElementById('tabCandidates');
+    var shops = document.getElementById('tabShops');
+    if (cand) cand.style.display = (name === 'candidates') ? '' : 'none';
+    if (shops) shops.style.display = (name === 'shops') ? '' : 'none';
+    // ログボタン非表示制御
     var logBtn = document.getElementById('btnDailyLog');
-    if (!logBtn) return;
-    var productTabs = ['all-products','unchecked','watch1','stop','good','sizeok','done','bad'];
-    logBtn.style.display = productTabs.indexOf(name) >= 0 ? 'none' : '';
+    if (logBtn) {
+      var hideTabs = ['all-products','unchecked','watch1','stop','good','sizeok','done','bad'];
+      logBtn.style.display = hideTabs.indexOf(name) >= 0 ? 'none' : '';
+    }
+    // candidates タブが選ばれたら候補を読み込む
+    if (name === 'candidates') window._loadCandidates();
   };
 })();
-</script>
 
+window._loadCandidates = async function() {
+  var inner = document.getElementById('candidatesInner');
+  if (!inner) return;
+  inner.innerHTML = '<p style="color:var(--muted);padding:16px">読み込み中...</p>';
 
-<script>
-window.showRankingCandidates = async function() {
-  var panel = document.getElementById('rankingCandidatePanel');
-  var list = document.getElementById('candidateList');
-  var countEl = document.getElementById('candidateCount');
-  panel.style.display = 'block';
-  list.innerHTML = '<p style="color:var(--muted);font-size:0.85em">読み込み中...</p>';
-  var res, data;
+  var data;
   try {
-    res = await fetch('data/ranking_results.json?v=' + Date.now());
+    var res = await fetch('data/ranking_results.json?v=' + Date.now());
     data = await res.json();
-  } catch(e) { list.innerHTML = '<p style="color:#f87171">取得失敗: ' + e.message + '</p>'; return; }
+  } catch(e) { inner.innerHTML = '<p style="color:#f87171;padding:16px">取得失敗</p>'; return; }
+
+  // ランキングのショップを集約
   var rankShops = {};
   data.rankings.forEach(function(r) {
     r.items.forEach(function(item) {
       if (!item.shop_sid) return;
       if (!rankShops[item.shop_sid]) rankShops[item.shop_sid] = {
         sid: item.shop_sid, name: item.shop_name || item.shop_sid,
-        topItem: item.name || '', topRank: item.rank, rankingLabel: r.label || r.url
+        topItem: item.name || '', topRank: item.rank, label: r.label || r.url
       };
     });
   });
-  var existing = loadExtra ? loadExtra() : [];
-  var existingCodes = existing.map(function(s){ return s.shopCode||s.sid||''; });
+
+  // 既登録を除外
+  var extra = loadExtra ? loadExtra() : [];
+  var existingCodes = extra.map(function(s){ return s.shopCode||s.sid||''; });
   var worthlessRaw = loadWorthlessShops ? loadWorthlessShops() : {};
   var worthlessCodes = Array.isArray(worthlessRaw) ? worthlessRaw.map(function(s){ return s.shopCode||s.sid||''; }) : Object.keys(worthlessRaw);
   var allKnown = existingCodes.concat(worthlessCodes);
   var candidates = Object.values(rankShops).filter(function(s){ return allKnown.indexOf(s.sid) < 0; });
+
   if (!candidates.length) {
-    list.innerHTML = '<p style="color:var(--muted);font-size:0.85em">新しい候補はありません（全て登録済み）</p>';
-    countEl.textContent = '0件'; return;
+    inner.innerHTML = '<p style="color:var(--muted);padding:16px">新しい候補はありません（全て登録済み）</p>';
+    return;
   }
-  countEl.textContent = candidates.length + '件';
-  list.innerHTML = candidates.map(function(s) {
-    return '<label style="display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer">' +
-      '<input type="checkbox" data-sid="' + s.sid + '" data-name="' + s.name.replace(/"/g,'&quot;') + '" style="margin-top:3px;flex-shrink:0">' +
-      '<span>' +
-        '<a href="https://www.rakuten.co.jp/shop/' + s.sid + '/" target="_blank" style="color:var(--accent);font-weight:bold;font-size:0.9em">' + s.name + '</a>' +
-        '<span style="color:var(--muted);font-size:0.75em;margin-left:6px">' + s.sid + '</span>' +
-        '<br><span style="color:var(--muted);font-size:0.78em">ランキング' + s.topRank + '位: ' + s.topItem.slice(0,40) + '</span>' +
-      '</span></label>';
+
+  var rows = candidates.map(function(s) {
+    return '<tr>' +
+      '<td style="padding:8px 12px;text-align:center"><input type="checkbox" data-sid="' + s.sid + '" data-name="' + s.name.replace(/"/g,'&quot;') + '"></td>' +
+      '<td style="padding:8px 12px"><a href="https://www.rakuten.co.jp/shop/' + s.sid + '/" target="_blank" style="color:var(--accent);font-weight:bold">' + s.name + '</a><br><small style="color:var(--muted)">' + s.sid + '</small></td>' +
+      '<td style="padding:8px 12px;color:var(--muted);font-size:0.85em">' + s.label + '</td>' +
+      '<td style="padding:8px 12px;color:var(--muted);font-size:0.85em">' + s.topRank + '位: ' + s.topItem.slice(0,40) + '</td>' +
+    '</tr>';
   }).join('');
+
+  inner.innerHTML =
+    '<div style="margin-bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
+      '<span style="color:var(--muted);font-size:0.85em">' + candidates.length + '件の候補</span>' +
+      '<button class="btn-sm" onclick="window._addCandidatesToShops()" style="background:#0ea5e9;color:#fff;padding:4px 14px">➕ ショップ一覧に追加</button>' +
+      '<button class="btn-sm" onclick="window._addCandidatesToWorthless()" style="background:#64748b;color:#fff;padding:4px 14px">🚫 価値なしへ</button>' +
+    '</div>' +
+    '<table class="shop-table"><thead><tr>' +
+      '<th style="width:40px">選択</th>' +
+      '<th>ショップ名</th>' +
+      '<th>ランキング</th>' +
+      '<th>代表商品</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table>';
 };
-window.addCandidatesToShops = function() {
-  var checks = document.querySelectorAll('#candidateList input[type=checkbox]:checked');
+
+window._addCandidatesToShops = function() {
+  var checks = document.querySelectorAll('#candidatesInner input[type=checkbox]:checked');
   if (!checks.length) { alert('ショップを選択してください。'); return; }
   var extra = loadExtra ? loadExtra() : [];
   checks.forEach(function(cb) {
@@ -2280,11 +2298,12 @@ window.addCandidatesToShops = function() {
   });
   if (saveExtra) saveExtra(extra);
   if (renderShops) renderShops();
-  document.getElementById('rankingCandidatePanel').style.display = 'none';
   alert('✅ ' + checks.length + '件のショップを追加しました。');
+  window._loadCandidates(); // 候補リストを再描画
 };
-window.addCandidatesToWorthless = function() {
-  var checks = document.querySelectorAll('#candidateList input[type=checkbox]:checked');
+
+window._addCandidatesToWorthless = function() {
+  var checks = document.querySelectorAll('#candidatesInner input[type=checkbox]:checked');
   if (!checks.length) { alert('ショップを選択してください。'); return; }
   var worthless = loadWorthlessShops ? loadWorthlessShops() : {};
   if (Array.isArray(worthless)) worthless = {};
@@ -2294,10 +2313,9 @@ window.addCandidatesToWorthless = function() {
     worthless[sid] = { name: name, date: new Date().toLocaleDateString('ja-JP') };
   });
   if (saveWorthlessShops) saveWorthlessShops(worthless);
-  document.getElementById('rankingCandidatePanel').style.display = 'none';
   alert('🚫 ' + checks.length + '件を価値なしに移動しました。');
+  window._loadCandidates();
 };
 </script>
-
 </body>
 </html>
