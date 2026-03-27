@@ -1763,14 +1763,14 @@ async function fetchRankings(){
     }
     // ジャンル名を取得
     let label = `ランキング #${genreId}`;
-    try {
-      const items = await fetchRankingItems(genreId, topN, sortOrder);
+    let items = [];
+    try { items = await fetchRankingItems(genreId, topN, sortOrder); } catch(e) { /* 商品は今すぐ更新後に取得 */ }
       savedRankings.push({ genreId, label, topN, sortOrder, url: url.trim(), items, fetchedAt: new Date().toISOString() });
       addedCount++;
-    } catch(e) {
-      if(msg) msg.textContent = `エラー: ${e.message}`;
-      return;
-    }
+
+
+
+
   }
   saveRankings(savedRankings);
   updateBadges();
