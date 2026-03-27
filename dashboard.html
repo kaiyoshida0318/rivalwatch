@@ -2320,17 +2320,29 @@ window._addCandidatesToWorthless = function() {
     var d = new Date(iso);
     return (d.getMonth()+1) + '/' + d.getDate() + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
   }
-  async function updateKpiDates() {
+  async function updateKpis() {
+    // 追跡商品数 (getAllItemsが定義された後に実行)
+    var itemsEl = document.getElementById('kpiItems');
+    if (itemsEl && typeof getAllItems === 'function') {
+      itemsEl.textContent = getAllItems().length;
+    }
     try {
       var res = await fetch('data/latest_summary.json?v=' + Date.now());
       var d = await res.json();
+      // ショップ最終更新
       var shopDateEl = document.getElementById('kpiShopDate');
       if (shopDateEl && d.generated_at) shopDateEl.textContent = fmtDate(d.generated_at);
+      // 観測ステータス
+      var weekEl = document.getElementById('kpiWeek');
+      if (weekEl && d.week) {
+        var w = d.week.replace('W','');
+        weekEl.textContent = w.slice(5,7).replace(/^0/,'') + '/' + w.slice(8,10);
+        weekEl.style.color = '';
+      }
     } catch(e) {}
     try {
       var res2 = await fetch('data/snapshots.json?v=' + Date.now());
       var d2 = await res2.json();
-      // 最新のスナップショット日付を取得
       var latestTs = '';
       Object.values(d2).forEach(function(shop) {
         if (shop.history && shop.history.length) {
@@ -2342,7 +2354,8 @@ window._addCandidatesToWorthless = function() {
       if (itemDateEl && latestTs) itemDateEl.textContent = fmtDate(latestTs);
     } catch(e) {}
   }
-  setTimeout(updateKpiDates, 1500);
+  // DOMロード完了後に実行
+  setTimeout(updateKpis, 2000);
 })();
 </script>
 </body>
