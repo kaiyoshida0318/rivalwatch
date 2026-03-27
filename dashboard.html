@@ -2467,5 +2467,42 @@ window._loadCandidates = async function() {
 // 起動時にバッジ更新
 setTimeout(_updateCandidatesBadge, 2000);
 </script>
+
+<script>
+// showDailyLogにcandidates列を追加
+var _origShowLog = window.showDailyLog;
+window.showDailyLog = function() {
+  _origShowLog.apply(this, arguments);
+  // テーブルは既に描画済み　candidates列を追加する
+  var content = document.getElementById('logContent');
+  if (!content) return;
+  var table = content.querySelector('table');
+  if (!table) return;
+  var rows = table.querySelectorAll('tr');
+  rows.forEach(function(row, ri) {
+    if (ri === 0) {
+      // ヘッダー行に候補列を追加
+      var th = document.createElement('th');
+      th.style.cssText = 'text-align:right;padding:6px 8px;color:#94a3b8;font-weight:normal;font-size:0.82em;white-space:nowrap';
+      th.textContent = '🎯候補';
+      row.appendChild(th);
+    } else {
+      // データ行に候補数を追加
+      var logs = JSON.parse(localStorage.getItem('rw_daily_log')||'[]');
+      var date = row.cells[0] ? row.cells[0].textContent.trim().replace(' 今日','') : '';
+      // MM/DDから日付を特实
+      var log = logs.find(function(l){
+        var d = l.date.slice(5).replace('-','/');
+        return d === date || date.includes(d);
+      });
+      var val = log ? (log.candidates || 0) : '-';
+      var td = document.createElement('td');
+      td.style.cssText = 'text-align:right;padding:6px 8px;color:#f1f5f9;font-size:0.88em';
+      td.textContent = val;
+      row.appendChild(td);
+    }
+  });
+};
+</script>
 </body>
 </html>
