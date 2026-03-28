@@ -2581,5 +2581,30 @@ if (_origSwitchTabForBadge) {
   };
 }
 </script>
+
+<script>
+// snapshots.jsonからitem_countsを自動補完（別PCでも商品を表示）
+(async function() {
+  try {
+    var stored = JSON.parse(localStorage.getItem("rw_item_counts")||"{}");
+    // データが空または1件以下の場合にsnapshots.jsonから自動補完
+    if (Object.keys(stored).length < 2) {
+      var r = await fetch("data/snapshots.json?v=" + Date.now());
+      var snap = await r.json();
+      var counts = {};
+      Object.entries(snap).forEach(function(e) {
+        var sid = e[0], shop = e[1];
+        var latest = shop.history && shop.history[shop.history.length - 1];
+        if (latest) counts[sid] = latest.item_count || (latest.items && latest.items.length) || 0;
+      });
+      if (Object.keys(counts).length > 0) {
+        localStorage.setItem("rw_item_counts", JSON.stringify(counts));
+        // 再描画
+        if (typeof renderCurrentTab === "function") setTimeout(renderCurrentTab, 500);
+      }
+    }
+  } catch(e) {}
+})();
+</script>
 </body>
 </html>
