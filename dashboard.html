@@ -2647,5 +2647,51 @@ function _applyAddedAtDates() {
 })();
 setTimeout(_applyAddedAtDates, 4500);
 </script>
+
+<script>
+// 候補ショップに発見日時を付与・表示するラッパー
+(function() {
+  function _fmtDate(iso) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    return (d.getMonth()+1) + "/" + d.getDate() + " " + String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+  }
+  // 候補テーブルに発見日時を表示
+  function _applyCandDates() {
+    var cands = JSON.parse(localStorage.getItem("rw_candidate_shops")||"[]");
+    var dateMap = {};
+    cands.forEach(function(s){ if (s.discoveredAt) dateMap[s.sid] = s.discoveredAt; });
+    if (!Object.keys(dateMap).length) return;
+    var inner = document.getElementById("candidatesInner");
+    if (!inner) return;
+    inner.querySelectorAll("tbody tr").forEach(function(row) {
+      var addBtn = row.querySelector("[data-sid]");
+      if (!addBtn) return;
+      var sid = addBtn.dataset.sid;
+      if (!dateMap[sid] || row.querySelector(".cand-date")) return;
+      var td = row.cells[0];
+      if (!td) return;
+      var span = document.createElement("small");
+      span.className = "cand-date";
+      span.style.cssText = "display:block;color:var(--muted);font-size:0.72em;margin-top:2px";
+      span.textContent = "発見: " + _fmtDate(dateMap[sid]);
+      td.appendChild(span);
+    });
+  }
+  // _loadCandidatesラップ：実行後に発見日時を付与・表示
+  var _origLC = window._loadCandidates;
+  if (_origLC) {
+    window._loadCandidates = async function() {
+      // 新規候補に discoveredAt を付与して保存
+      var stored = JSON.parse(localStorage.getItem("rw_candidate_shops")||"[]");
+      var now = new Date().toISOString();
+      stored.forEach(function(s){ if (!s.discoveredAt) s.discoveredAt = now; });
+      localStorage.setItem("rw_candidate_shops", JSON.stringify(stored));
+      await _origLC.apply(this, arguments);
+      setTimeout(_applyCandDates, 200);
+    };
+  }
+})();
+</script>
 </body>
 </html>
