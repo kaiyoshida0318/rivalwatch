@@ -2316,7 +2316,7 @@ window._loadCandidates = async function() {
   var _storedCands = JSON.parse(localStorage.getItem('rw_candidate_shops')||'[]');
   var _storedUrls = _storedCands.map(function(s){return s.sid;});
   cands.forEach(function(s){
-    if (_storedUrls.indexOf(s.sid) < 0) _storedCands.push(s);
+    if (_storedUrls.indexOf(s.sid) < 0) { s.discoveredAt = new Date().toISOString(); _storedCands.push(s); }
   });
   cands = _storedCands;
   localStorage.setItem('rw_candidate_shops', JSON.stringify(cands));
@@ -2605,6 +2605,47 @@ if (_origSwitchTabForBadge) {
     }
   } catch(e) {}
 })();
+</script>
+
+<script>
+// ショップ一覧のextraShopにaddedAtを表示
+function _applyAddedAtDates() {
+  var extra = loadExtra ? loadExtra() : [];
+  var extraMap = {};
+  extra.forEach(function(s) {
+    var key = s.shopCode||s.sid||"";
+    if (key && s.addedAt) extraMap[key] = s.addedAt;
+  });
+  if (!Object.keys(extraMap).length) return;
+  document.querySelectorAll("#tabShops tbody tr").forEach(function(row) {
+    var deleteBtn = Array.from(row.querySelectorAll("[onclick]")).find(function(el){
+      return (el.getAttribute("onclick")||"").includes("deleteShop");
+    });
+    if (!deleteBtn) return;
+    var m = (deleteBtn.getAttribute("onclick")||"").match(/deleteShop\(['"]([^'"]+)['"]/);
+    if (!m || !extraMap[m[1]]) return;
+    // 名前セルに追加日時がまだなければ追加
+    var nameCell = row.cells[1];
+    if (!nameCell || nameCell.querySelector(".added-at-date")) return;
+    var d = new Date(extraMap[m[1]]);
+    var dateStr = (d.getMonth()+1) + "/" + d.getDate() + " " + String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+    var span = document.createElement("span");
+    span.className = "added-at-date";
+    span.style.cssText = "display:block;color:var(--muted);font-size:0.72em;margin-top:1px"
+    span.textContent = "追加: " + dateStr;
+    nameCell.appendChild(span);
+  });
+}
+// renderShops後に実行
+(function() {
+  var _origRS3 = window.renderShops;
+  if (!_origRS3) return;
+  window.renderShops = function() {
+    _origRS3.apply(this, arguments);
+    setTimeout(_applyAddedAtDates, 200);
+  };
+})();
+setTimeout(_applyAddedAtDates, 4500);
 </script>
 </body>
 </html>
