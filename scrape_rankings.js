@@ -89,10 +89,10 @@ async function main(){
         const {items, pageMeta, periodType}=await scrapeRankingPage(browser,url,topN);
         const enriched=[];
         for(const item of items){
-          await sleep(600);
-          let detail=await enrichViaApi(item.shopSid,item.itemCode);
-          if(detail&&detail.name){
-            console.log('  [rank'+item.rank+'] API ok: '+detail.name.slice(0,25));
+      // APIを使わずページスクレイプデータをそのまま使用
+      let detail = {name:item.name, price:item.price, image_url:item.image_url, review_count:0, shop_name:item.shopSid};
+      console.log(' [rank'+item.rank+'] '+item.shopSid+': '+item.name.slice(0,25));
+
           }else{
             detail={name:item.name,price:item.price,image_url:item.image_url,review_count:0,shop_name:item.shopSid};
             console.log('  [rank'+item.rank+'] page: '+item.name.slice(0,25)+' Y'+item.price);
