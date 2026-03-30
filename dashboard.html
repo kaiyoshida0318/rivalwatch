@@ -1834,7 +1834,7 @@ async function fetchRankings(){
         const periodType = latest.periodType || (cfg.url && cfg.url.includes('/weekly/') ? 'Weekly' : 'Daily');
         const rankingTitle = latest.rankingTitle || latest.categoryName || '';
         const breadcrumb = latest.breadcrumb || '';
-        const displayName = rankingTitle ? (periodType + ' | ' + rankingTitle) : (periodType + ' | ' + (cfg.label || cfg.url || ''));
+        const displayName = rankingTitle ? (periodType + ' | ' + rankingTitle) : cfg.label && cfg.label.startsWith(periodType + ' | ') ? cfg.label : (periodType + ' | ' + (cfg.label || cfg.url || ''));
         const itemCount = latest.items ? latest.items.length : (cfg.items ? cfg.items.length : 0);
         const topN = cfg.topN || 10;
         const rankUrl = cfg.url || '#';
