@@ -2822,12 +2822,12 @@ setTimeout(_filterRankingRows, 5000);
 </script>
 
 <script>
-// 候補ショップの代表商品に画像を表示（rw_candidate_shopsのimage_urlを優先）
+// 候補ショップの代表商品に画像を表示（rw_candidate_shops.image_urlを優先）
 async function _applyCandItemImages() {
   var inner = document.getElementById("candidatesInner");
   if (!inner) return;
   var imageMap = {};
-  // 候補ショップのimage_urlを優先参照
+  // rw_candidate_shopsのimage_urlを優先
   try {
     var stored = JSON.parse(localStorage.getItem("rw_candidate_shops")||"[]");
     stored.forEach(function(s){ if (s.image_url) imageMap[s.sid] = s.image_url; });
@@ -2843,7 +2843,6 @@ async function _applyCandItemImages() {
       });
     });
   } catch(e) {}
-  // 各行のセル2に画像を挿入
   inner.querySelectorAll("tbody tr").forEach(function(row) {
     var btn = row.querySelector("[data-sid]");
     if (!btn) return;
@@ -2859,7 +2858,6 @@ async function _applyCandItemImages() {
     cell.insertBefore(img, cell.firstChild);
   });
 }
-// _loadCandidates実行後に画像を適用
 (function() {
   var _origLC2 = window._loadCandidates;
   if (!_origLC2) return;
