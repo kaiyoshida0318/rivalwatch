@@ -3149,5 +3149,49 @@ setTimeout(function() {
   logBtn.parentElement.insertBefore(btn, logBtn);
 }, 1000);
 </script>
+
+<script>
+// saveExtraにバリデーションを追加（weekly/monthly/dailyやSUMMARY重複を除去）
+(function(){
+  var _origSaveExtra = window.saveExtra;
+  if (!_origSaveExtra) return;
+  var INVALID_SIDS = ["weekly","monthly","daily","realtime"];
+  window.saveExtra = function(arr) {
+    // SUMMARYのsid一覧を取得
+    var summarySids = new Set();
+    if (typeof SUMMARY !== "undefined" && SUMMARY && SUMMARY.shops) {
+      SUMMARY.shops.forEach(function(s){ if(s.sid) summarySids.add(s.sid); });
+    }
+    // バリデーション：weekly等・SUMMARY重複を除去
+    var cleaned = (arr||[]).filter(function(s) {
+      var sid = s.shopCode || s.sid || "";
+      if (!sid) return false;
+      if (INVALID_SIDS.indexOf(sid) >= 0) { console.warn("[rivalwatch] saveExtra: invalid sid rejected:", sid); return false; }
+      if (summarySids.has(sid)) return false;
+      return true;
+    });
+    return _origSaveExtra.call(this, cleaned);
+  };
+})();
+// 起動時にもクリーンアップ
+setTimeout(function(){
+  if (typeof loadExtra !== "function" || typeof saveExtra !== "function") return;
+  var extra = loadExtra();
+  var summarySids = new Set();
+  if (typeof SUMMARY !== "undefined" && SUMMARY && SUMMARY.shops) {
+    SUMMARY.shops.forEach(function(s){ if(s.sid) summarySids.add(s.sid); });
+  }
+  var INVALID_SIDS = ["weekly","monthly","daily","realtime"];
+  var cleaned = extra.filter(function(s){
+    var sid = s.shopCode || s.sid || "";
+    return sid && INVALID_SIDS.indexOf(sid) < 0 && !summarySids.has(sid);
+  });
+  if (cleaned.length !== extra.length) {
+    saveExtra(cleaned);
+    if (typeof _updateShopsBadge === "function") _updateShopsBadge();
+    console.log("[rivalwatch] 起動時クリーンアップ:", extra.length, "->", cleaned.length);
+  }
+}, 5000);
+</script>
 </body>
 </html>
