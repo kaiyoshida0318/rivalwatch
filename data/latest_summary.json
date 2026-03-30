@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-03-30T17:39:22.532442+09:00",
-  "week": "W2026-03-30",
+  "generated_at": "2026-03-31T06:27:30.174100+09:00",
+  "week": "W2026-03-31",
   "shop_count": 55,
-  "alert_count": 22,
+  "alert_count": 1,
   "shops": [
     {
       "no": "1",
@@ -10,7 +10,7 @@
       "sid": "porto3",
       "total_reviews": 2414,
       "item_count": 15,
-      "total_item_count": 216,
+      "total_item_count": 219,
       "weekly_delta": 0,
       "weekly_est": null,
       "top_items": [
@@ -201,11 +201,15 @@
       "no": "2",
       "name": "Trade-ABC 楽天市場店",
       "sid": "trade-abc",
-      "total_reviews": 46695,
+      "total_reviews": 46705,
       "item_count": 15,
-      "total_item_count": 102,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "total_item_count": 101,
+      "weekly_delta": 10,
+      "weekly_est": {
+        "low": 200,
+        "high": 333,
+        "mid": 250
+      },
       "top_items": [
         {
           "item_id": "trade-abc:10012381",
@@ -235,13 +239,17 @@
           "item_id": "trade-abc:10012364",
           "name": "＼3,941件レビュー突破！／足臭バスター フットブラシ やわらかい 足洗いマット 足裏ブラシ フットケア 足洗用 吸盤付き かかと 角質 角質ケア 足裏ケア ",
           "price": 1280,
-          "review_count": 3946,
+          "review_count": 3948,
           "review_avg": 4.61,
           "url": "https://item.rakuten.co.jp/trade-abc/148-k105-n01/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/trade-abc/cabinet/148/th_148_2406.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 2,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 40,
+            "high": 67,
+            "mid": 50
+          }
         },
         {
           "item_id": "trade-abc:10012389",
@@ -259,49 +267,65 @@
           "item_id": "trade-abc:10012343",
           "name": "＼3,242件レビュー突破！／タオルキャップ 2個セット 子供 スイミング 女の子 キッズ うさぎ くま ヘアキャップ プール 2枚 2個 セット ドライキャッ",
           "price": 890,
-          "review_count": 3246,
+          "review_count": 3247,
           "review_avg": 4.7,
           "url": "https://item.rakuten.co.jp/trade-abc/132-k016-n03/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/trade-abc/cabinet/132/th_132_2401.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "trade-abc:10012428",
           "name": "＼2,800件レビュー突破！／メガネ くもり止め クロス メガネ拭き レンズクロス くもり止めクロス 曇らない マスク メガネ クロス くもりどめ ゴーグル サ",
           "price": 1080,
-          "review_count": 2829,
+          "review_count": 2830,
           "review_avg": 4.55,
           "url": "https://item.rakuten.co.jp/trade-abc/217-k143-n01/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/trade-abc/cabinet/217/th_217.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "trade-abc:10012454",
           "name": "＼2,643件レビュー突破！／お米保存袋 米袋 密閉 米びつ チャック付き お米 保存容器 アルミ袋 ライスストッカー ライスボックス 米櫃 ジッパー付き 遮光",
           "price": 1000,
-          "review_count": 2661,
+          "review_count": 2663,
           "review_avg": 4.67,
           "url": "https://item.rakuten.co.jp/trade-abc/245-k166-n01/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/trade-abc/cabinet/245/th_245_3.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 2,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 40,
+            "high": 67,
+            "mid": 50
+          }
         },
         {
           "item_id": "trade-abc:10012328",
           "name": "＼2,501件レビュー突破！／突っ張り棒 ステンレス 強力 つっぱり棒 伸縮棒 耐荷重 カーテン 衣類 コート掛け 棚 収納 伸縮自在 ベランダ リビング 洗面",
           "price": 1390,
-          "review_count": 2515,
+          "review_count": 2516,
           "review_avg": 4.73,
           "url": "https://item.rakuten.co.jp/trade-abc/098-k078-n01/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/trade-abc/cabinet/098/th_098_2308.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "trade-abc:10012245",
@@ -319,13 +343,17 @@
           "item_id": "trade-abc:10012452",
           "name": "＼2,482件レビュー突破！／耳かき カメラ イヤースコープ 耳掻き 耳掃除 耳そうじ ピンセット カメラ付き 子供 ライト みみかき 照明付き 介護耳かき 大",
           "price": 1480,
-          "review_count": 2484,
+          "review_count": 2485,
           "review_avg": 4.33,
           "url": "https://item.rakuten.co.jp/trade-abc/250-k094-n02/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/trade-abc/cabinet/250/th_250-3.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "trade-abc:10012365",
@@ -355,13 +383,17 @@
           "item_id": "trade-abc:10012408",
           "name": "＼2,009件レビュー突破！／マグネットフック 金属製保護パッド付き 超強力 ネオジム磁石 おしゃれ 北欧 強力 フック ステンレス製 防錆 インテリア 整理整",
           "price": 1390,
-          "review_count": 2015,
+          "review_count": 2017,
           "review_avg": 4.65,
           "url": "https://item.rakuten.co.jp/trade-abc/189-k122-n03/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/trade-abc/cabinet/189/th_189_2309.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 2,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 40,
+            "high": 67,
+            "mid": 50
+          }
         },
         {
           "item_id": "trade-abc:10012344",
@@ -394,23 +426,31 @@
       "no": "9",
       "name": "LASIEM（ラシエム）",
       "sid": "morevalue",
-      "total_reviews": 28245,
+      "total_reviews": 28249,
       "item_count": 15,
       "total_item_count": 168,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "weekly_delta": 4,
+      "weekly_est": {
+        "low": 80,
+        "high": 133,
+        "mid": 100
+      },
       "top_items": [
         {
           "item_id": "morevalue:10000243",
           "name": "＼3/30限定30％OFFクーポン／【ラシエム公式】 財布 レディース ミニ財布 本革 ミニ カードケース カード入れ 大容量 ゴールド ファスナー ミニウォレ",
           "price": 1980,
-          "review_count": 6383,
+          "review_count": 6384,
           "review_avg": 4.54,
           "url": "https://item.rakuten.co.jp/morevalue/t19/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/morevalue/cabinet/rt19/rt19b_01_02r.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "morevalue:10000197",
@@ -476,13 +516,17 @@
           "item_id": "morevalue:10000415",
           "name": "＼3/30限定30％OFFクーポン／財布 レディース 長財布 小さめ 小さい長財布 短い長財布 本革 コンパクト 薄い 薄型 L字ファスナー スキミング防止 ミ",
           "price": 5480,
-          "review_count": 1285,
+          "review_count": 1286,
           "review_avg": 4.47,
           "url": "https://item.rakuten.co.jp/morevalue/m3/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/morevalue/cabinet/m3/m3_01_5r.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "morevalue:10000361",
@@ -560,13 +604,17 @@
           "item_id": "morevalue:10000208",
           "name": "【楽天1位】 かっさプレート 美顔器 テラヘルツ 美顔 美容 美肌 美人 かっさ 頭皮マッサージ リンパマッサージ カッサ カッサプレート 突起 健康 ツボ押し",
           "price": 1780,
-          "review_count": 735,
+          "review_count": 737,
           "review_avg": 4.64,
           "url": "https://item.rakuten.co.jp/morevalue/t11/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/morevalue/cabinet/t11/t11_01_02_2r.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 2,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 40,
+            "high": 67,
+            "mid": 50
+          }
         },
         {
           "item_id": "morevalue:10000330",
@@ -587,23 +635,31 @@
       "no": "12",
       "name": "ddice",
       "sid": "confianceshop",
-      "total_reviews": 22567,
+      "total_reviews": 22338,
       "item_count": 25,
-      "total_item_count": 250,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "total_item_count": 249,
+      "weekly_delta": 3,
+      "weekly_est": {
+        "low": 60,
+        "high": 100,
+        "mid": 75
+      },
       "top_items": [
         {
           "item_id": "confianceshop:10000139",
           "name": "≪クーポン利用で880円！≫【2サイズから選べる】バッグインバッグ バックインバッグ バックインバックバッグインバック フェルト 大きめ 小さめ インナーバッグ",
           "price": 1280,
-          "review_count": 3885,
+          "review_count": 3886,
           "review_avg": 4.38,
           "url": "https://item.rakuten.co.jp/confianceshop/10000139/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/confianceshop/cabinet/05953329/imgrc0088842020.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "confianceshop:10000019",
@@ -681,25 +737,33 @@
           "item_id": "confianceshop:10000094",
           "name": "≪全品20％offクーポン発行中！≫ バッグインバッグ インナーバッグ トートバッグ 整理 baginbag 収納 トラベルポーチ レディース 大きめ 小さめ ",
           "price": 680,
-          "review_count": 914,
+          "review_count": 915,
           "review_avg": 3.9,
           "url": "https://item.rakuten.co.jp/confianceshop/10000094/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/confianceshop/cabinet/05598711/imgrc0094791205.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "confianceshop:10000444",
           "name": "≪1枚145円 クーポン利用で！お試しは1枚:385円！≫ キッチンクロス 油汚れクロス 5枚セット まとめ買い レンジクロス 布巾 油汚れ 専用 台所 ふきん",
           "price": 385,
-          "review_count": 843,
+          "review_count": 844,
           "review_avg": 4.56,
           "url": "https://item.rakuten.co.jp/confianceshop/10000439/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/confianceshop/cabinet/10764007/imgrc0136853263.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "confianceshop:10000004",
@@ -769,18 +833,6 @@
           "review_avg": 4.64,
           "url": "https://item.rakuten.co.jp/confianceshop/10000279/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/confianceshop/cabinet/10758199/imgrc0137367380.jpg?_ex=128x128",
-          "review_delta": 0,
-          "price_delta": 0,
-          "est_sales": null
-        },
-        {
-          "item_id": "confianceshop:10000017",
-          "name": "≪クーポン利用で1,380円！≫ レインコート 自転車 レインポンチョ ママ 自転車用レインコート ポンチョレインコート 送り迎え 自転車レインコート 自転車用",
-          "price": 1980,
-          "review_count": 477,
-          "review_avg": 4.15,
-          "url": "https://item.rakuten.co.jp/confianceshop/10000017/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
-          "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/confianceshop/cabinet/05371024/nmifjdsliog.jpg?_ex=128x128",
           "review_delta": 0,
           "price_delta": 0,
           "est_sales": null
@@ -892,9 +944,21 @@
           "review_delta": 0,
           "price_delta": 0,
           "est_sales": null
+        },
+        {
+          "item_id": "confianceshop:10000334",
+          "name": "《クーポン利用で750円!》 アップルウォッチ バンド スポーツバンド 8 7 6 SE 5 3 4 44 ベルト 40 Apple Watch スポーツ シリ",
+          "price": 1280,
+          "review_count": 245,
+          "review_avg": 4.65,
+          "url": "https://item.rakuten.co.jp/confianceshop/10000334/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
+          "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/confianceshop/cabinet/08780305/imgrc0116856811.jpg?_ex=128x128",
+          "review_delta": null,
+          "price_delta": null,
+          "est_sales": null
         }
       ],
-      "alert_count": 0
+      "alert_count": 1
     },
     {
       "no": "14",
@@ -1051,18 +1115,6 @@
           "est_sales": null
         },
         {
-          "item_id": "polapola:10000044",
-          "name": "＼最大50％OFF！店内対象商品／【楽天1位】 洗濯ネット 特大 中 小 110cm×90cm 大 80cm×60cm 布団 大型 ファスナー収納付 こたつ布団",
-          "price": 698,
-          "review_count": 215,
-          "review_avg": 4.52,
-          "url": "https://item.rakuten.co.jp/polapola/pola-029/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
-          "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/polapola/cabinet/imgrc0098214936.jpg?_ex=128x128",
-          "review_delta": 0,
-          "price_delta": 0,
-          "est_sales": null
-        },
-        {
           "item_id": "polapola:10000078",
           "name": "＼最大50％OFF！店内対象商品／【理学療法士推薦】 指サポーター 三点固定 ばね指 突き指 つき指 指 固定 指のサポーター 腱鞘炎 フィンガー 関節痛 人差",
           "price": 1050,
@@ -1070,6 +1122,18 @@
           "review_avg": 4.33,
           "url": "https://item.rakuten.co.jp/polapola/pola-058/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/polapola/cabinet/compass1724293309.jpg?_ex=128x128",
+          "review_delta": 0,
+          "price_delta": 0,
+          "est_sales": null
+        },
+        {
+          "item_id": "polapola:10000044",
+          "name": "＼最大50％OFF！店内対象商品／【楽天1位】 洗濯ネット 特大 中 小 110cm×90cm 大 80cm×60cm 布団 大型 ファスナー収納付 こたつ布団",
+          "price": 698,
+          "review_count": 215,
+          "review_avg": 4.52,
+          "url": "https://item.rakuten.co.jp/polapola/pola-029/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
+          "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/polapola/cabinet/imgrc0098214936.jpg?_ex=128x128",
           "review_delta": 0,
           "price_delta": 0,
           "est_sales": null
@@ -1087,7 +1151,7 @@
           "est_sales": null
         }
       ],
-      "alert_count": 1
+      "alert_count": 0
     },
     {
       "no": "15",
@@ -1095,7 +1159,7 @@
       "sid": "queensland",
       "total_reviews": 8311,
       "item_count": 15,
-      "total_item_count": 1596,
+      "total_item_count": 1595,
       "weekly_delta": 0,
       "weekly_est": null,
       "top_items": [
@@ -1481,13 +1545,13 @@
       "sid": "trendstyle",
       "total_reviews": 8226,
       "item_count": 15,
-      "total_item_count": 1277,
+      "total_item_count": 1273,
       "weekly_delta": 0,
       "weekly_est": null,
       "top_items": [
         {
           "item_id": "trendstyle:10003585",
-          "name": "【本日限定10%OFFクーポン】 ブラックボードシート | 壁が黒板に 便利 シートタイプ 黒板 /2m×45cm 5本のチョーク付き ウォールステッカー お絵",
+          "name": "ブラックボードシート | 壁が黒板に 便利 シートタイプ 黒板 /2m×45cm 5本のチョーク付き ウォールステッカー お絵かき 子供部屋 会議室 オフィス用",
           "price": 1280,
           "review_count": 1464,
           "review_avg": 4.27,
@@ -1499,7 +1563,7 @@
         },
         {
           "item_id": "trendstyle:10003767",
-          "name": "【本日限定10%OFFクーポン】 時計ベルト 腕時計 ベルト 時計 替えベルト バンド empt スタンダード 尾錠 ブラック ブラウン 黒 茶 18mm 19",
+          "name": "時計ベルト 腕時計 ベルト 時計 替えベルト バンド empt スタンダード 尾錠 ブラック ブラウン 黒 茶 18mm 19mm 20mm 21mm 22mm",
           "price": 1650,
           "review_count": 969,
           "review_avg": 4.6,
@@ -1511,7 +1575,7 @@
         },
         {
           "item_id": "trendstyle:10003765",
-          "name": "【本日限定10%OFFクーポン】 時計ベルト 腕時計 ベルト 時計 替えベルト バンド empt Dバックル ブラック ブラウン 黒 茶 18mm 19mm 2",
+          "name": "時計ベルト 腕時計 ベルト 時計 替えベルト バンド empt Dバックル ブラック ブラウン 黒 茶 18mm 19mm 20mm 21mm 22mm | 本",
           "price": 1980,
           "review_count": 870,
           "review_avg": 4.38,
@@ -1523,7 +1587,7 @@
         },
         {
           "item_id": "trendstyle:10003796",
-          "name": "【本日限定10%OFFクーポン】 ランニングポーチ ランニングバッグ ウェストポーチ ランニング ■EMPT ランニングウェストポーチ ジョギングポーチ マラソ",
+          "name": "ランニングポーチ ランニングバッグ ウェストポーチ ランニング ■EMPT ランニングウェストポーチ ジョギングポーチ マラソン トライアスロン ハイキング ラ",
           "price": 1280,
           "review_count": 645,
           "review_avg": 3.97,
@@ -1535,7 +1599,7 @@
         },
         {
           "item_id": "trendstyle:10005013",
-          "name": "【本日限定10%OFFクーポン】 大判 厚手 ジョイント トレーニングマット ジムマット 60x60x1.2cm 6枚セット | ジョイントマット 筋トレマット",
+          "name": "大判 厚手 ジョイント トレーニングマット ジムマット 60x60x1.2cm 6枚セット | ジョイントマット 筋トレマット 運動マット エクササイズマット ",
           "price": 4650,
           "review_count": 644,
           "review_avg": 4.49,
@@ -1547,7 +1611,7 @@
         },
         {
           "item_id": "trendstyle:10003597",
-          "name": "【本日限定10%OFFクーポン】 蝶ネクタイ 子供 メンズ レディース [empt 送料無料]ボウタイ ニット 蝶ネクタイ メンズ 結婚式などに最適 男女兼用 ",
+          "name": "蝶ネクタイ 子供 メンズ レディース [empt 送料無料]ボウタイ ニット 蝶ネクタイ メンズ 結婚式などに最適 男女兼用 子供OK 蝶ネクタイ メンズ 蝶ネ",
           "price": 1398,
           "review_count": 513,
           "review_avg": 4.37,
@@ -1559,7 +1623,7 @@
         },
         {
           "item_id": "trendstyle:10003685",
-          "name": "【本日限定10%OFFクーポン】 自転車クッションカバー スポーツサイクル用 | ライドを快適にサポートするクッションサドルカバー / 自転車 サドル サドルカ",
+          "name": "自転車クッションカバー スポーツサイクル用 | ライドを快適にサポートするクッションサドルカバー / 自転車 サドル サドルカバー クッション ロードバイク ク",
           "price": 1398,
           "review_count": 481,
           "review_avg": 4.09,
@@ -1571,7 +1635,7 @@
         },
         {
           "item_id": "trendstyle:10003890",
-          "name": "【本日限定10%OFFクーポン】 自転車 タイヤ バルブキャップ 仏式 英式 対応 4個セット | ロードバイク マウンテンバイク タイヤバルブ ドレスアップ ",
+          "name": "自転車 タイヤ バルブキャップ 仏式 英式 対応 4個セット | ロードバイク マウンテンバイク タイヤバルブ ドレスアップ かっこいい おしゃれ カスタマイズ",
           "price": 699,
           "review_count": 420,
           "review_avg": 4.71,
@@ -1583,7 +1647,7 @@
         },
         {
           "item_id": "trendstyle:10003790",
-          "name": "【本日限定10%OFFクーポン】 EMPT 水着 メンズ フィットネス水着 競泳水着 | 水泳 フィットネス スイムウェア スポーツ 男性用 ショートパンツ 競",
+          "name": "EMPT 水着 メンズ フィットネス水着 競泳水着 | 水泳 フィットネス スイムウェア スポーツ 男性用 ショートパンツ 競泳水着 練習水着 スイミングパンツ",
           "price": 1980,
           "review_count": 419,
           "review_avg": 4.33,
@@ -1595,7 +1659,7 @@
         },
         {
           "item_id": "trendstyle:10003799",
-          "name": "【本日限定10%OFFクーポン】 レディース無地5本指ソックス | 足のムレ対策アイテム 5本指ソックス かわいい おしゃれ 5本指ソックス パンプス 五本指ソ",
+          "name": "レディース無地5本指ソックス | 足のムレ対策アイテム 5本指ソックス かわいい おしゃれ 5本指ソックス パンプス 五本指ソックス 浅履き 靴下 スニーカー ",
           "price": 398,
           "review_count": 398,
           "review_avg": 4.44,
@@ -1607,7 +1671,7 @@
         },
         {
           "item_id": "trendstyle:10003600",
-          "name": "【本日限定10%OFFクーポン】 かわいい レディース フットカバー 柄 | 素足感覚 フットカバーソックス 靴下 カバーソックス レディース カバーソックス ",
+          "name": "かわいい レディース フットカバー 柄 | 素足感覚 フットカバーソックス 靴下 カバーソックス レディース カバーソックス 浅履き フットカバー 脱げにくい ",
           "price": 298,
           "review_count": 356,
           "review_avg": 4.22,
@@ -1619,7 +1683,7 @@
         },
         {
           "item_id": "trendstyle:10003750",
-          "name": "【本日限定10%OFFクーポン】 ギター カポタスト ギター カポ Guitar CAPO アコースティックギター アコギ エレキギター エレキ対応 のカポタス",
+          "name": "ギター カポタスト ギター カポ Guitar CAPO アコースティックギター アコギ エレキギター エレキ対応 のカポタスト ギター カポ /シンプルで使い",
           "price": 1000,
           "review_count": 277,
           "review_avg": 4.37,
@@ -1631,7 +1695,7 @@
         },
         {
           "item_id": "trendstyle:10003742",
-          "name": "【本日限定10%OFFクーポン】 外反母趾サポーター 2個 | 靴 パンプス サポーター 対策 保護 薄型 ソックス フットケア 足のトラブル シリコン 外反母",
+          "name": "外反母趾サポーター 2個 | 靴 パンプス サポーター 対策 保護 薄型 ソックス フットケア 足のトラブル シリコン 外反母趾 矯正 外反母趾 靴 おしゃれ ",
           "price": 1000,
           "review_count": 261,
           "review_avg": 4.2,
@@ -1643,7 +1707,7 @@
         },
         {
           "item_id": "trendstyle:10003652",
-          "name": "【本日限定10%OFFクーポン】 蝶ネクタイ 子供 メンズ レディース [empt第二弾 送料無料]ボウタイ ニット 蝶ネクタイ メンズ 結婚式などに最適 男女",
+          "name": "蝶ネクタイ 子供 メンズ レディース [empt第二弾 送料無料]ボウタイ ニット 蝶ネクタイ メンズ 結婚式などに最適 男女兼用 子供OK 蝶ネクタイ メンズ",
           "price": 1398,
           "review_count": 259,
           "review_avg": 4.49,
@@ -1655,7 +1719,7 @@
         },
         {
           "item_id": "trendstyle:10003800",
-          "name": "【本日限定10%OFFクーポン】 時計ベルト 腕時計 ベルト 時計 替えベルト バンド empt プッシュロック Dバックル ブラック ブラウン 黒 茶 18m",
+          "name": "時計ベルト 腕時計 ベルト 時計 替えベルト バンド empt プッシュロック Dバックル ブラック ブラウン 黒 茶 18mm 19mm 20mm 21mm ",
           "price": 3480,
           "review_count": 250,
           "review_avg": 4.5,
@@ -1666,7 +1730,7 @@
           "est_sales": null
         }
       ],
-      "alert_count": 1
+      "alert_count": 0
     },
     {
       "no": "22",
@@ -1674,7 +1738,7 @@
       "sid": "grepo",
       "total_reviews": 2713,
       "item_count": 15,
-      "total_item_count": 547,
+      "total_item_count": 546,
       "weekly_delta": 0,
       "weekly_est": null,
       "top_items": [
@@ -1865,11 +1929,15 @@
       "no": "23",
       "name": "ハッピートーク楽天市場店",
       "sid": "happy-talk-shop",
-      "total_reviews": 5467,
+      "total_reviews": 5468,
       "item_count": 15,
       "total_item_count": 97,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "weekly_delta": 1,
+      "weekly_est": {
+        "low": 20,
+        "high": 33,
+        "mid": 25
+      },
       "top_items": [
         {
           "item_id": "happy-talk-shop:10000057",
@@ -2043,16 +2111,20 @@
           "item_id": "happy-talk-shop:10000050",
           "name": "【公式】【従来モデル(1年)】【在庫限り特別価格 | 通常3,980円 → 2,980円(税込)】 電磁波対策 ネックレス ゼロ磁場 ペンダント | 電磁波 電",
           "price": 2980,
-          "review_count": 141,
-          "review_avg": 4.35,
+          "review_count": 142,
+          "review_avg": 4.34,
           "url": "https://item.rakuten.co.jp/happy-talk-shop/zrp-001/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/happy-talk-shop/cabinet/accessory/zero_pen/zjp2501_1_000.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         }
       ],
-      "alert_count": 2
+      "alert_count": 0
     },
     {
       "no": "26",
@@ -2060,7 +2132,7 @@
       "sid": "maple517",
       "total_reviews": 261,
       "item_count": 15,
-      "total_item_count": 295,
+      "total_item_count": 296,
       "weekly_delta": 0,
       "weekly_est": null,
       "top_items": [
@@ -2444,23 +2516,31 @@
       "no": "31",
       "name": "KQueenStore",
       "sid": "kqueenstore",
-      "total_reviews": 4165,
+      "total_reviews": 4167,
       "item_count": 15,
       "total_item_count": 251,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "weekly_delta": 2,
+      "weekly_est": {
+        "low": 40,
+        "high": 67,
+        "mid": 50
+      },
       "top_items": [
         {
           "item_id": "kqueenstore:10001451",
           "name": "ナベシャツ なべしゃつ インナー スポーツブラ 揺れない ジュニア 大人 大きいサイズ レディース 胸サポータ 胸つぶし さらし 胸 男装 なべシャツ 胸を小さ",
           "price": 1080,
-          "review_count": 649,
+          "review_count": 650,
           "review_avg": 4.24,
           "url": "https://item.rakuten.co.jp/kqueenstore/s13/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/kqueenstore/cabinet/05887756/inner_01.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "kqueenstore:10001620",
@@ -2526,13 +2606,17 @@
           "item_id": "kqueenstore:10001426",
           "name": "シフォン ワイドパンツ プリーツ ウェストゴム ロング丈 パンツ ガウチョパンツ ボトムス プリーツパンツ 春 夏 レディス",
           "price": 1540,
-          "review_count": 219,
+          "review_count": 220,
           "review_avg": 4.42,
           "url": "https://item.rakuten.co.jp/kqueenstore/s256/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/kqueenstore/cabinet/05887756/imgrc0080084117.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "kqueenstore:10001352",
@@ -2824,17 +2908,21 @@
           "est_sales": null
         }
       ],
-      "alert_count": 4
+      "alert_count": 0
     },
     {
       "no": "37",
       "name": "便利雑貨ショップ umiwo",
       "sid": "umiwo",
-      "total_reviews": 10753,
+      "total_reviews": 10754,
       "item_count": 20,
-      "total_item_count": 727,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "total_item_count": 728,
+      "weekly_delta": 1,
+      "weekly_est": {
+        "low": 20,
+        "high": 33,
+        "mid": 25
+      },
       "top_items": [
         {
           "item_id": "umiwo:10000207",
@@ -3068,13 +3156,17 @@
           "item_id": "umiwo:10000783",
           "name": "楽天1位【高評価レビュー4.7点】ピルクラッシャー 錠剤クラッシャー シンプル すりつぶし機能 薬 錠剤 タブレット 粉末 粉 錠剤粉砕 赤ちゃん ペット お年",
           "price": 880,
-          "review_count": 268,
-          "review_avg": 4.69,
+          "review_count": 269,
+          "review_avg": 4.7,
           "url": "https://item.rakuten.co.jp/umiwo/0784/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/umiwo/cabinet/photo7/0784_1.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         }
       ],
       "alert_count": 0
@@ -3276,83 +3368,111 @@
       "no": "46",
       "name": "LARUTANオンラインショップ",
       "sid": "larutan",
-      "total_reviews": 18846,
+      "total_reviews": 18868,
       "item_count": 15,
       "total_item_count": 22,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "weekly_delta": 22,
+      "weekly_est": {
+        "low": 440,
+        "high": 733,
+        "mid": 550
+      },
       "top_items": [
         {
           "item_id": "larutan:10000093",
           "name": "口コミ4700件!!＜7種から選べるレビュー特典＞◆楽天1位16冠◆モバイルミルクウォーマー LARUTAN USB ミルクウォーマー ボトルウォーマー 哺乳瓶",
           "price": 5980,
-          "review_count": 4818,
+          "review_count": 4826,
           "review_avg": 4.59,
           "url": "https://item.rakuten.co.jp/larutan/n026m/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/larutan/cabinet/larutan/n026m/n026m-search-image/n026m-a-top.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 8,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 160,
+            "high": 267,
+            "mid": 200
+          }
         },
         {
           "item_id": "larutan:10000015",
           "name": "口コミ3200件!!◆楽天1位17冠◆芸能人愛用＜管理栄養士推薦＞離乳食冊子付き♪ミルクウォーマー ボトルウォーマー 哺乳瓶ウォーマー ミルク 調乳ポット 離乳",
           "price": 6980,
-          "review_count": 3224,
+          "review_count": 3225,
           "review_avg": 4.6,
           "url": "https://item.rakuten.co.jp/larutan/n026/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/larutan/cabinet/larutan/n026/n026-search-image/n026m-c-top.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "larutan:10000000",
           "name": "口コミ2600件!!＜芸能人愛用＞楽天1位6冠≪レビュー特典≫LARUTAN おむつストッカー 蓋付き 仕切り 収納 オムツストッカー お世話セット おむつバッ",
           "price": 2480,
-          "review_count": 2656,
+          "review_count": 2657,
           "review_avg": 4.48,
           "url": "https://item.rakuten.co.jp/larutan/n022-a-wh-set/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/larutan/cabinet/thum/n022-a-wh-set-top.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "larutan:10000131",
           "name": "クーポンで5112円!!産婦人科医&助産師推薦★楽天1位17冠★口コミ1900件≪レビュー特典あり≫搾乳機 搾乳器 電動 さく乳器 LARUTAN 電動搾乳機 ",
           "price": 5680,
-          "review_count": 1972,
+          "review_count": 1975,
           "review_avg": 4.58,
           "url": "https://item.rakuten.co.jp/larutan/n095/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/larutan/cabinet/larutan/n095/n095-search-image/n095-c2-top.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 3,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 60,
+            "high": 100,
+            "mid": 75
+          }
         },
         {
           "item_id": "larutan:10000088",
           "name": "＼大ヒット★11万個突破／楽天1位《雑誌SNSでも話題》TRAN ランニング ポーチ スマホ【日本代表選手愛用】ウエストポーチ ランニングベルト ペットボトル ",
           "price": 2480,
-          "review_count": 1959,
+          "review_count": 1960,
           "review_avg": 4.63,
           "url": "https://item.rakuten.co.jp/larutan/n001-b2/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/larutan/cabinet/tran/n001/n001-search-image/n001c2-2603.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "larutan:10000136",
           "name": "＼5種から選べるレビュー特典／＜芸能人愛用＞高評価★楽天1位14冠★助産師推薦 哺乳瓶除菌乾燥機 哺乳瓶 除菌 乾燥 除菌乾燥機 乾燥器 哺乳びん 大容量 空焚",
           "price": 14850,
-          "review_count": 1394,
+          "review_count": 1399,
           "review_avg": 4.62,
           "url": "https://item.rakuten.co.jp/larutan/n100/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/larutan/cabinet/larutan/n100-r/n100-search-image/n100-c1-top.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 5,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 100,
+            "high": 167,
+            "mid": 125
+          }
         },
         {
           "item_id": "larutan:10000103",
@@ -3382,13 +3502,17 @@
           "item_id": "larutan:10000154",
           "name": "今ならクーポンで9980円★＜豪華レビュー特典＞楽天1位2冠 ポットクッカー スープメーカー 自動調理 ポット 600ml 豆乳メーカー ミキサー 便利グッズ ",
           "price": 12980,
-          "review_count": 273,
+          "review_count": 276,
           "review_avg": 4.63,
           "url": "https://item.rakuten.co.jp/larutan/n105/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/larutan/cabinet/larutan/potcocker/n105-search-image/n105-2603b-top.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 3,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 60,
+            "high": 100,
+            "mid": 75
+          }
         },
         {
           "item_id": "larutan:10000148",
@@ -3469,23 +3593,31 @@
       "no": "47",
       "name": "tempostar",
       "sid": "tempostar",
-      "total_reviews": 3822,
+      "total_reviews": 3829,
       "item_count": 15,
-      "total_item_count": 70,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "total_item_count": 68,
+      "weekly_delta": 7,
+      "weekly_est": {
+        "low": 140,
+        "high": 233,
+        "mid": 175
+      },
       "top_items": [
         {
           "item_id": "tempostar:10000001",
           "name": "＼楽天1位！／ キッチンスケール 0.1g デジタルスケール クッキングスケール スケール はかり 計り 測り 量り デジタル キッチン 料理 おしゃれ 電子は",
           "price": 799,
-          "review_count": 1880,
+          "review_count": 1883,
           "review_avg": 4.36,
           "url": "https://item.rakuten.co.jp/tempostar/tds-001/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/tempostar/cabinet/08735996/08735997/tds_001_01.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 3,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 60,
+            "high": 100,
+            "mid": 75
+          }
         },
         {
           "item_id": "tempostar:10000004",
@@ -3501,19 +3633,23 @@
         },
         {
           "item_id": "tempostar:10000082",
-          "name": "【先着1289円で購入！3/30 23:59迄】自転車カバー 電動自転車カバー 厚手 自転車カバー 子供乗せ 防水 クス製 防犯防風 20-29インチ対応 21",
+          "name": "【先着1289円で購入！3/31 23:59迄】自転車カバー 電動自転車カバー 厚手 自転車カバー 子供乗せ 防水 クス製 防犯防風 20-29インチ対応 21",
           "price": 1389,
-          "review_count": 333,
-          "review_avg": 4.47,
+          "review_count": 336,
+          "review_avg": 4.46,
           "url": "https://item.rakuten.co.jp/tempostar/ts-cover01/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/tempostar/cabinet/12320425/12320713/tscover-01.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 3,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 60,
+            "high": 100,
+            "mid": 75
+          }
         },
         {
           "item_id": "tempostar:10000043",
-          "name": "☆楽天一位☆【15％OFFクーポン★3/30 23:59迄】ハンガー すべらない 滑らないハンガー 滑り止め 跡がつかない 肩 すべりにくい 型崩れ防止 ハンガ",
+          "name": "☆楽天一位☆【15％OFFクーポン★3/31 23:59迄】ハンガー すべらない 滑らないハンガー 滑り止め 跡がつかない 肩 すべりにくい 型崩れ防止 ハンガ",
           "price": 1480,
           "review_count": 273,
           "review_avg": 4.65,
@@ -3561,7 +3697,7 @@
         },
         {
           "item_id": "tempostar:10000169",
-          "name": "＼3/30限定799円で手に入る！／ ストレッチバンド ストレッチチューブ トレーニングチューブ トレーニングバンド ストレッチ 筋トレ バンド チューブ 背中",
+          "name": "＼3/31限定799円で手に入る！／ ストレッチバンド ストレッチチューブ トレーニングチューブ トレーニングバンド ストレッチ 筋トレ バンド チューブ 背中",
           "price": 799,
           "review_count": 72,
           "review_avg": 4.69,
@@ -3597,15 +3733,19 @@
         },
         {
           "item_id": "tempostar:10000158",
-          "name": "【クーポンで1264円！3/30 23:59迄】靴 洗濯ネット 靴用洗濯ネット 靴洗濯ネット シューズ洗濯ネット 2個セット 4個セット シューズ 洗濯 型崩れ",
+          "name": "【クーポンで1264円！3/31 23:59迄】靴 洗濯ネット 靴用洗濯ネット 靴洗濯ネット シューズ洗濯ネット 2個セット 4個セット シューズ 洗濯 型崩れ",
           "price": 1579,
-          "review_count": 33,
-          "review_avg": 4.21,
+          "review_count": 34,
+          "review_avg": 4.24,
           "url": "https://item.rakuten.co.jp/tempostar/ts-shoeclean/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/tempostar/cabinet/08735996/12439780/ts-shoeclean01z.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "tempostar:10000016",
@@ -3664,7 +3804,7 @@
       "sid": "motto-motto",
       "total_reviews": 742,
       "item_count": 15,
-      "total_item_count": 70425,
+      "total_item_count": 70448,
       "weekly_delta": 0,
       "weekly_est": null,
       "top_items": [
@@ -3815,13 +3955,13 @@
         {
           "item_id": "motto-motto:10022171",
           "name": "送料無料 鼻パッド ノーズパッド 2セット4枚入り 同色 めがね メガネ 眼鏡 眼鏡小物 シール シリコン ズレない ずれ落ち防止 すべり止め 黒 透明 白 シ",
-          "price": 300,
+          "price": 290,
           "review_count": 39,
           "review_avg": 3.67,
           "url": "https://item.rakuten.co.jp/motto-motto/zak-40286/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/motto-motto/cabinet/itempic3196/zak-40286.jpg?_ex=128x128",
           "review_delta": 0,
-          "price_delta": 0,
+          "price_delta": -10,
           "est_sales": null
         },
         {
@@ -3849,17 +3989,21 @@
           "est_sales": null
         }
       ],
-      "alert_count": 9
+      "alert_count": 0
     },
     {
       "no": "50",
       "name": "タブレット スマホホルダーecoride",
       "sid": "ecoride",
-      "total_reviews": 4450,
+      "total_reviews": 4451,
       "item_count": 15,
       "total_item_count": 55,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "weekly_delta": 1,
+      "weekly_est": {
+        "low": 20,
+        "high": 33,
+        "mid": 25
+      },
       "top_items": [
         {
           "item_id": "ecoride:10000989",
@@ -3948,13 +4092,13 @@
         {
           "item_id": "ecoride:10000042",
           "name": "アルミシート 断熱 保温 災害 エマージェンシーシート アルミブランケット 防災グッズ アルミ 毛布 サバイバルシート コンパクト 防災 防寒 備蓄 防風 防災",
-          "price": 549,
+          "price": 999,
           "review_count": 165,
           "review_avg": 4.68,
           "url": "https://item.rakuten.co.jp/ecoride/sabage_061/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/ecoride/cabinet/img2/sum/sabage-061.jpg?_ex=128x128",
           "review_delta": 0,
-          "price_delta": 0,
+          "price_delta": 450,
           "est_sales": null
         },
         {
@@ -4033,16 +4177,20 @@
           "item_id": "ecoride:10001350",
           "name": "ネクタイ 黒 葬儀 喪服 冠婚葬祭 葬式 フォーマル 撥水加工 弔問 シルク 礼装 メンズ 無地 日本製 法事",
           "price": 1780,
-          "review_count": 108,
-          "review_avg": 4.56,
+          "review_count": 109,
+          "review_avg": 4.57,
           "url": "https://item.rakuten.co.jp/ecoride/homekitchen-087-01/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/ecoride/cabinet/img3/homekitchen-087-01.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         }
       ],
-      "alert_count": 1
+      "alert_count": 0
     },
     {
       "no": "51",
@@ -4434,23 +4582,31 @@
       "no": "56",
       "name": "エクレボ 楽天市場店",
       "sid": "exrevo",
-      "total_reviews": 23907,
+      "total_reviews": 23916,
       "item_count": 20,
-      "total_item_count": 270,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "total_item_count": 269,
+      "weekly_delta": 9,
+      "weekly_est": {
+        "low": 180,
+        "high": 300,
+        "mid": 225
+      },
       "top_items": [
         {
           "item_id": "exrevo:10001068",
           "name": "キャップ レディース 深め uv おしゃれ メンズ 夏用 ブランド キッズ 帽子 無地 春夏 接触冷感 涼しい uvカット シンプル コットン メッシュ 大きめ",
           "price": 1980,
-          "review_count": 4257,
+          "review_count": 4262,
           "review_avg": 4.29,
           "url": "https://item.rakuten.co.jp/exrevo/cp-01/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/exrevo/cabinet/hat/cp/cp-01.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 5,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 100,
+            "high": 167,
+            "mid": 125
+          }
         },
         {
           "item_id": "exrevo:10000665",
@@ -4468,13 +4624,17 @@
           "item_id": "exrevo:10001036",
           "name": "通帳ケース パスポートケース 磁気防止 スキミング防止 大容量 印鑑 入る 保護 ジャバラ 革 おしゃれ かわいい 通帳入れ パスポート入れ 通帳ケース磁気防止",
           "price": 1680,
-          "review_count": 2531,
+          "review_count": 2532,
           "review_avg": 4.44,
           "url": "https://item.rakuten.co.jp/exrevo/cc-47/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/exrevo/cabinet/zakka/cc/2/cc-47_n.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "exrevo:10000973",
@@ -4540,13 +4700,17 @@
           "item_id": "exrevo:10001116",
           "name": "コインケース 牛本革 薄い レディース「コインケース てのひら 財布 ミニ」 本革 小銭入れ コンパクト ミニ財布 小さい 小さめ 小物入れ 定期入れ メンズ ",
           "price": 1680,
-          "review_count": 858,
+          "review_count": 859,
           "review_avg": 4.43,
           "url": "https://item.rakuten.co.jp/exrevo/wt-12/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/exrevo/cabinet/zakka/wt/wt-12_nnn.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "exrevo:10001359",
@@ -4564,13 +4728,17 @@
           "item_id": "exrevo:10001048",
           "name": "パスケース 定期入れ レディース リール付き メンズ レザー おしゃれ 縦型 iDカード ケース 通勤 通学 高校生 かわいい キーホルダー 伸縮 カラビナ 両",
           "price": 1280,
-          "review_count": 659,
+          "review_count": 660,
           "review_avg": 4.4,
           "url": "https://item.rakuten.co.jp/exrevo/ps-04/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/exrevo/cabinet/zakka/cc/2/ps-04_nn.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "exrevo:10001219",
@@ -4645,6 +4813,22 @@
           "est_sales": null
         },
         {
+          "item_id": "exrevo:10001148",
+          "name": "ボディバッグ レディース メンズ 小さめ 斜めがけ 大人 軽量 大容量 キッズ おしゃれ かわいい 2way 斜めがけ ワンショルダー スマホポーチ ショルダー",
+          "price": 1980,
+          "review_count": 392,
+          "review_avg": 4.12,
+          "url": "https://item.rakuten.co.jp/exrevo/bb-27c/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
+          "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/exrevo/cabinet/zakka/bag/bb/bb-27c.jpg?_ex=128x128",
+          "review_delta": 1,
+          "price_delta": 0,
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
+        },
+        {
           "item_id": "exrevo:10000036",
           "name": "【ウィッグ ポニーテール】【送料無料】簡単 盛り髪！「姫盛 ウィッグ（ハードウェーブ）」卒業式 成人式 メガ盛り パーティー お団子 結婚式 ウィック ウイッグ",
           "price": 2680,
@@ -4652,18 +4836,6 @@
           "review_avg": 4.27,
           "url": "https://item.rakuten.co.jp/exrevo/10000036/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/exrevo/cabinet/wig/hm/hm-02.jpg?_ex=128x128",
-          "review_delta": 0,
-          "price_delta": 0,
-          "est_sales": null
-        },
-        {
-          "item_id": "exrevo:10001148",
-          "name": "ボディバッグ レディース メンズ 小さめ 斜めがけ 大人 軽量 大容量 キッズ おしゃれ かわいい 2way 斜めがけ ワンショルダー スマホポーチ ショルダー",
-          "price": 1980,
-          "review_count": 391,
-          "review_avg": 4.12,
-          "url": "https://item.rakuten.co.jp/exrevo/bb-27c/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
-          "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/exrevo/cabinet/zakka/bag/bb/bb-27c.jpg?_ex=128x128",
           "review_delta": 0,
           "price_delta": 0,
           "est_sales": null
@@ -4687,23 +4859,31 @@
       "no": "57",
       "name": "スリーアール",
       "sid": "3rwebshop",
-      "total_reviews": 17752,
+      "total_reviews": 17755,
       "item_count": 26,
-      "total_item_count": 235,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "total_item_count": 234,
+      "weekly_delta": 3,
+      "weekly_est": {
+        "low": 60,
+        "high": 100,
+        "mid": 75
+      },
       "top_items": [
         {
           "item_id": "3rwebshop:10006102",
           "name": "【防災士オススメ】 単三電池 充電池 単3 電池 エネボルト 充電 ケース付 充電電池 充電式電池 2150mAh 単3型 単3形 互換 単三 イルミネーション",
           "price": 1180,
-          "review_count": 4365,
+          "review_count": 4366,
           "review_avg": 4.52,
           "url": "https://item.rakuten.co.jp/3rwebshop/el21008/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/3rwebshop/cabinet/hansoku/06957443/ev21508-sam-rev3.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "3rwebshop:10005834",
@@ -4733,13 +4913,17 @@
           "item_id": "3rwebshop:10008952",
           "name": "【全世界対応★収納ケース付き】 折りたたみケトル 海外 対応 持ち運び ケトル 旅行 トラベルケトル 折りたたみ 電気 ケトル 電気ケトル ポータブルケトル 旅",
           "price": 4980,
-          "review_count": 746,
+          "review_count": 747,
           "review_avg": 4.44,
           "url": "https://item.rakuten.co.jp/3rwebshop/3r-assike06/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/3rwebshop/cabinet/hansoku/06957443/3r-tkl01kcl01-item01.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "3rwebshop:10007886",
@@ -4926,7 +5110,7 @@
           "name": "【LINEクーポン300円OFF】 充電池 充電器セット 単4 充電池 単四 950mAh セット 充電器 単3 単4 兼用 USB 電池充電器 ケース付 単4",
           "price": 2120,
           "review_count": 203,
-          "review_avg": 4.34,
+          "review_avg": 4.35,
           "url": "https://item.rakuten.co.jp/3rwebshop/set098-evc/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/3rwebshop/cabinet/hansoku/06957443/set098-evc_rev.jpg?_ex=128x128",
           "review_delta": 0,
@@ -4937,13 +5121,17 @@
           "item_id": "3rwebshop:10009456",
           "name": "【花粉対策・生乾き防止】 衣類乾燥機 小型 部屋干し コンパクト 乾燥機 服 乾燥 乾燥機 洗濯物 ハンガー 1人暮らし 一人暮らし 工事不要 衣類乾燥除湿機 ",
           "price": 8899,
-          "review_count": 190,
+          "review_count": 191,
           "review_avg": 4.31,
           "url": "https://item.rakuten.co.jp/3rwebshop/3r-hcd02/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/3rwebshop/cabinet/hansoku/06957443/3r-hcd02-item01i.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "3rwebshop:10008791",
@@ -5006,29 +5194,37 @@
           "est_sales": null
         }
       ],
-      "alert_count": 1
+      "alert_count": 0
     },
     {
       "no": "58",
       "name": "シェリーショップ",
       "sid": "shelly-shop",
-      "total_reviews": 28398,
+      "total_reviews": 28404,
       "item_count": 15,
       "total_item_count": 39,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "weekly_delta": 6,
+      "weekly_est": {
+        "low": 120,
+        "high": 200,
+        "mid": 150
+      },
       "top_items": [
         {
           "item_id": "shelly-shop:10000975",
-          "name": "【3/30限定 P5倍】椅子脚カバー 椅子足カバー イス 脚キャップ イス脚キャップ 椅子脚キャップ 椅子 脚 カバー 丸形 長方形 正方形 傷防止 カンガルー",
+          "name": "椅子脚カバー 椅子足カバー イス 脚キャップ イス脚キャップ 椅子脚キャップ 椅子 脚 カバー 丸形 長方形 正方形 脱げにくい 傷防止 カンガルー カルガルー",
           "price": 1100,
-          "review_count": 10794,
+          "review_count": 10796,
           "review_avg": 4.58,
           "url": "https://item.rakuten.co.jp/shelly-shop/isucover-w2/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/shelly-shop/cabinet/203/kireinamama/kisl-susp/sastena-fsk03.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 2,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 40,
+            "high": 67,
+            "mid": 50
+          }
         },
         {
           "item_id": "shelly-shop:10000106",
@@ -5044,19 +5240,23 @@
         },
         {
           "item_id": "shelly-shop:10000590",
-          "name": "【3/30限定 P5倍】 ソファ 滑り止め 【 丸型 角型 3~10cm 】 目立たない 超強力 滑り止め ソファー すべり止め 日本製 ベッド キズ防止 足 ",
+          "name": "ソファ 滑り止め 【 丸型 角型 3~10cm 】 目立たない 超強力 滑り止め ソファー すべり止め 日本製 ベッド キズ防止 足 脚 滑り止めゴム 臭くない",
           "price": 1111,
-          "review_count": 3010,
+          "review_count": 3012,
           "review_avg": 4.47,
           "url": "https://item.rakuten.co.jp/shelly-shop/suberidome34/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/shelly-shop/cabinet/203/sdnc/suberi3-1001.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 2,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 40,
+            "high": 67,
+            "mid": 50
+          }
         },
         {
           "item_id": "shelly-shop:10000996",
-          "name": "【3/30限定 P5倍】 椅子脚カバー 傷防止 ウール 100％ 木製脚用 きれいなママ フェルトカバー 8個入 椅子足カバー イス 脚キャップ 椅子脚キャップ",
+          "name": "椅子脚カバー 傷防止 ウール 100％ 木製脚用 きれいなママ フェルトカバー 8個入 椅子足カバー イス 脚キャップ イス脚キャップ 椅子脚キャップ 椅子 脚",
           "price": 1298,
           "review_count": 1746,
           "review_avg": 4.61,
@@ -5068,7 +5268,7 @@
         },
         {
           "item_id": "shelly-shop:10000963",
-          "name": "【3/30限定 P5倍】椅子脚カバー 椅子足カバー イス 脚キャップ イス脚キャップ　椅子脚キャップ 椅子 脚 カバー 椅子カバー 脚カバー 脱げにくい フッ素",
+          "name": "椅子脚カバー 椅子足カバー イス 脚キャップ イス脚キャップ　椅子脚キャップ 椅子 脚 カバー 椅子カバー 脚カバー シリコン 脱げにくい フッ素 カンガルー ",
           "price": 1298,
           "review_count": 1551,
           "review_avg": 4.56,
@@ -5080,12 +5280,12 @@
         },
         {
           "item_id": "shelly-shop:10000640",
-          "name": "【3/30限定 1個増量】 写真 8cm キーホルダー 1個 ラッピング うちの子最高 写真キーホルダー 立てられる アクリルキーホルダー キッズ・ベビー・マタ",
+          "name": "写真 8cm キーホルダー 1個 うちの子最高 写真キーホルダー 立てられる アクリルキーホルダー キッズ・ベビー・マタニティ 出産祝い・ギフト メモリアル・記",
           "price": 1980,
           "review_count": 1200,
           "review_avg": 4.83,
           "url": "https://item.rakuten.co.jp/shelly-shop/acrylic-kh01-a/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
-          "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/shelly-shop/cabinet/203/sale01/2401-05acrylic-kh01.jpg?_ex=128x128",
+          "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/shelly-shop/cabinet/203/photokey/231226acrylic-kh01.jpg?_ex=128x128",
           "review_delta": 0,
           "price_delta": 0,
           "est_sales": null
@@ -5118,17 +5318,21 @@
           "item_id": "shelly-shop:10000715",
           "name": "ソファー 滑り止め キレイに切れる 超強力 ソファ 滑り止め 長方形 日本製 16cmx 6cm カットしやすいミゾ付でラクラクカット 1枚入り ベッド すべり",
           "price": 1100,
-          "review_count": 743,
+          "review_count": 744,
           "review_avg": 4.63,
           "url": "https://item.rakuten.co.jp/shelly-shop/kakustoper-s/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/shelly-shop/cabinet/203/sdnc/suberi/250220-tyouho.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "shelly-shop:10000615",
-          "name": "【3/30限定 P5倍】 超強力 ソファー 滑り止め 4枚入 ダブルストッパー採用 7cm ソファー滑り止め ソファすべり止め 日本製 ベッド キズ防止 滑り止",
+          "name": "超強力 ソファー 滑り止め 4枚入 ダブルストッパー採用 7cm ソファー滑り止め ソファすべり止め 日本製 ベッド キズ防止 滑り止め ゴム 臭くない 滑り止",
           "price": 1200,
           "review_count": 630,
           "review_avg": 4.69,
@@ -5140,43 +5344,47 @@
         },
         {
           "item_id": "shelly-shop:10000643",
-          "name": "【3/30限定 1個増量】 写真 8cm キーホルダー 1個 犬 ラッピング 立てられるキーホルダー アクリルスタンド うちの子最高 キーホルダー アクリルキー",
+          "name": "写真 8cm キーホルダー 1個 犬 立てられるキーホルダー アクリルスタンド うちの子最高 キーホルダー アクリルキーホルダー 記念品 メモリアルグッズ ペッ",
           "price": 1980,
           "review_count": 627,
           "review_avg": 4.85,
           "url": "https://item.rakuten.co.jp/shelly-shop/acrylic-kh01-b/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
-          "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/shelly-shop/cabinet/203/sale01/2401-05acrylic-kh01d.jpg?_ex=128x128",
+          "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/shelly-shop/cabinet//203/photokey/8cm-kh01d.jpg?_ex=128x128",
           "review_delta": 0,
           "price_delta": 0,
           "est_sales": null
         },
         {
           "item_id": "shelly-shop:10000973",
-          "name": "【3/30限定 P5倍】椅子脚カバー 椅子足カバー イス 脚キャップ イス脚キャップ　椅子脚キャップ 椅子 脚 カバー 椅子カバー 脚カバー シリコン 脱げにく",
+          "name": "椅子脚カバー 椅子足カバー イス 脚キャップ イス脚キャップ　椅子脚キャップ 椅子 脚 カバー 椅子カバー 脚カバー シリコン 脱げにくい フッ素 カンガルー ",
           "price": 1298,
-          "review_count": 540,
+          "review_count": 541,
           "review_avg": 4.52,
           "url": "https://item.rakuten.co.jp/shelly-shop/isucover1821/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/shelly-shop/cabinet/203/kireinamama/18-21mm/kkm1821.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "shelly-shop:10000675",
-          "name": "【3/30限定 2個増量】 写真 チャーム 2個 うちの子最高 写真チャーム ラッピング キッズ・ベビー・マタニティ 出産祝い・ギフト メモリアル・記念品 その",
+          "name": "写真 チャーム 2個 うちの子最高 写真チャーム キッズ・ベビー・マタニティ 出産祝い・ギフト メモリアル・記念品 その他 敬老の日 七五三 出産祝 誕生日 ギ",
           "price": 1980,
           "review_count": 459,
           "review_avg": 4.78,
           "url": "https://item.rakuten.co.jp/shelly-shop/acrylic-ch2/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
-          "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/shelly-shop/cabinet/203/sale01/2401-05acrylic-ch.jpg?_ex=128x128",
+          "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/shelly-shop/cabinet/203/charm/2311charm.jpg?_ex=128x128",
           "review_delta": 0,
           "price_delta": 0,
           "est_sales": null
         },
         {
           "item_id": "shelly-shop:10000709",
-          "name": "【3/30限定 P5倍】 ソファ 滑り止め 細脚専用 丸型 2~4cm ソファぴたハイパー ソファ すべり止め ハード インテリア・寝具・収納 ソファ・ソファベ",
+          "name": "ソファ 滑り止め 細脚専用 丸型 2~4cm ソファぴたハイパー ソファ すべり止め ハード インテリア・寝具・収納 ソファ・ソファベッド ソファ・ソファベッド",
           "price": 1298,
           "review_count": 426,
           "review_avg": 4.6,
@@ -5188,7 +5396,7 @@
         },
         {
           "item_id": "shelly-shop:10000807",
-          "name": "【3/30限定 P5倍】スキミング 防止カード 永久磁石対応 磁気防止 ウルトラシェリーカード 3枚組 日本製 キャッシュカード クレジット マイナンバーカード",
+          "name": "スキミング 防止カード 永久磁石対応 磁気防止 ウルトラシェリーカード 3枚組 日本製 キャッシュカード クレジット マイナンバーカード 免許証 磁気不良 日用",
           "price": 1320,
           "review_count": 376,
           "review_avg": 4.45,
@@ -5205,11 +5413,15 @@
       "no": "59",
       "name": "便利グッズのお店 AQSHOP",
       "sid": "aqshop",
-      "total_reviews": 3358,
+      "total_reviews": 3359,
       "item_count": 15,
-      "total_item_count": 59,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "total_item_count": 58,
+      "weekly_delta": 1,
+      "weekly_est": {
+        "low": 20,
+        "high": 33,
+        "mid": 25
+      },
       "top_items": [
         {
           "item_id": "aqshop:10000285",
@@ -5239,13 +5451,17 @@
           "item_id": "aqshop:10000078",
           "name": "【楽天1位】 AQSHOP セキュリティポーチ スキミング防止 旅行 パスポート 貴重品 ポーチ トラベル 防犯 盗難 スキミング 防止 薄い 服の中 服の下 ",
           "price": 2480,
-          "review_count": 295,
-          "review_avg": 4.6,
+          "review_count": 296,
+          "review_avg": 4.59,
           "url": "https://item.rakuten.co.jp/aqshop/aq-travel-pouch-bk_ss/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/aqshop/cabinet/travelpouch/0-2.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "aqshop:10000218",
@@ -5400,7 +5616,7 @@
       "sid": "thtech",
       "total_reviews": 2281,
       "item_count": 15,
-      "total_item_count": 235,
+      "total_item_count": 237,
       "weekly_delta": 0,
       "weekly_est": null,
       "top_items": [
@@ -5591,11 +5807,15 @@
       "no": "65",
       "name": "UNICONA 楽天市場店",
       "sid": "unicona",
-      "total_reviews": 21966,
+      "total_reviews": 21970,
       "item_count": 50,
       "total_item_count": 562,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "weekly_delta": 4,
+      "weekly_est": {
+        "low": 80,
+        "high": 133,
+        "mid": 100
+      },
       "top_items": [
         {
           "item_id": "unicona:10001094",
@@ -5637,13 +5857,17 @@
           "item_id": "unicona:10000493",
           "name": "＼お得な2枚セット！／授乳ブラ 2枚セット 授乳ブラジャー 下着 ブラ マタニティ インナー マタニティブラ 締め付けない ナイトブラ 妊婦 授乳用 産前産後 ",
           "price": 1280,
-          "review_count": 1535,
+          "review_count": 1536,
           "review_avg": 4.5,
           "url": "https://item.rakuten.co.jp/unicona/uc-0258/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/unicona/cabinet/uc-0258-a.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "unicona:10001420",
@@ -5661,25 +5885,33 @@
           "item_id": "unicona:10001608",
           "name": "自転車ヘルメット 自転車 ヘルメット 女性用 おしゃれ 大人 帽子 おしゃれ ハット型ヘルメット バケットハット 大人用 子供 ジュニア 通勤 通学 街乗り 蒸",
           "price": 2980,
-          "review_count": 845,
+          "review_count": 846,
           "review_avg": 4.31,
           "url": "https://item.rakuten.co.jp/unicona/uc-0821-1/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/unicona/cabinet/uc-0821-1-a.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "unicona:10001601",
           "name": "ヘルメット 自転車 ヘルメット 自転車ヘルメット 帽子型ヘルメット 自転車用ヘルメット 大人用 レディース メンズ ヘルメット 軽量ヘルメット 軽量 あごひも付",
           "price": 2980,
-          "review_count": 761,
+          "review_count": 762,
           "review_avg": 4.26,
           "url": "https://item.rakuten.co.jp/unicona/uc-0822/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/unicona/cabinet/uc-0822-a.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "unicona:10001618",
@@ -5757,13 +5989,17 @@
           "item_id": "unicona:10000208",
           "name": "クッキングシート 繰り返し オーブンペーパー ベーキングシート 繰り返し使える オーブンシート オーブン料理 お菓子作り 高強度 高温耐性 耐熱 耐久 水洗い可",
           "price": 580,
-          "review_count": 370,
+          "review_count": 371,
           "review_avg": 4.01,
           "url": "https://item.rakuten.co.jp/unicona/3370/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/unicona/cabinet/sonota2/3370-0.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "unicona:10001528",
@@ -6204,11 +6440,15 @@
       "no": "68",
       "name": "MILASIC",
       "sid": "milasic",
-      "total_reviews": 4662,
+      "total_reviews": 4663,
       "item_count": 15,
-      "total_item_count": 1190,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "total_item_count": 1189,
+      "weekly_delta": 1,
+      "weekly_est": {
+        "low": 20,
+        "high": 33,
+        "mid": 25
+      },
       "top_items": [
         {
           "item_id": "milasic:10000307",
@@ -6382,13 +6622,17 @@
           "item_id": "milasic:10000181",
           "name": "【mitas公式】ACアダプター Type-C 急速充電 android 充電器 最大2A 1.5m くすみカラー ACアダプタ ケーブル一体型 一体型 アンド",
           "price": 1620,
-          "review_count": 122,
+          "review_count": 123,
           "review_avg": 4.6,
           "url": "https://item.rakuten.co.jp/milasic/1709/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/milasic/cabinet/ir11/1709_01_l_g.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         }
       ],
       "alert_count": 0
@@ -6397,11 +6641,15 @@
       "no": "69",
       "name": "よろず生活雑貨屋レーベンウッド",
       "sid": "lebenwood",
-      "total_reviews": 9218,
+      "total_reviews": 9225,
       "item_count": 15,
-      "total_item_count": 499,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "total_item_count": 498,
+      "weekly_delta": 7,
+      "weekly_est": {
+        "low": 140,
+        "high": 233,
+        "mid": 175
+      },
       "top_items": [
         {
           "item_id": "lebenwood:10004237",
@@ -6419,13 +6667,17 @@
           "item_id": "lebenwood:10004906",
           "name": "【楽天100冠1位 雑誌掲載 x 保育士監修】 大音量 防犯ブザー 乾電池式 子供 子ども 130db 小学生 女の子 男の子 大人 女性 可愛い ランキング ",
           "price": 1000,
-          "review_count": 1150,
+          "review_count": 1155,
           "review_avg": 4.67,
           "url": "https://item.rakuten.co.jp/lebenwood/lbw-17038/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/lebenwood/cabinet/08503648/08888872/11407399/1.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 5,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 100,
+            "high": 167,
+            "mid": 125
+          }
         },
         {
           "item_id": "lebenwood:10004585",
@@ -6443,13 +6695,17 @@
           "item_id": "lebenwood:10004664",
           "name": "【楽天25冠1位 x FUDGE誌掲載 x 美容師監修】天然毛 ヘアブラシ La Vure公式 奥まで届く毛長2倍 スカルプケア レディース 人気 ブラシ 豚毛",
           "price": 2580,
-          "review_count": 841,
+          "review_count": 842,
           "review_avg": 4.59,
           "url": "https://item.rakuten.co.jp/lebenwood/10004652/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/lebenwood/cabinet/08503648/08640387/10671104/1.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "lebenwood:10004378",
@@ -6491,13 +6747,17 @@
           "item_id": "lebenwood:10004241",
           "name": "【楽天1位 現役キャンパー監修】 ペグハンマー REIDEN キャンプ用品 キャンプ ペグ ハンマー アウトドア ソロキャン トンカチ ペグ ペグ抜き テント用",
           "price": 1680,
-          "review_count": 540,
+          "review_count": 541,
           "review_avg": 4.52,
           "url": "https://item.rakuten.co.jp/lebenwood/lbw-11002/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/lebenwood/cabinet/08503648/08690216/09922192/1.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "lebenwood:10004524",
@@ -6610,7 +6870,7 @@
         },
         {
           "item_id": "e-monoplus:10000057",
-          "name": "＼10％OFFクーポン！3/30限定／ 【ランキング1位獲得】人気 ふわふわ足指カバー3色組 足指 広げる ソックス 足指セパレーター 足指広げる グッズ 足の",
+          "name": "【ランキング1位獲得】人気 ふわふわ足指カバー3色組 足指 広げる ソックス 足指セパレーター 足指広げる グッズ 足の甲 足 脚 むくみ 外反母趾 内反小趾 ",
           "price": 1680,
           "review_count": 659,
           "review_avg": 4.47,
@@ -6646,7 +6906,7 @@
         },
         {
           "item_id": "e-monoplus:10000327",
-          "name": "＼10％OFFクーポン！3/30限定／ ラジウム温感サポーター サポーター ネックウォーマー 国産 日本製 首 肩 背中 肩当て 肩あて 肩こり 冷え対策 冷え",
+          "name": "ラジウム温感サポーター サポーター ネックウォーマー 国産 日本製 首 肩 背中 肩当て 肩あて 肩こり 冷え対策 冷え性対策 つけ襟 付け襟防寒 送料無料 秋",
           "price": 2980,
           "review_count": 221,
           "review_avg": 4.0,
@@ -6658,7 +6918,7 @@
         },
         {
           "item_id": "e-monoplus:10000458",
-          "name": "＼10％OFFクーポン！3/30限定／ 大人気 楽天ランキング1位【肋骨 締め ベルト】超薄 目立たない 日本製 肋骨ベルト ととのう 肋骨骨折 コルセット バ",
+          "name": "大人気 楽天ランキング1位【肋骨 締め ベルト】超薄 目立たない 日本製 肋骨ベルト ととのう 肋骨骨折 コルセット バストバンド サポーター あばら ろっ骨 ",
           "price": 4990,
           "review_count": 202,
           "review_avg": 4.42,
@@ -6694,7 +6954,7 @@
         },
         {
           "item_id": "e-monoplus:10000676",
-          "name": "＼10％OFFクーポン！3/30限定／ 人気 腱鞘サポーター 腱鞘炎 腱鞘炎サポーター 親指 手首 サポーター 第一関節 固定 けんしょう炎 グッズ 対策 とと",
+          "name": "人気 腱鞘サポーター 腱鞘炎 腱鞘炎サポーター 親指 手首 サポーター 第一関節 固定 けんしょう炎 グッズ 対策 ととのう 手首らく手首ラク 片手 親指 手首",
           "price": 1600,
           "review_count": 136,
           "review_avg": 4.21,
@@ -6706,7 +6966,7 @@
         },
         {
           "item_id": "e-monoplus:10000273",
-          "name": "＼10％OFFクーポン！3/30限定／ ロングセラー 韓国アカスリ 垢すり 2枚組 アカスリタオル 韓国 アカすり ロングタイプ 28×120cm タオルタイプ",
+          "name": "ロングセラー 韓国アカスリ 垢すり 2枚組 アカスリタオル 韓国 アカすり ロングタイプ 28×120cm タオルタイプ お家 で 本格 垢すり エステ あかす",
           "price": 1400,
           "review_count": 122,
           "review_avg": 4.52,
@@ -6718,7 +6978,7 @@
         },
         {
           "item_id": "e-monoplus:10000265",
-          "name": "＼10％OFFクーポン！3/30限定／ 人気 1位 夏 ネックカバー uvカット uv 冷感 放熱冷感つけ襟風uvネックカバー クール おしゃれ 日焼け対策 首",
+          "name": "人気 1位 夏 ネックカバー uvカット uv 冷感 放熱冷感つけ襟風uvネックカバー クール おしゃれ 日焼け対策 首 夏 用 つけ襟 ストール 熱中症 グッ",
           "price": 1980,
           "review_count": 96,
           "review_avg": 4.07,
@@ -6730,7 +6990,7 @@
         },
         {
           "item_id": "e-monoplus:10000075",
-          "name": "＼10％OFFクーポン！3/30限定／ 静電気除去ブレスレット【 静電気除去本革おしゃれブレスレット】レザーブレスレット 静電気除去 グッズ 静電気防止 秋 冬",
+          "name": "静電気除去ブレスレット【 静電気除去本革おしゃれブレスレット】レザーブレスレット 静電気除去 グッズ 静電気防止 秋 冬 静電気 ブレスレット メンズ レディー",
           "price": 1600,
           "review_count": 92,
           "review_avg": 3.91,
@@ -6742,7 +7002,7 @@
         },
         {
           "item_id": "e-monoplus:10000481",
-          "name": "＼10％OFFクーポン！3/30限定／ ランキング1位 人気 売れ筋 首 肩 背中 温め グッズ【毛布 のような ふっくら 暖か ベスト】寝具 肩当て 肩当 肩",
+          "name": "ランキング1位 人気 売れ筋 首 肩 背中 温め グッズ【毛布 のような ふっくら 暖か ベスト】寝具 肩当て 肩当 肩あて 温め グッズ ケープ 肩こり解消 ",
           "price": 4380,
           "review_count": 87,
           "review_avg": 4.47,
@@ -6754,7 +7014,7 @@
         },
         {
           "item_id": "e-monoplus:10000135",
-          "name": "＼10％OFFクーポン！3/30限定／ 人気 美ハリ おやすみ眉間シート24枚入 眉間 しわ 取り 眉間のシワ テープ 眉間 シワ 取り シート パック 美容液",
+          "name": "人気 美ハリ おやすみ眉間シート24枚入 眉間 しわ 取り 眉間のシワ テープ 眉間 シワ 取り シート パック 美容液 シワ伸ばし しわ伸ばし 美容シート 眉",
           "price": 2178,
           "review_count": 82,
           "review_avg": 4.09,
@@ -6783,23 +7043,31 @@
       "no": "72",
       "name": "mitas",
       "sid": "oobikiyaking",
-      "total_reviews": 84089,
+      "total_reviews": 84099,
       "item_count": 50,
       "total_item_count": 1191,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "weekly_delta": 10,
+      "weekly_est": {
+        "low": 200,
+        "high": 333,
+        "mid": 250
+      },
       "top_items": [
         {
           "item_id": "oobikiyaking:10057821",
           "name": "【楽天1位 mitas公式】急速充電器 2.4A 最大12W くすみカラー ACアダプター 2ポート USB スマートIC 充電器 チャージャー PSE認証 U",
           "price": 1080,
-          "review_count": 10837,
+          "review_count": 10838,
           "review_avg": 4.54,
           "url": "https://item.rakuten.co.jp/oobikiyaking/1685/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/oobikiyaking/cabinet/ir13/1685_01_r_r.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "oobikiyaking:10049225",
@@ -6815,27 +7083,35 @@
         },
         {
           "item_id": "oobikiyaking:10052458",
-          "name": "ゆで卵メーカー レンジ 4個 1個 最大4個 耐熱シリコンバンド付き ゆでたまご メーカー レンジ 電子レンジ エッグクッカー 茹で卵メーカー エッグスチーマー",
+          "name": "【楽天1位 mitas公式】ゆで卵メーカー レンジ 4個 1個 最大4個 耐熱シリコンバンド付き ゆでたまご メーカー レンジ 電子レンジ エッグクッカー 茹で",
           "price": 1240,
-          "review_count": 6290,
+          "review_count": 6292,
           "review_avg": 4.29,
           "url": "https://item.rakuten.co.jp/oobikiyaking/4580463472454e/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/oobikiyaking/cabinet/ir12/10357_01_r_c.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 2,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 40,
+            "high": 67,
+            "mid": 50
+          }
         },
         {
           "item_id": "oobikiyaking:10057881",
-          "name": "Type-C ACアダプター 1.5m スマホ 急速 充電器 くすみカラー ACアダプタ 急速充電 ケーブル一体型 一体型 最大2A アンドロイド androi",
+          "name": "【楽天1位 mitas公式】Type-C ACアダプター 1.5m スマホ 急速 充電器 くすみカラー ACアダプタ 急速充電 ケーブル一体型 一体型 最大2A",
           "price": 1620,
-          "review_count": 5641,
+          "review_count": 5643,
           "review_avg": 4.54,
           "url": "https://item.rakuten.co.jp/oobikiyaking/1709/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/oobikiyaking/cabinet/ir11/1709_01_r_h.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 2,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 40,
+            "high": 67,
+            "mid": 50
+          }
         },
         {
           "item_id": "oobikiyaking:10059130",
@@ -6889,25 +7165,33 @@
           "item_id": "oobikiyaking:10059336",
           "name": "【楽天1位 mitas公式】国内防水検査合格 レインシューズカバー 自転車 雨具 滑り止め オーバーシューズ 大きいサイズ 上からカバー 防水 折りたたみ 通勤",
           "price": 1000,
-          "review_count": 2305,
+          "review_count": 2307,
           "review_avg": 4.28,
           "url": "https://item.rakuten.co.jp/oobikiyaking/1914/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/oobikiyaking/cabinet/ir14/mset-1914_01_r_a.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 2,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 40,
+            "high": 67,
+            "mid": 50
+          }
         },
         {
           "item_id": "oobikiyaking:10054264",
           "name": "【mitas公式】マウスパッド リストレスト リストレスト付マウスパッド リストレスト一体型 低反発 柔らかい マウスパット 手首 負担 軽減 PC パソコン ",
           "price": 1000,
-          "review_count": 2115,
+          "review_count": 2116,
           "review_avg": 4.51,
           "url": "https://item.rakuten.co.jp/oobikiyaking/1363/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/oobikiyaking/cabinet/ir12/1363_01_r_b.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "oobikiyaking:10050061",
@@ -6935,7 +7219,7 @@
         },
         {
           "item_id": "oobikiyaking:10050681",
-          "name": "室外機カバー 2枚セット アルミ ベルト エアコン エアコン室外機カバー 遮熱 サンカット 日よけ シート パネル 節電 省エネ エコ 効果 反射 保護カバー ",
+          "name": "【楽天1位 mitas公式】室外機カバー 2枚セット アルミ ベルト エアコン エアコン室外機カバー 遮熱 サンカット 日よけ シート パネル 節電 省エネ エ",
           "price": 1380,
           "review_count": 1563,
           "review_avg": 4.01,
@@ -6961,13 +7245,17 @@
           "item_id": "oobikiyaking:10057726",
           "name": "【楽天1位 MILASIC公式】ペット 早食い防止 犬 フードボウル ペットボウル スローフード 丸飲み 防止 食器 ペット用品 丸洗い可能 餌入れ 小型犬 中",
           "price": 1000,
-          "review_count": 1539,
+          "review_count": 1540,
           "review_avg": 4.36,
           "url": "https://item.rakuten.co.jp/oobikiyaking/1617/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/oobikiyaking/cabinet/ir12/1617_01_r_c.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "oobikiyaking:10054004",
@@ -7007,7 +7295,7 @@
         },
         {
           "item_id": "oobikiyaking:10049075",
-          "name": "マグネット式 室外機カバー アルミ エアコン エアコン室外機カバー ワイド 遮熱 シート 磁石 ワンタッチ 簡単 取り付け 設置 汚れ防止 サンカット 日よけ ",
+          "name": "【楽天1位 mitas公式】マグネット式 室外機カバー アルミ エアコン エアコン室外機カバー ワイド 遮熱 シート 磁石 ワンタッチ 簡単 取り付け 設置 汚",
           "price": 1000,
           "review_count": 1190,
           "review_avg": 4.16,
@@ -7043,7 +7331,7 @@
         },
         {
           "item_id": "oobikiyaking:10054271",
-          "name": "安心の国内検査合格 迷子防止ひも キッズハーネス 迷子防止 迷子紐 1.5m 迷子防止紐 セーフティーハーネス 迷子対策ロープ 天使 羽根 ベルト ハーネス 子",
+          "name": "【楽天1位 MILASIC公式】安心の国内検査合格 迷子防止ひも キッズハーネス 迷子防止 迷子紐 1.5m 迷子防止紐 セーフティーハーネス 迷子対策ロープ ",
           "price": 1380,
           "review_count": 911,
           "review_avg": 4.43,
@@ -7165,13 +7453,17 @@
           "item_id": "oobikiyaking:10056337",
           "name": "【楽天1位 mitas公式】傘カバー 折りたたみ傘カバー 傘入れ 傘 かさ アンブレラカバー コンパクト 傘ケース 折りたたみ 伸縮 傘ホルダー 折り畳み カサ",
           "price": 880,
-          "review_count": 625,
+          "review_count": 626,
           "review_avg": 4.31,
           "url": "https://item.rakuten.co.jp/oobikiyaking/1483/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/oobikiyaking/cabinet/ir12/1483_01_r_d.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "oobikiyaking:10053996",
@@ -7379,7 +7671,7 @@
         },
         {
           "item_id": "oobikiyaking:10049057",
-          "name": "集音器 耳かけ 左右両耳 対応 電池付属 ボリュームダイヤル 音量調節機能 目立たない 小型 軽量 耳かけ集音器 集音機 電池式 LR44 イヤホンキャップ イ",
+          "name": "【mitas公式】集音器 耳かけ 左右両耳 対応 電池付属 ボリュームダイヤル 音量調節機能 目立たない 小型 軽量 耳かけ集音器 集音機 電池式 LR44 イ",
           "price": 1100,
           "review_count": 448,
           "review_avg": 4.07,
@@ -7396,11 +7688,15 @@
       "no": "73",
       "name": "hidekistore",
       "sid": "hidekistore",
-      "total_reviews": 4175,
+      "total_reviews": 4177,
       "item_count": 11,
       "total_item_count": 11,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "weekly_delta": 2,
+      "weekly_est": {
+        "low": 40,
+        "high": 67,
+        "mid": 50
+      },
       "top_items": [
         {
           "item_id": "hidekistore:10000028",
@@ -7418,13 +7714,17 @@
           "item_id": "hidekistore:10000037",
           "name": "【唇非粘着パターン選択可能】マウステープ 口閉じテープ 口閉じるテープ 口閉じ 240日分 【8セット】鼻呼吸 テープ いびき 口 乾燥 防止 安眠 グッズ 快",
           "price": 1180,
-          "review_count": 785,
+          "review_count": 787,
           "review_avg": 4.65,
           "url": "https://item.rakuten.co.jp/hidekistore/compass1637388394/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/hidekistore/cabinet/compass1757052360.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 2,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 40,
+            "high": 67,
+            "mid": 50
+          }
         },
         {
           "item_id": "hidekistore:10000009",
@@ -7736,7 +8036,7 @@
       "sid": "plusdo201812",
       "total_reviews": 670,
       "item_count": 15,
-      "total_item_count": 2902,
+      "total_item_count": 2896,
       "weekly_delta": 0,
       "weekly_est": null,
       "top_items": [
@@ -8122,7 +8422,7 @@
       "sid": "roryxtyle",
       "total_reviews": 5832,
       "item_count": 15,
-      "total_item_count": 1598,
+      "total_item_count": 1597,
       "weekly_delta": 0,
       "weekly_est": null,
       "top_items": [
@@ -8315,7 +8615,7 @@
       "sid": "cccakse",
       "total_reviews": 1668,
       "item_count": 15,
-      "total_item_count": 801,
+      "total_item_count": 802,
       "weekly_delta": 0,
       "weekly_est": null,
       "top_items": [
@@ -8508,7 +8808,7 @@
       "sid": "across-zakka",
       "total_reviews": 2798,
       "item_count": 15,
-      "total_item_count": 88,
+      "total_item_count": 87,
       "weekly_delta": 0,
       "weekly_est": null,
       "top_items": [
@@ -8693,17 +8993,21 @@
           "est_sales": null
         }
       ],
-      "alert_count": 1
+      "alert_count": 0
     },
     {
       "no": "追",
       "name": "graciashop",
       "sid": "graciashop",
-      "total_reviews": 1859,
+      "total_reviews": 1860,
       "item_count": 15,
       "total_item_count": 33,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "weekly_delta": 1,
+      "weekly_est": {
+        "low": 20,
+        "high": 33,
+        "mid": 25
+      },
       "top_items": [
         {
           "item_id": "graciashop:10000022",
@@ -8805,13 +9109,17 @@
           "item_id": "graciashop:10000193",
           "name": "背中 塗る グッズ ローションアプリケーター 背中ぬり棒 背中クリーム棒 伸縮自在 ヘッド交換可能 届かない場所 ローション 腰 日焼け止め ひやけどめ 女性 ",
           "price": 2280,
-          "review_count": 66,
-          "review_avg": 4.65,
+          "review_count": 67,
+          "review_avg": 4.64,
           "url": "https://item.rakuten.co.jp/graciashop/smallroller1/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/graciashop/cabinet/10538242/smallroller1_3333.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "graciashop:10000147",
@@ -9087,7 +9395,7 @@
       "sid": "standardstore",
       "total_reviews": 1265,
       "item_count": 15,
-      "total_item_count": 569,
+      "total_item_count": 570,
       "weekly_delta": 0,
       "weekly_est": null,
       "top_items": [
@@ -9278,35 +9586,47 @@
       "no": "追",
       "name": "forthon",
       "sid": "forthon",
-      "total_reviews": 17606,
+      "total_reviews": 17609,
       "item_count": 15,
       "total_item_count": 318,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "weekly_delta": 3,
+      "weekly_est": {
+        "low": 60,
+        "high": 100,
+        "mid": 75
+      },
       "top_items": [
         {
           "item_id": "forthon:10000428",
           "name": "【楽天1位/累計20万個突破】 ベビーヘルメット 360度ガード 保護力UP 赤ちゃん 子供 クッション 転倒防止 ごっつん防止 セーフティ プロテクター ヘッ",
           "price": 1290,
-          "review_count": 3014,
+          "review_count": 3015,
           "review_avg": 4.24,
           "url": "https://item.rakuten.co.jp/forthon/r360/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/forthon/cabinet/product/sku2/r360_1z.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "forthon:10000339",
           "name": "【累計70,000個突破】 タッチペン 2way 極細 透明ディスク 可動式 高感度導電ファイバー くすみカラー シンプル 角度 さらさら スマホ タブレット ",
           "price": 598,
-          "review_count": 2042,
+          "review_count": 2043,
           "review_avg": 4.55,
           "url": "https://item.rakuten.co.jp/forthon/r267/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/forthon/cabinet/shohin01/sonota4/r267_1a.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "forthon:10000841",
@@ -9408,13 +9728,17 @@
           "item_id": "forthon:10000858",
           "name": "【楽天1位】 窓ストッパー 6個セット 転落防止 窓 引き戸 ロック 賃貸 子ども ペット 安全 剥がせる ストッパー 窓ロック 網戸ロック チャイルドロック ",
           "price": 800,
-          "review_count": 781,
+          "review_count": 782,
           "review_avg": 4.6,
           "url": "https://item.rakuten.co.jp/forthon/r570/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/forthon/cabinet/product/sku4/r570/r570_1zz.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "forthon:10000094",
@@ -9672,7 +9996,7 @@
       "top_items": [
         {
           "item_id": "le-cure:10002233",
-          "name": "【本日、限定クーポンも！】＼早く買えば良かった！／グリル専用焼き魚トレー ワイド 28×20cm 大型 マーブルコート 穴なし グリル用 魚焼きトレー グリルプ",
+          "name": "＼早く買えば良かった！／グリル専用焼き魚トレー ワイド 28×20cm 大型 マーブルコート 穴なし グリル用 魚焼きトレー グリルプレート グリルトレー 魚焼",
           "price": 1496,
           "review_count": 2675,
           "review_avg": 4.67,
@@ -9684,7 +10008,7 @@
         },
         {
           "item_id": "le-cure:10000402",
-          "name": "【本日、限定クーポンも！】＼大容量でコスパが良い！／革の達人 極 お徳用 250g 革製品 ソファ 革靴 レザー 手入れ 革 レザーワックス 靴磨き 保革油",
+          "name": "＼大容量でコスパが良い！／革の達人 極 お徳用 250g 革製品 ソファ 革靴 レザー 手入れ 革 レザーワックス 靴磨き 保革油",
           "price": 2310,
           "review_count": 2115,
           "review_avg": 4.51,
@@ -9696,7 +10020,7 @@
         },
         {
           "item_id": "le-cure:10002416",
-          "name": "【本日、限定クーポンも！】＼よく拭けて、すぐ乾く！／ホテル仕様 ふきん【応援したい日本製】 ワッフル 綿 キッチンふきん 播州製 2枚/4枚/10枚 白 吸水 ",
+          "name": "＼よく拭けて、すぐ乾く！／ホテル仕様 ふきん【応援したい日本製】 ワッフル 綿 キッチンふきん 播州製 2枚/4枚/10枚 白 吸水 速乾 蛍光塗料不使用 キッ",
           "price": 1265,
           "review_count": 882,
           "review_avg": 4.81,
@@ -9708,7 +10032,7 @@
         },
         {
           "item_id": "le-cure:10002326",
-          "name": "【本日、限定クーポンも！】カードケース 薄型 カードケース レザー調 クレジットカード・ポイントカードなど 20枚収納メンズ・レディース兼用 カード入れ 二つ折",
+          "name": "カードケース 薄型 カードケース レザー調 クレジットカード・ポイントカードなど 20枚収納メンズ・レディース兼用 カード入れ 二つ折り クレジットカードケース",
           "price": 1265,
           "review_count": 570,
           "review_avg": 4.39,
@@ -9720,7 +10044,7 @@
         },
         {
           "item_id": "le-cure:10001597",
-          "name": "【本日、限定クーポンも！】メガネずり落ちないパッド【送料無料 メール便出荷】メガネずり落ち防止や痛いメガネ跡対策に【 メガネ 鼻パッド シリコン 眼鏡 鼻あて ",
+          "name": "メガネずり落ちないパッド【送料無料 メール便出荷】メガネずり落ち防止や痛いメガネ跡対策に【 メガネ 鼻パッド シリコン 眼鏡 鼻あて ズレ防止 ノーズパッド シ",
           "price": 1078,
           "review_count": 566,
           "review_avg": 3.57,
@@ -9732,7 +10056,7 @@
         },
         {
           "item_id": "le-cure:10001145",
-          "name": "【本日、限定クーポンも！】＼楽天1位／キレイな穴が開く ベルト 穴あけパンチ 1穴【当店限定】 回転式 穴あけポンチ レザーパンチ レザークラフト 皮ポンチ パ",
+          "name": "＼楽天1位／キレイな穴が開く ベルト 穴あけパンチ 1穴【当店限定】 回転式 穴あけポンチ レザーパンチ レザークラフト 皮ポンチ パンチャー ベルト穴あけ機 ",
           "price": 2178,
           "review_count": 453,
           "review_avg": 4.48,
@@ -9744,7 +10068,7 @@
         },
         {
           "item_id": "le-cure:10002235",
-          "name": "【本日、限定クーポンも！】グリル専用焼き魚トレー マーブルコート 穴なし 24.5×17.5cm お手入れ簡単 グリル用 魚焼きトレー 魚焼きグリル プレート ",
+          "name": "グリル専用焼き魚トレー マーブルコート 穴なし 24.5×17.5cm お手入れ簡単 グリル用 魚焼きトレー 魚焼きグリル プレート キッチングッズ 便利 キッ",
           "price": 1265,
           "review_count": 431,
           "review_avg": 4.59,
@@ -9756,7 +10080,7 @@
         },
         {
           "item_id": "le-cure:10001093",
-          "name": "【本日、限定クーポンも！】＼使いやすい大きさ！／【送料無料】ヘアブラシ 美容師さんの艶髪ブラシ 静電気除去タイプ 艶髪 ブロー ブラッシング ストレート 美容師",
+          "name": "＼使いやすい大きさ！／【送料無料】ヘアブラシ 美容師さんの艶髪ブラシ 静電気除去タイプ 艶髪 ブロー ブラッシング ストレート 美容師さんシリーズ ツヤ髪ブラシ",
           "price": 2178,
           "review_count": 378,
           "review_avg": 4.28,
@@ -9768,7 +10092,7 @@
         },
         {
           "item_id": "le-cure:10002598",
-          "name": "【本日、限定クーポンも！】＼部屋干しがラクに！／付け外し簡単 室内物干し掛け ロング 2個組 鴨居 扉枠 窓枠 物干し竿受け金具 部屋干しグッズ 洗濯干し 室内",
+          "name": "＼部屋干しがラクに！／付け外し簡単 室内物干し掛け ロング 2個組 鴨居 扉枠 窓枠 物干し竿受け金具 部屋干しグッズ 洗濯干し 室内 雨 雨の日 梅雨対策",
           "price": 1320,
           "review_count": 355,
           "review_avg": 4.58,
@@ -9780,7 +10104,7 @@
         },
         {
           "item_id": "le-cure:10000728",
-          "name": "【本日、限定クーポンも！】ニッパー式爪切り ソフトグリップ A-02 巻き爪 足の爪切り 巻爪切り",
+          "name": "ニッパー式爪切り ソフトグリップ A-02 巻き爪 足の爪切り 巻爪切り",
           "price": 2728,
           "review_count": 336,
           "review_avg": 4.49,
@@ -9792,7 +10116,7 @@
         },
         {
           "item_id": "le-cure:10000341",
-          "name": "【本日、限定クーポンも！】＼めざましで紹介！／腹式呼吸エクサロングピロピロ【送料無料 メール便出荷】旧名：ロングブレスピロピロ 【 吹き戻し 腹式呼吸ダイエット",
+          "name": "＼めざましで紹介！／腹式呼吸エクサロングピロピロ【送料無料 メール便出荷】旧名：ロングブレスピロピロ 【 吹き戻し 腹式呼吸ダイエット ブレストレーニング 】宅",
           "price": 946,
           "review_count": 335,
           "review_avg": 3.78,
@@ -9804,7 +10128,7 @@
         },
         {
           "item_id": "le-cure:10000328",
-          "name": "【本日、限定クーポンも！】＼ストレス解消に／ エアー サンドバック スタンド ストレス発散パンチバッグ 家庭用 パンチングバック スタンディング バッグ 自宅 ",
+          "name": "＼ストレス解消に／ エアー サンドバック スタンド ストレス発散パンチバッグ 家庭用 パンチングバック スタンディング バッグ 自宅 運動不足",
           "price": 2728,
           "review_count": 325,
           "review_avg": 4.0,
@@ -9816,7 +10140,7 @@
         },
         {
           "item_id": "le-cure:10001856",
-          "name": "【本日、限定クーポンも！】大判 潤いシルクのおやすみマスク 寝るとき 洗える マスク 睡眠用 就寝用マスク エアコン 喉 乾燥 夜用マスク お休みマスク 乾燥対",
+          "name": "大判 潤いシルクのおやすみマスク 寝るとき 洗える マスク 睡眠用 就寝用マスク エアコン 喉 乾燥 夜用マスク お休みマスク 乾燥対策",
           "price": 1408,
           "review_count": 325,
           "review_avg": 4.23,
@@ -9828,7 +10152,7 @@
         },
         {
           "item_id": "le-cure:10000830",
-          "name": "【本日、限定クーポンも！】着物収納ケース 不織布 炭入り消臭 着物一式収納ケース 振袖 成人式 七五三 帯 クローゼット 着物 保管 収納 浴衣収納 着物ケース",
+          "name": "着物収納ケース 不織布 炭入り消臭 着物一式収納ケース 振袖 成人式 七五三 帯 クローゼット 着物 保管 収納 浴衣収納 着物ケース 持ち運び 着物入れ きも",
           "price": 1980,
           "review_count": 297,
           "review_avg": 4.42,
@@ -9840,7 +10164,7 @@
         },
         {
           "item_id": "le-cure:10002893",
-          "name": "【本日、限定クーポンも！】丸いまな板 アイメディア 日本製 耐熱エラストマー 食洗機対応 抗菌 ベージュ/ブラック かまぼこ型 まな板 d型 丸型 黒 おしゃれ",
+          "name": "丸いまな板 アイメディア 日本製 耐熱エラストマー 食洗機対応 抗菌 ベージュ/ブラック かまぼこ型 まな板 d型 丸型 黒 おしゃれ カッティングボード 穴な",
           "price": 3300,
           "review_count": 289,
           "review_avg": 4.71,
@@ -9857,23 +10181,31 @@
       "no": "追",
       "name": "bestday",
       "sid": "bestday",
-      "total_reviews": 9932,
+      "total_reviews": 9939,
       "item_count": 15,
-      "total_item_count": 612,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "total_item_count": 609,
+      "weekly_delta": 7,
+      "weekly_est": {
+        "low": 140,
+        "high": 233,
+        "mid": 175
+      },
       "top_items": [
         {
           "item_id": "bestday:10000284",
           "name": "楽天1位受賞！【1000件レビュー突破】 マイナンバーカード ケース クレジットカード 銀行カード パスポート スキミング防止ケース 磁気不良対策 ICカード干",
           "price": 1000,
-          "review_count": 2378,
+          "review_count": 2382,
           "review_avg": 4.43,
           "url": "https://item.rakuten.co.jp/bestday/qy-034163ss/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/bestday/cabinet/09044458/09360074/qy-034163ss-02.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 4,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 80,
+            "high": 133,
+            "mid": 100
+          }
         },
         {
           "item_id": "bestday:10000523",
@@ -9891,25 +10223,33 @@
           "item_id": "bestday:10000347",
           "name": "楽天1位受賞！【雑誌掲載】食器棚シート キッチンシート 45*300cm しょっきだな シート 引き出しシート キッチンマット冷蔵庫マット 接着剤不要 自由裁断",
           "price": 1000,
-          "review_count": 1068,
+          "review_count": 1069,
           "review_avg": 4.56,
           "url": "https://item.rakuten.co.jp/bestday/034803mult-ss/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/bestday/cabinet/09044458/09360074/034803mult-ss-02.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "bestday:10000288",
           "name": "リトミックスカーフ スカーフ【レビュー特典付き】 シフォン ジャグリング シルクスカーフ 正方形 四角 浮遊 スカーフ カラフル 子ども スカーフ遊び リトミッ",
           "price": 1000,
-          "review_count": 859,
+          "review_count": 860,
           "review_avg": 4.4,
           "url": "https://item.rakuten.co.jp/bestday/034579mult/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/bestday/cabinet/09044458/09360074/wall-021386-01.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "bestday:10000009",
@@ -9963,13 +10303,17 @@
           "item_id": "bestday:10000644",
           "name": "楽天1位受賞！【保育士が監修】ビニール 巾着袋 防水 袋 旅行 小分け袋 防水袋 収納袋 旅行用ポーチ 濡れた服 水着 収納ポーチ 靴袋 撥水 温泉バッグ 旅行",
           "price": 1000,
-          "review_count": 336,
+          "review_count": 337,
           "review_avg": 4.7,
           "url": "https://item.rakuten.co.jp/bestday/039054tbd/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/bestday/cabinet/09044458/12011995/039054-2508.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "bestday:10000572",
@@ -10044,7 +10388,7 @@
           "est_sales": null
         }
       ],
-      "alert_count": 1
+      "alert_count": 0
     },
     {
       "no": "追",
@@ -10052,7 +10396,7 @@
       "sid": "htshop",
       "total_reviews": 1129,
       "item_count": 15,
-      "total_item_count": 57,
+      "total_item_count": 59,
       "weekly_delta": 0,
       "weekly_est": null,
       "top_items": [
@@ -10237,7 +10581,7 @@
           "est_sales": null
         }
       ],
-      "alert_count": 1
+      "alert_count": 0
     },
     {
       "no": "追",
@@ -10436,11 +10780,15 @@
       "no": "追",
       "name": "three-r2012",
       "sid": "three-r2012",
-      "total_reviews": 1840,
+      "total_reviews": 1842,
       "item_count": 15,
       "total_item_count": 1047,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "weekly_delta": 2,
+      "weekly_est": {
+        "low": 40,
+        "high": 67,
+        "mid": 50
+      },
       "top_items": [
         {
           "item_id": "three-r2012:10000386",
@@ -10494,13 +10842,17 @@
           "item_id": "three-r2012:10035734",
           "name": "プラスジェル KS 20ml 〈 ピアス 消毒 ジェル 皮膚 ピアスホール 洗浄 消毒 殺菌 アフターケア ファーストピアス ボディーピアス 〉FM",
           "price": 725,
-          "review_count": 137,
-          "review_avg": 4.74,
+          "review_count": 138,
+          "review_avg": 4.75,
           "url": "https://item.rakuten.co.jp/three-r2012/za-h-00mgcqbg20389/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/three-r2012/cabinet/06239323/za-h-00mgcqbg20389.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "three-r2012:10035491",
@@ -10578,13 +10930,17 @@
           "item_id": "three-r2012:10071364",
           "name": "A-KG UV クール ヘア バンド ヘッド バンド HB73-77 汗止め 頭汗 バンダナ 冷感 最新 モデル ランニング スポーツ",
           "price": 650,
-          "review_count": 73,
-          "review_avg": 3.58,
+          "review_count": 74,
+          "review_avg": 3.59,
           "url": "https://item.rakuten.co.jp/three-r2012/ma-20200710-96-020/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/three-r2012/cabinet/07183509/4589848651989-1.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "three-r2012:10000403",
@@ -10631,7 +10987,7 @@
       "sid": "auc-prendre",
       "total_reviews": 4254,
       "item_count": 15,
-      "total_item_count": 1693,
+      "total_item_count": 1700,
       "weekly_delta": 0,
       "weekly_est": null,
       "top_items": [
@@ -10822,11 +11178,15 @@
       "no": "追",
       "name": "nagomi-japan",
       "sid": "nagomi-japan",
-      "total_reviews": 6184,
+      "total_reviews": 6187,
       "item_count": 15,
       "total_item_count": 291,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "weekly_delta": 3,
+      "weekly_est": {
+        "low": 60,
+        "high": 100,
+        "mid": 75
+      },
       "top_items": [
         {
           "item_id": "nagomi-japan:10000057",
@@ -10856,13 +11216,17 @@
           "item_id": "nagomi-japan:10000055",
           "name": "ベルト メンズ 穴なし オートロック ビジネス 120cm 自動 コンフォート 無段階 無調整 スーツ フォーマル 本革 レザー 紳士 ブランド 父の日 敬老の",
           "price": 889,
-          "review_count": 658,
+          "review_count": 659,
           "review_avg": 4.45,
           "url": "https://item.rakuten.co.jp/nagomi-japan/0981-000211/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/nagomi-japan/cabinet/0981-000211_c0.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "nagomi-japan:10000254",
@@ -10916,13 +11280,17 @@
           "item_id": "nagomi-japan:10000096",
           "name": "爪やすり 爪磨き 爪ヤスリ ガラス製 ケース付き ネイルケア 爪みがき つめみがき ネイル 爪 ケア みがき つめ やすり ツメ ヤスリ",
           "price": 209,
-          "review_count": 320,
-          "review_avg": 4.56,
+          "review_count": 321,
+          "review_avg": 4.55,
           "url": "https://item.rakuten.co.jp/nagomi-japan/0981-000466/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/nagomi-japan/cabinet/0981-000466_c0.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "nagomi-japan:10000063",
@@ -11000,13 +11368,17 @@
           "item_id": "nagomi-japan:10000025",
           "name": "ナースウォッチ 時計 電池交換可 スマイルマーク クリップ かわいい イルカ ドルフィン 笑顔 スマイル 猫 いちご さくら パイナップル",
           "price": 438,
-          "review_count": 228,
-          "review_avg": 3.81,
+          "review_count": 229,
+          "review_avg": 3.82,
           "url": "https://item.rakuten.co.jp/nagomi-japan/0981-000092/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/nagomi-japan/cabinet/0981-000092_c0.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         }
       ],
       "alert_count": 0
@@ -11017,7 +11389,7 @@
       "sid": "one-daze",
       "total_reviews": 493,
       "item_count": 15,
-      "total_item_count": 1542,
+      "total_item_count": 1549,
       "weekly_delta": 0,
       "weekly_est": null,
       "top_items": [
@@ -11208,23 +11580,31 @@
       "no": "追",
       "name": "haidihaidi",
       "sid": "haidihaidi",
-      "total_reviews": 7643,
+      "total_reviews": 7645,
       "item_count": 15,
       "total_item_count": 616,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "weekly_delta": 2,
+      "weekly_est": {
+        "low": 40,
+        "high": 67,
+        "mid": 50
+      },
       "top_items": [
         {
           "item_id": "haidihaidi:10001569",
           "name": "【連続1位】ソファーカバー 2人掛け 3人掛け ストレッチ かけるだけ ソファカバー 1人 4人掛け おしゃれ 肘付き 北欧 ワッフル 肘あり 伸びる 洗濯可 ",
           "price": 2980,
-          "review_count": 1366,
+          "review_count": 1368,
           "review_avg": 4.22,
           "url": "https://item.rakuten.co.jp/haidihaidi/lls004s/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/haidihaidi/cabinet/07334642/07851129/lls004s_01.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 2,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 40,
+            "high": 67,
+            "mid": 50
+          }
         },
         {
           "item_id": "haidihaidi:10002117",
@@ -11401,15 +11781,19 @@
       "no": "追",
       "name": "firstmarket",
       "sid": "firstmarket",
-      "total_reviews": 8669,
+      "total_reviews": 8670,
       "item_count": 15,
       "total_item_count": 59,
-      "weekly_delta": 0,
-      "weekly_est": null,
+      "weekly_delta": 1,
+      "weekly_est": {
+        "low": 20,
+        "high": 33,
+        "mid": 25
+      },
       "top_items": [
         {
           "item_id": "firstmarket:10001388",
-          "name": "＼3/30ポイント5倍／【楽天1位&レビュー1,000件以上】車 日除け サンバイザー カーバイザー 昼夜2パターンセット 日よけ サングラス不要 UVカット ",
+          "name": "【楽天1位&レビュー1,000件以上】車 日除け サンバイザー カーバイザー 昼夜2パターンセット 日よけ サングラス不要 UVカット 偏光 紫外線カット 車用",
           "price": 1980,
           "review_count": 1046,
           "review_avg": 3.77,
@@ -11421,7 +11805,7 @@
         },
         {
           "item_id": "firstmarket:10001424",
-          "name": "＼3/30ポイント5倍／【楽天ランキング1位】スマホ 防水ポーチ 防水ケース 防水ウエストバッグ カメラ 財布 iphone 携帯 ポーチ ブルー ピンク イエ",
+          "name": "【楽天ランキング1位】スマホ 防水ポーチ 防水ケース 防水ウエストバッグ カメラ 財布 iphone 携帯 ポーチ ブルー ピンク イエロー ウエストポーチ 防",
           "price": 1000,
           "review_count": 1026,
           "review_avg": 4.26,
@@ -11433,7 +11817,7 @@
         },
         {
           "item_id": "firstmarket:10001645",
-          "name": "＼3/30ポイント5倍／【高評価★4.45 ヘアブラシクリーナー付き】ヘアブラシ くし 髪の毛 サラサラ ブラシ ヘアーブラシ 猪毛 艶髪 プレゼント パドルブ",
+          "name": "【高評価★4.45 ヘアブラシクリーナー付き】ヘアブラシ くし 髪の毛 サラサラ ブラシ ヘアーブラシ 猪毛 艶髪 プレゼント パドルブラシ クッションブラシ ",
           "price": 1880,
           "review_count": 852,
           "review_avg": 4.48,
@@ -11445,19 +11829,23 @@
         },
         {
           "item_id": "firstmarket:10001461",
-          "name": "＼3/30ポイント5倍／【楽天1位 累計3,000個突破】 HDMI分配器 HDMI切替器 3HDMI to HDMI 切替器 メス→オス 分配器 セレクター ",
+          "name": "【楽天1位 累計3,000個突破】 HDMI分配器 HDMI切替器 3HDMI to HDMI 切替器 メス→オス 分配器 セレクター 変換 変換アダプタ TV",
           "price": 1180,
-          "review_count": 821,
+          "review_count": 822,
           "review_avg": 4.14,
           "url": "https://item.rakuten.co.jp/firstmarket/10000382/?rafcid=wsc_i_is_5ef4c552-3cc7-4a95-bde5-45519c1c2792",
           "image_url": "https://thumbnail.image.rakuten.co.jp/@0_mall/firstmarket/cabinet/06943197/06958132/ch0654-1-2.jpg?_ex=128x128",
-          "review_delta": 0,
+          "review_delta": 1,
           "price_delta": 0,
-          "est_sales": null
+          "est_sales": {
+            "low": 20,
+            "high": 33,
+            "mid": 25
+          }
         },
         {
           "item_id": "firstmarket:10001458",
-          "name": "＼3/30ポイント5倍／【楽天1位 累計15,000個突破】L字型 4個入 コーナーガード コーナークッション テーブル 角 ガード 赤ちゃん 子供 ベビー キ",
+          "name": "【楽天1位 累計15,000個突破】L字型 4個入 コーナーガード コーナークッション テーブル 角 ガード 赤ちゃん 子供 ベビー キッズ 乳児 家具 セーフ",
           "price": 880,
           "review_count": 583,
           "review_avg": 4.35,
@@ -11469,7 +11857,7 @@
         },
         {
           "item_id": "firstmarket:10001630",
-          "name": "＼3/30ポイント5倍／【楽天1位 選べる2枚セット】授乳ブラ 授乳 ブラ ノンワイヤー 前開き マタニティブラ ブラジャー ナイトブラ カップ入り コットン ",
+          "name": "【楽天1位 選べる2枚セット】授乳ブラ 授乳 ブラ ノンワイヤー 前開き マタニティブラ ブラジャー ナイトブラ カップ入り コットン マタニティ 妊娠 大きい",
           "price": 1780,
           "review_count": 558,
           "review_avg": 4.28,
@@ -11481,7 +11869,7 @@
         },
         {
           "item_id": "firstmarket:10001652",
-          "name": "＼3/30ポイント5倍／【楽天1位・耐用年数5年以上の改良品】洗濯機カバー 洗濯機 カバー 防水 屋外 Sサイズ Mサイズ Lサイズ XLサイズ ファスナー 防",
+          "name": "【楽天1位・耐用年数5年以上の改良品】洗濯機カバー 洗濯機 カバー 防水 屋外 Sサイズ Mサイズ Lサイズ XLサイズ ファスナー 防水性アップ 厚手 丈夫 ",
           "price": 1780,
           "review_count": 503,
           "review_avg": 4.51,
@@ -11493,7 +11881,7 @@
         },
         {
           "item_id": "firstmarket:10001629",
-          "name": "＼3/30ポイント5倍／【嬉しい5点セット】爪切り ニッパー ニッパー型 巻き爪 爪きり つめきり ネイルケア ニッパー ゾンデ 爪やすり ハサミ セルフケア ",
+          "name": "【嬉しい5点セット】爪切り ニッパー ニッパー型 巻き爪 爪きり つめきり ネイルケア ニッパー ゾンデ 爪やすり ハサミ セルフケア 硬い爪 厚い爪 爪 切り",
           "price": 1580,
           "review_count": 480,
           "review_avg": 4.23,
@@ -11505,7 +11893,7 @@
         },
         {
           "item_id": "firstmarket:10001655",
-          "name": "＼3/30ポイント5倍／【ヘアブラシクリーナー付き】パドルブラシ ヘアブラシ 艶髪 プレゼント ヘアーブラシ サラサラ 天然木材 頭皮マッサージ スカルプブラシ",
+          "name": "【ヘアブラシクリーナー付き】パドルブラシ ヘアブラシ 艶髪 プレゼント ヘアーブラシ サラサラ 天然木材 頭皮マッサージ スカルプブラシ 頭皮ブラシ ヘッドスパ",
           "price": 1380,
           "review_count": 475,
           "review_avg": 4.52,
@@ -11517,7 +11905,7 @@
         },
         {
           "item_id": "firstmarket:10001403",
-          "name": "＼3/30ポイント5倍／【楽天ランキング1位】プロ用時計工具 時計ベルト調整 こまはずし 交換ピン5本付き こま外し 工具 メタルバンド バンド調整 ベルト バ",
+          "name": "【楽天ランキング1位】プロ用時計工具 時計ベルト調整 こまはずし 交換ピン5本付き こま外し 工具 メタルバンド バンド調整 ベルト バンド 調整 腕時計 時計",
           "price": 680,
           "review_count": 438,
           "review_avg": 3.93,
@@ -11529,7 +11917,7 @@
         },
         {
           "item_id": "firstmarket:10001635",
-          "name": "＼3/30ポイント5倍／肩サポーター 肩 サポーター 肩用 ショルダー 五十肩 四十肩 肩のサポーター 保温 保護 固定 男女兼用 女性 男性 用 サポート肩固",
+          "name": "肩サポーター 肩 サポーター 肩用 ショルダー 五十肩 四十肩 肩のサポーター 保温 保護 固定 男女兼用 女性 男性 用 サポート肩固定 解消 スポーツ 野球",
           "price": 1580,
           "review_count": 430,
           "review_avg": 4.04,
@@ -11541,7 +11929,7 @@
         },
         {
           "item_id": "firstmarket:10001628",
-          "name": "＼3/30ポイント5倍／【1000円ポッキリ】インソール 衝撃吸収 中敷 中敷き 22cm〜27.5cm サイズ調整 クッション スポーツ ウォーキング ランニ",
+          "name": "【1000円ポッキリ】インソール 衝撃吸収 中敷 中敷き 22cm〜27.5cm サイズ調整 クッション スポーツ ウォーキング ランニング 立ち仕事 姿勢 疲",
           "price": 1000,
           "review_count": 384,
           "review_avg": 4.35,
@@ -11553,7 +11941,7 @@
         },
         {
           "item_id": "firstmarket:10001643",
-          "name": "＼3/30ポイント5倍／【楽天ランキング1位】授乳ブラ マタニティブラ レース 前開き ノンワイヤー 授乳 ブラ 育乳ブラ ナイトブラ 脇高 マタニティ 下着 ",
+          "name": "【楽天ランキング1位】授乳ブラ マタニティブラ レース 前開き ノンワイヤー 授乳 ブラ 育乳ブラ ナイトブラ 脇高 マタニティ 下着 インナー 補正 おしゃれ",
           "price": 1980,
           "review_count": 373,
           "review_avg": 4.3,
@@ -11565,7 +11953,7 @@
         },
         {
           "item_id": "firstmarket:10001690",
-          "name": "＼3/30ポイント5倍／LED UV ネイルライト 折りたたみ UV＋LED ネイルドライヤー レジン 硬化 ジェルネイル ジェルネイルライト レジン レジンク",
+          "name": "LED UV ネイルライト 折りたたみ UV＋LED ネイルドライヤー レジン 硬化 ジェルネイル ジェルネイルライト レジン レジンクラフト コンパクト UV",
           "price": 1280,
           "review_count": 353,
           "review_avg": 4.38,
@@ -11577,7 +11965,7 @@
         },
         {
           "item_id": "firstmarket:10001692",
-          "name": "＼3/30ポイント5倍／【高品質のオックスフォード生地】吊り下げ収納 吊り下げ ラック 折りたたみ クローゼット 衣類 2段 3段 4段 ハンガー 収納 カゴ ",
+          "name": "【高品質のオックスフォード生地】吊り下げ収納 吊り下げ ラック 折りたたみ クローゼット 衣類 2段 3段 4段 ハンガー 収納 カゴ かご 衣類収納 収納ボッ",
           "price": 1180,
           "review_count": 347,
           "review_avg": 4.54,
