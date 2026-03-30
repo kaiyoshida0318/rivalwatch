@@ -417,6 +417,35 @@ def main():
 
     # ── ランキングスクレイピング ──────────────────────────
     scrape_rankings(now)
+    # 日別ログをuser_state.jsonに自動保存
+    try:
+        state = load_json(USER_STATE_FILE, {})
+        daily_log = state.get("daily_log", [])
+        today_str = now.strftime("%Y-%m-%d")
+        # 今日のエントリがなければ追加
+        if not any(e.get("date") == today_str for e in daily_log):
+            total_items = sum(len(snapshots.get(s, {}).get("history", [{}])[-1].get("items", [])) for s in snapshots)
+            unchecked = state.get("unchecked_count", 0)
+            log_entry = {
+                "date": today_str,
+                "all": total_items,
+                "unchecked": unchecked,
+                "watch1": len(state.get("watch1", [])),
+                "stop": len(state.get("stop", [])),
+                "good": len(state.get("good", [])),
+                "sizeok": len(state.get("sizeok", [])),
+                "done": len(state.get("done", [])),
+                "bad": len(state.get("bad", [])),
+                "candidates": len(state.get("extra_shops", []))
+            }
+            daily_log.append(log_entry)
+            # 約30日分保持
+            daily_log = daily_log[-30:]
+            state["daily_log"] = daily_log
+            save_json(USER_STATE_FILE, state)
+            print(f"  日別ログ保存: {today_str}")
+    except Exception as e:
+        print(f"  日別ログエラー: {e}")
 
     print("\n"+"="*56)
     print(f"  完了: {len(summary_shops)}店舗取得")
