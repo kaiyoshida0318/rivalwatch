@@ -3049,5 +3049,54 @@ window.deleteRankingConfig = function(idx) {
   };
 })();
 </script>
+
+<script>
+// ランキング名の右に更新日を表示
+async function _applyRankingUpdateDates() {
+  var inner = document.getElementById("tabRankings");
+  if (!inner) return;
+  try {
+    var rr = await fetch("data/ranking_results.json?" + Date.now());
+    var d = await rr.json();
+    var dateMap = {};
+    (d.rankings||[]).forEach(function(r) {
+      if (r.url && r.updateDate) dateMap[r.url] = r.updateDate;
+    });
+    // 各行のランキング名セルに日付を追加
+    var tbody = inner.querySelector("table tbody");
+    if (!tbody) return;
+    Array.from(tbody.querySelectorAll("tr")).forEach(function(row) {
+      var delBtn = Array.from(row.querySelectorAll("[onclick]")).find(function(el){
+        return (el.getAttribute("onclick")||"").includes("deleteRankingConfig");
+      });
+      if (!delBtn) return;
+      var m = (delBtn.getAttribute("onclick")||"").match(/deleteRankingConfig\((\d+)\)/);
+      if (!m) return;
+      var idx = parseInt(m[1]);
+      var cfg = loadRankingConfigs ? loadRankingConfigs() : [];
+      var url = cfg[idx] ? cfg[idx].url : null;
+      if (!url || !dateMap[url]) return;
+      var cell = row.cells[1];
+      if (!cell || cell.querySelector(".rw-update-date")) return;
+      var span = document.createElement("span");
+      span.className = "rw-update-date";
+      span.textContent = " ｜ " + dateMap[url];
+      span.style.cssText = "font-size:11px;color:#888;margin-left:6px;font-weight:normal;white-space:nowrap";
+      var nameNode = cell.firstChild;
+      if (nameNode) cell.insertBefore(span, nameNode.nextSibling);
+    });
+  } catch(e) {}
+}
+// renderRankingList実行後に更新日を表示
+(function(){
+  var _rrl3 = window.renderRankingList;
+  if (!_rrl3) return;
+  window.renderRankingList = async function() {
+    var r = await _rrl3.apply(this, arguments);
+    setTimeout(_applyRankingUpdateDates, 500);
+    return r;
+  };
+})();
+</script>
 </body>
 </html>
