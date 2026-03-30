@@ -2725,5 +2725,41 @@ setTimeout(_applyAddedAtDates, 4500);
   };
 })();
 </script>
+
+<script>
+// renderRankingList: localStorageのURLにないランキングを除外
+(function() {
+  var _origRRL = window.renderRankingList;
+  if (!_origRRL) return;
+  window.renderRankingList = async function() {
+    // localStorageのURL一覧を取得
+    var localCfg = loadRankingConfigs ? loadRankingConfigs() : [];
+    var localUrls = localCfg.map(function(r){ return r.url; });
+    // latestResultsをフィルタリングするラッパー
+    var _origFetch = window.fetch;
+    if (localUrls.length > 0) {
+      window.fetch = async function(url, opts) {
+        var res = await _origFetch.apply(this, arguments);
+        if (typeof url === "string" && url.includes("ranking_results.json")) {
+          var clone = res.clone();
+          var data = await clone.json();
+          if (data && data.rankings) {
+            data.rankings = data.rankings.filter(function(r) {
+              return localUrls.indexOf(r.url) >= 0;
+            });
+            var filtered = new Response(JSON.stringify(data), { status: res.status, headers: res.headers });
+            window.fetch = _origFetch;
+            return filtered;
+          }
+        }
+        window.fetch = _origFetch;
+        return res;
+      };
+    }
+    await _origRRL.apply(this, arguments);
+    window.fetch = _origFetch;
+  };
+})();
+</script>
 </body>
 </html>
