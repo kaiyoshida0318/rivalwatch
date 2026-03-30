@@ -2727,39 +2727,50 @@ setTimeout(_applyAddedAtDates, 4500);
 </script>
 
 <script>
-// renderRankingList: localStorageのURLにないランキングを除外
-(function() {
-  var _origRRL = window.renderRankingList;
-  if (!_origRRL) return;
-  window.renderRankingList = async function() {
-    // localStorageのURL一覧を取得
-    var localCfg = loadRankingConfigs ? loadRankingConfigs() : [];
-    var localUrls = localCfg.map(function(r){ return r.url; });
-    // latestResultsをフィルタリングするラッパー
-    var _origFetch = window.fetch;
-    if (localUrls.length > 0) {
-      window.fetch = async function(url, opts) {
-        var res = await _origFetch.apply(this, arguments);
-        if (typeof url === "string" && url.includes("ranking_results.json")) {
-          var clone = res.clone();
-          var data = await clone.json();
-          if (data && data.rankings) {
-            data.rankings = data.rankings.filter(function(r) {
-              return localUrls.indexOf(r.url) >= 0;
-            });
-            var filtered = new Response(JSON.stringify(data), { status: res.status, headers: res.headers });
-            window.fetch = _origFetch;
-            return filtered;
-          }
-        }
-        window.fetch = _origFetch;
-        return res;
-      };
+// renderRankingList: localStorageのURLにないランキングをDOMから除去
+function _filterRankingRows() {
+  var localCfg = loadRankingConfigs ? loadRankingConfigs() : [];
+  var localUrls = localCfg.map(function(r){ return r.url; });
+  if (!localUrls.length) return;
+  // 削除ボタンのonclickからurlを取得してフィルタリング
+  var tbody = document.querySelector("#tabRankings table tbody");
+  if (!tbody) return;
+  Array.from(tbody.querySelectorAll("tr")).forEach(function(row) {
+    var delBtn = Array.from(row.querySelectorAll("[onclick]")).find(function(el){
+      return (el.getAttribute("onclick")||"").includes("deleteRanking");
+    });
+    if (!delBtn) return;
+    var m = (delBtn.getAttribute("onclick")||"").match(/deleteRanking\(['"]([^'"]+)['"]/);
+    if (!m) return;
+    var url = m[1];
+    if (localUrls.indexOf(url) < 0) {
+      row.remove();
     }
-    await _origRRL.apply(this, arguments);
-    window.fetch = _origFetch;
+  });
+  // 連番号を正計に洗い直す
+  Array.from(tbody.querySelectorAll("tr")).forEach(function(row, i) {
+    var numCell = row.cells[0];
+    if (numCell) numCell.textContent = i + 1;
+  });
+}
+(function() {
+  var _origRRL2 = window.renderRankingList;
+  if (!_origRRL2) return;
+  window.renderRankingList = async function() {
+    await _origRRL2.apply(this, arguments);
+    setTimeout(_filterRankingRows, 300);
   };
+  // タブ切り替え時にも実行
+  var _origST = window.switchTab;
+  if (_origST) {
+    window.switchTab = function(name) {
+      _origST.apply(this, arguments);
+      if (name === "rankings") setTimeout(_filterRankingRows, 500);
+    };
+  }
 })();
+setTimeout(_filterRankingRows, 5000);
 </script>
+
 </body>
 </html>
