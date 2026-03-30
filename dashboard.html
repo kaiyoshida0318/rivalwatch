@@ -2987,6 +2987,8 @@ window.deleteRankingConfig = function(idx) {
         body: JSON.stringify({ message: "ランキング削除results: " + deletedUrl, content: btoa(rrB64), sha: rrD.sha, branch: "main" })
       });
       console.log("[rivalwatch] ランキングをGitHubから完全削除:", deletedUrl);
+      // user_state.jsonのrankingからも削除
+      try{var usRes=await fetch('https://api.github.com/repos/kaiyoshida0318/rivalwatch/contents/data/user_state.json',{headers:{'Authorization':'token '+pat}});var usD=await usRes.json();var usBytes=Uint8Array.from(atob(usD.content.replace(/\n/g,'')),function(c){return c.charCodeAt(0);});var usObj=JSON.parse(new TextDecoder('utf-8').decode(usBytes));if(usObj.rankings){usObj.rankings=usObj.rankings.filter(function(r){var u=typeof r==='string'?r:r.url;return u!==deletedUrl;});}var usStr=JSON.stringify(usObj,null,2);var usUtf=new TextEncoder().encode(usStr);var usB64='';for(var ui=0;ui<usUtf.length;ui+=8192)usB64+=String.fromCharCode.apply(null,usUtf.slice(ui,ui+8192));await fetch('https://api.github.com/repos/kaiyoshida0318/rivalwatch/contents/data/user_state.json',{method:'PUT',headers:{'Authorization':'token '+pat,'Content-Type':'application/json'},body:JSON.stringify({message:'ranking削除:'+deletedUrl,content:btoa(usB64),sha:usD.sha,branch:'main'})});}catch(ue){console.error(ue);}
     } catch(e) { console.error("[rivalwatch] 削除エラー:", e); }
   })();
 };
