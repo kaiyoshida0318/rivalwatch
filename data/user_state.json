@@ -1219,6 +1219,15 @@
       "genreId": "210427",
       "label": "Weekly | #210427",
       "topN": 10
+    },
+    {
+      "genreId": "558912",
+      "label": "ランキング #558912",
+      "topN": 10,
+      "sortOrder": "-reviewCount",
+      "url": "https://ranking.rakuten.co.jp/weekly/558912/",
+      "items": [],
+      "fetchedAt": "2026-03-30T07:42:22.941Z"
     }
   ],
   "extra_shops": [
@@ -1442,5 +1451,5 @@
     "unicona": 50,
     "umiwo": 20
   },
-  "updated_at": "2026-03-30T07:40:30.720Z"
+  "updated_at": "2026-03-30T07:45:35.996Z"
 }
