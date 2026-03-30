@@ -2747,10 +2747,11 @@ function _filterRankingRows() {
       row.remove();
     }
   });
-  // 連番号を正計に洗い直す
-  Array.from(tbody.querySelectorAll("tr")).forEach(function(row, i) {
-    var numCell = row.cells[0];
-    if (numCell) numCell.textContent = i + 1;
+  // 連番号を正計に洗い直す（deleteRankingConfigを持つ行のみ）
+  var rankNum = 1;
+  Array.from(tbody.querySelectorAll("tr")).forEach(function(row) {
+    var hasDelBtn = Array.from(row.querySelectorAll("[onclick]")).some(function(el){ return (el.getAttribute("onclick")||"").includes("deleteRankingConfig"); });
+    if (hasDelBtn) { if (row.cells[0]) row.cells[0].textContent = rankNum++; }
   });
 }
 (function() {
