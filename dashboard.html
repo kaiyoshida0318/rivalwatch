@@ -2791,7 +2791,14 @@ setTimeout(_filterRankingRows, 5000);
     }
   }
   // 起動時に実行
-  setTimeout(_syncSavedRankings, 3000);
+  function _syncAndUpdateBadge() {
+    _syncSavedRankings();
+    // rankingBadgeをlocalStorage基準で更新
+    var cnt = loadRankingConfigs ? loadRankingConfigs().length : 0;
+    var el = document.getElementById("rankingBadge");
+    if (el) el.innerHTML = cnt > 0 ? '<span style="background:var(--accent);color:#fff;border-radius:10px;font-size:11px;padding:1px 7px;margin-left:4px">' + cnt + '</span>' : "";
+  }
+  setTimeout(_syncAndUpdateBadge, 3000);
   // loadFromGitHub後にも実行
   var _origLFG2 = window.loadFromGitHub;
   if (_origLFG2) {
