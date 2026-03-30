@@ -1875,11 +1875,35 @@ async function fetchRankings(){
     }
 
 function deleteRankingConfig(idx){
-  if(!confirm('このランキング設定を削除しますか？')) return;
-  savedRankings.splice(idx, 1);
-  saveRankings(savedRankings);
-  renderRankingList();
-  updateBadges();
+  if(!confirm("このランキングを削除しますか？"))return;
+  var cfg=loadRankingConfigs?loadRankingConfigs():[];
+  if(idx<0||idx>=cfg.length)return;
+  var deletedUrl=cfg[idx].url;
+  cfg.splice(idx,1);
+  if(saveRankingConfigs)saveRankingConfigs(cfg);
+  if(savedRankings){for(var i=savedRankings.length-1;i>=0;i--){if(savedRankings[i].url===deletedUrl)savedRankings.splice(i,1);}}
+  if(typeof renderRankingList==="function")renderRankingList();
+  if(typeof updateBadges==="function")setTimeout(updateBadges,300);
+  var pat=localStorage.getItem("rw_pat")||"";
+  if(!pat)return;
+  (async function(){
+    try{
+      var cfgRes=await fetch("https://api.github.com/repos/kaiyoshida0318/rivalwatch/contents/data/ranking_configs.json",{headers:{"Authorization":"token "+pat}});
+      var cfgD=await cfgRes.json();
+      var cfgBytes=Uint8Array.from(atob(cfgD.content.replace(/\n/g,"")),function(c){return c.charCodeAt(0);});
+      var cfgArr=JSON.parse(new TextDecoder("utf-8").decode(cfgBytes));
+      cfgArr=cfgArr.filter(function(r){return r.url!==deletedUrl;});
+      var cfgStr=JSON.stringify(cfgArr,null,2);var cfgUtf=new TextEncoder().encode(cfgStr);var cfgB64="";for(var ci=0;ci<cfgUtf.length;ci+=8192)cfgB64+=String.fromCharCode.apply(null,cfgUtf.slice(ci,ci+8192));
+      await fetch("https://api.github.com/repos/kaiyoshida0318/rivalwatch/contents/data/ranking_configs.json",{method:"PUT",headers:{"Authorization":"token "+pat,"Content-Type":"application/json"},body:JSON.stringify({message:"ランキング削除:"+deletedUrl,content:btoa(cfgB64),sha:cfgD.sha,branch:"main"})});
+      var rrRes=await fetch("https://api.github.com/repos/kaiyoshida0318/rivalwatch/contents/data/ranking_results.json",{headers:{"Authorization":"token "+pat}});
+      var rrD=await rrRes.json();
+      var rrBytes=Uint8Array.from(atob(rrD.content.replace(/\n/g,"")),function(c){return c.charCodeAt(0);});
+      var rrObj=JSON.parse(new TextDecoder("utf-8").decode(rrBytes));
+      if(rrObj.rankings)rrObj.rankings=rrObj.rankings.filter(function(r){return r.url!==deletedUrl;});
+      var rrStr=JSON.stringify(rrObj,null,2);var rrUtf=new TextEncoder().encode(rrStr);var rrB64="";for(var ri=0;ri<rrUtf.length;ri+=8192)rrB64+=String.fromCharCode.apply(null,rrUtf.slice(ri,ri+8192));
+      await fetch("https://api.github.com/repos/kaiyoshida0318/rivalwatch/contents/data/ranking_results.json",{method:"PUT",headers:{"Authorization":"token "+pat,"Content-Type":"application/json"},body:JSON.stringify({message:"ランキング削除results:"+deletedUrl,content:btoa(rrB64),sha:rrD.sha,branch:"main"})});
+    }catch(e){console.error(e);}
+  })();
 }
 
 function rankingCard(item, rank){
