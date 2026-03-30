@@ -1612,7 +1612,7 @@ function updateBadges(){
   document.getElementById('watch1Badge').innerHTML=watch1Count>0?`<span style="background:#f59e0b;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${watch1Count}</span>`:'';
   document.getElementById('sizeokBadge').innerHTML=sizeokCount>0?`<span style="background:#06b6d4;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${sizeokCount}</span>`:'';
   document.getElementById('stopBadge').innerHTML=stopCount>0?`<span style="background:#ef4444;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${stopCount}</span>`:'';
-  document.getElementById('rankingBadge').innerHTML=loadRankingConfigs().length>0?`<span style="background:#f59e0b;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${savedRankings.length}</span>`:'';
+  document.getElementById('rankingBadge').innerHTML=loadRankingConfigs().length>0?`<span style="background:#f59e0b;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${loadRankingConfigs().length}</span>`:'';
   document.getElementById('doneBadge').innerHTML=doneCount>0?`<span style="background:#8b5cf6;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${doneCount}</span>`:'';
 
   document.getElementById('worthlessBadge').innerHTML=worthlessCount>0?`<span style="background:#1a1a1a;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${worthlessCount}</span>`:'';
@@ -1886,7 +1886,7 @@ function deleteRankingConfig(idx){
   var deletedUrl=cfg[idx].url;
   cfg.splice(idx,1);
   if(saveRankingConfigs)saveRankingConfigs(cfg);
-  if(savedRankings){for(var i=savedRankings.length-1;i>=0;i--){if(savedRankings[i].url===deletedUrl)savedRankings.splice(i,1);}}
+  if(savedRankings){for(var i=loadRankingConfigs().length-1;i>=0;i--){if(savedRankings[i].url===deletedUrl)savedRankings.splice(i,1);}}
   if(typeof renderRankingList==="function")renderRankingList();
   if(typeof updateBadges==="function")setTimeout(updateBadges,300);
   var pat=localStorage.getItem("rw_pat")||"";
@@ -2471,7 +2471,7 @@ window._loadCandidates = async function() {
   window.loadFromGitHub = async function() {
     var localBefore = loadRankingConfigs ? loadRankingConfigs() : [];
     await _origLoad.apply(this, arguments);
-    if (localBefore.length > savedRankings.length) {
+    if (localBefore.length > loadRankingConfigs().length) {
       localBefore.forEach(function(r) {
         if (!savedRankings.find(function(s){ return s.url === r.url; })) {
           savedRankings.push(r);
@@ -2815,7 +2815,7 @@ setTimeout(_filterRankingRows, 5000);
     var localUrls = local.map(function(r){ return r.url; });
     if (!savedRankings) return;
     // localUrlsにないURLをsavedRankingsから除去
-    for (var i = savedRankings.length - 1; i >= 0; i--) {
+    for (var i = loadRankingConfigs().length - 1; i >= 0; i--) {
       if (localUrls.indexOf(savedRankings[i].url) < 0) {
         savedRankings.splice(i, 1);
       }
@@ -2948,7 +2948,7 @@ window.deleteRankingConfig = function(idx) {
   cfg.splice(idx, 1);
   if (saveRankingConfigs) saveRankingConfigs(cfg);
   if (savedRankings) {
-    for (var i = savedRankings.length - 1; i >= 0; i--) {
+    for (var i = loadRankingConfigs().length - 1; i >= 0; i--) {
       if (savedRankings[i].url === deletedUrl) savedRankings.splice(i, 1);
     }
   }
