@@ -2693,5 +2693,37 @@ setTimeout(_applyAddedAtDates, 4500);
   }
 })();
 </script>
+
+<script>
+// GitHubのdaily_logをlocalStorageにマージ
+(function() {
+  var _origLFG = window.loadFromGitHub;
+  if (!_origLFG) return;
+  window.loadFromGitHub = async function() {
+    await _origLFG.apply(this, arguments);
+    // state.daily_logをローカルにマージ
+    try {
+      if (typeof state === "undefined" || !state.daily_log) return;
+      var ghLog = state.daily_log;
+      var localLog = JSON.parse(localStorage.getItem("rw_daily_log")||"[]");
+      var localDates = localLog.map(function(l){ return l.date; });
+      var added = 0;
+      ghLog.forEach(function(entry) {
+        if (localDates.indexOf(entry.date) < 0) {
+          localLog.push(entry);
+          added++;
+        }
+      });
+      if (added > 0) {
+        // 日付順にソートして保存
+        localLog.sort(function(a,b){ return a.date < b.date ? -1 : 1; });
+        localLog = localLog.slice(-30);
+        localStorage.setItem("rw_daily_log", JSON.stringify(localLog));
+        console.log("[rivalwatch] daily_logをGitHubから" + added + "件補完");
+      }
+    } catch(e) {}
+  };
+})();
+</script>
 </body>
 </html>
