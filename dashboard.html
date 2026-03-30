@@ -3004,5 +3004,27 @@ window.deleteRankingConfig = function(idx) {
   };
 })();
 </script>
+
+<script>
+// rankingBadgeを常にloadRankingConfigs().length基準に保つ最終ラッパー
+(function(){
+  var _origUB = window.updateBadges;
+  function _fixRankingBadge() {
+    var cnt = loadRankingConfigs ? loadRankingConfigs().length : 0;
+    var el = document.getElementById("rankingBadge");
+    if (!el) return;
+    el.innerHTML = cnt > 0
+      ? '<span style="background:var(--accent);color:#fff;border-radius:10px;font-size:11px;padding:1px 7px;margin-left:4px">' + cnt + '</span>'
+      : "";
+  }
+  window.updateBadges = function() {
+    if (_origUB) _origUB.apply(this, arguments);
+    _fixRankingBadge();
+  };
+  // 起動時にも実行
+  setTimeout(_fixRankingBadge, 1000);
+  setTimeout(_fixRankingBadge, 4000);
+})();
+</script>
 </body>
 </html>
