@@ -3062,7 +3062,6 @@ async function _applyRankingUpdateDates() {
     (d.rankings||[]).forEach(function(r) {
       if (r.url && r.updateDate) dateMap[r.url] = r.updateDate;
     });
-    // 各行のランキング名セルに日付を追加
     var tbody = inner.querySelector("table tbody");
     if (!tbody) return;
     Array.from(tbody.querySelectorAll("tr")).forEach(function(row) {
@@ -3089,7 +3088,6 @@ async function _applyRankingUpdateDates() {
     });
   } catch(e) {}
 }
-// renderRankingList実行後に更新日を表示
 (function(){
   var _rrl3 = window.renderRankingList;
   if (!_rrl3) return;
