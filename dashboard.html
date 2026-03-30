@@ -1612,7 +1612,7 @@ function updateBadges(){
   document.getElementById('watch1Badge').innerHTML=watch1Count>0?`<span style="background:#f59e0b;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${watch1Count}</span>`:'';
   document.getElementById('sizeokBadge').innerHTML=sizeokCount>0?`<span style="background:#06b6d4;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${sizeokCount}</span>`:'';
   document.getElementById('stopBadge').innerHTML=stopCount>0?`<span style="background:#ef4444;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${stopCount}</span>`:'';
-  document.getElementById('rankingBadge').innerHTML=savedRankings.length>0?`<span style="background:#f59e0b;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${savedRankings.length}</span>`:'';
+  document.getElementById('rankingBadge').innerHTML=loadRankingConfigs().length>0?`<span style="background:#f59e0b;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${savedRankings.length}</span>`:'';
   document.getElementById('doneBadge').innerHTML=doneCount>0?`<span style="background:#8b5cf6;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${doneCount}</span>`:'';
 
   document.getElementById('worthlessBadge').innerHTML=worthlessCount>0?`<span style="background:#1a1a1a;color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${worthlessCount}</span>`:'';
