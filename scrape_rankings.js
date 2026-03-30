@@ -93,9 +93,6 @@ async function main(){
       let detail = {name:item.name, price:item.price, image_url:item.image_url, review_count:0, shop_name:item.shopSid};
       console.log(' [rank'+item.rank+'] '+item.shopSid+': '+item.name.slice(0,25));
 
-          ;
-            console.log('  [rank'+item.rank+'] page: '+item.name.slice(0,25)+' Y'+item.price);
-          }
           enriched.push({rank:item.rank,item_id:item.shopSid+':'+item.itemCode,shop_sid:item.shopSid,shop_name:(detail&&detail.shop_name)||item.shopSid,item_code:item.itemCode,url:item.url,name:(detail&&detail.name)||'',image_url:(detail&&detail.image_url)||'',price:(detail&&detail.price)||0,review_count:(detail&&detail.review_count)||0});
         }
         results.push({
