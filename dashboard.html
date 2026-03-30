@@ -2453,6 +2453,8 @@ window._loadCandidates = async function() {
       var tabs = document.querySelectorAll('[onclick]');
       for (var i=0; i<tabs.length; i++) {
         var oc = tabs[i].getAttribute('onclick') || '';
+  if(typeof saveRankingConfigs==="function") saveRankingConfigs(savedRankings);
+  if(typeof writeRankingConfigsToGitHub==="function") setTimeout(writeRankingConfigsToGitHub,500);
         if (oc.indexOf('rankings') >= 0 && oc.indexOf('switchTab') >= 0) { tabs[i].click(); break; }
       }
       await new Promise(function(r){ setTimeout(r,300); });
