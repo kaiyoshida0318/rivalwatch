@@ -15,6 +15,7 @@ async function enrichViaApi(shopSid,itemCode){
   try{const res=await fetch(RAKUTEN_API+'?'+params,{headers:{Referer:'https://kaiyoshida0318.github.io/rivalwatch/'}});
   const data=await res.json();
   if(data&&data.Items&&data.Items.length){const it=data.Items[0].Item||data.Items[0];const imgs=it.mediumImageUrls||[];
+        const retShop=(it.shopCode||'').toLowerCase(); if(retShop&&retShop!==shopSid.toLowerCase()){console.log(' [enrich] mismatch:'+shopSid+'!='+retShop);return null;}
   return{name:(it.itemName||'').slice(0,80),image_url:imgs[0]?imgs[0].imageUrl:'',price:parseInt(it.itemPrice||0),review_count:parseInt(it.reviewCount||0),shop_name:it.shopName||shopSid};}
   }catch(e){}return null;}
 async function scrapeRankingPage(browser,url,topN){
