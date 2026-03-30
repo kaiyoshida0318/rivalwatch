@@ -3100,66 +3100,54 @@ async function _applyRankingUpdateDates() {
 </script>
 
 <script>
-// 日別ログの「表示説明」ボタンとショップ一覧の緜・オレンジNEWの説明
-(function(){
-  // 説明モーダルを作成
-  function _showLegend() {
-    var existing = document.getElementById("rw-legend-modal");
-    if (existing) { existing.remove(); return; }
-    var overlay = document.createElement("div");
-    overlay.id = "rw-legend-modal";
-    overlay.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center";
-    overlay.onclick = function(e){ if(e.target===overlay) overlay.remove(); };
-    var box = document.createElement("div");
-    box.style.cssText = "background:#fff;border-radius:12px;padding:28px 32px;max-width:540px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.18);font-size:14px;line-height:1.7";
-    box.innerHTML = [
-      '<h3 style="margin:0 0 16px;font-size:16px;border-bottom:2px solid #e0e0e0;padding-bottom:10px">表示説明</h3>',
-      '<div style="margin-bottom:18px">',
-      '  <strong>ショップ一覧のFOLOR / NEWバッジ</strong>',
-      '  <table style="width:100%;border-collapse:collapse;margin-top:8px">',
-      '    <tr><td style="padding:6px 8px"><span style="background:#e1f5ee;color:#0f6e56;border-radius:4px;padding:2px 8px;font-size:12px;font-weight:bold">NEW</span></td>',
-      '        <td style="padding:6px 8px">緑NEW = collect.pyが自動収集しているショップ（SUMMARY内）</td></tr>',
-      '    <tr><td style="padding:6px 8px"><span style="background:#fff3e0;color:#e65100;border-radius:4px;padding:2px 8px;font-size:12px;font-weight:bold">NEW</span></td>',
-      '        <td style="padding:6px 8px">オレンジNEW = 候補ショップから手動で追加したショップ</td></tr>',
-      '  </table>',
-      '</div>',
-      '<div style="margin-bottom:18px">',
-      '  <strong>日別ログの列の意味</strong>',
-      '  <table style="width:100%;border-collapse:collapse;margin-top:8px">',
-      '    <tr style="background:#f5f5f5"><th style="padding:6px 8px;text-align:left">列名</th><th style="padding:6px 8px;text-align:left">意味</th></tr>',
-      '    <tr><td style="padding:6px 8px;font-weight:bold">日付</td><td style="padding:6px 8px">Actionsが実行された日</td></tr>',
-      '    <tr style="background:#fafafa"><td style="padding:6px 8px;font-weight:bold">ショップ</td><td style="padding:6px 8px">ショップ一覧のショップ数</td></tr>',
-      '    <tr><td style="padding:6px 8px;font-weight:bold">商品</td><td style="padding:6px 8px">収集した商品数の合計</td></tr>',
-      '    <tr style="background:#fafafa"><td style="padding:6px 8px;font-weight:bold">チェック前</td><td style="padding:6px 8px">チェック前の商品数（まだ変更穏の商品）</td></tr>',
-      '    <tr><td style="padding:6px 8px;font-weight:bold">候補</td><td style="padding:6px 8px">ランキングで発見したショップ追加候補数</td></tr>',
-      '  </table>',
-      '</div>',
-      '<button onclick="document.getElementById(\'rw-legend-modal\').remove()" style="background:#1a1a2e;color:#fff;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:14px">閉じる</button>',
-    ].join("");
-    overlay.appendChild(box);
-    document.body.appendChild(overlay);
-  }
-  // showDailyLogをラップして「表示説明」ボタンを上部に追加
-  var _origSDL = window.showDailyLog;
-  if (!_origSDL) return;
-  window.showDailyLog = function() {
-    _origSDL.apply(this, arguments);
-    setTimeout(function() {
-      var modal = document.getElementById("logModal");
-      if (!modal) return;
-      var inner = modal.querySelector("div");
-      if (!inner) return;
-      if (inner.querySelector(".rw-legend-btn")) return;
-      var btn = document.createElement("button");
-      btn.className = "rw-legend-btn";
-      btn.textContent = "❓ 表示説明";
-      btn.onclick = _showLegend;
-      btn.style.cssText = "background:#fff;border:1.5px solid #1a1a2e;color:#1a1a2e;padding:5px 14px;border-radius:6px;cursor:pointer;font-size:13px;margin-bottom:12px;float:left";
-      // モーダルの先頭に挿入
-      inner.insertBefore(btn, inner.firstChild);
-    }, 200);
-  };
-})();
+// 「表示説明」ボタンを日別ログボタンの左側に配置
+function _showLegend() {
+  var existing = document.getElementById("rw-legend-modal");
+  if (existing) { existing.remove(); return; }
+  var overlay = document.createElement("div");
+  overlay.id = "rw-legend-modal";
+  overlay.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center";
+  overlay.onclick = function(e){ if(e.target===overlay) overlay.remove(); };
+  var box = document.createElement("div");
+  box.style.cssText = "background:#fff;border-radius:12px;padding:28px 32px;max-width:540px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.18);font-size:14px;line-height:1.7";
+  box.innerHTML = [
+    '<h3 style="margin:0 0 16px;font-size:16px;border-bottom:2px solid #e0e0e0;padding-bottom:10px">表示説明</h3>',
+    '<div style="margin-bottom:18px">',
+    '  <strong>ショップ一覧のNEWバッジ</strong>',
+    '  <table style="width:100%;border-collapse:collapse;margin-top:8px">',
+    '    <tr><td style="padding:6px 8px"><span style="background:#e1f5ee;color:#0f6e56;border-radius:4px;padding:2px 8px;font-size:12px;font-weight:bold">NEW</span></td>',
+    '        <td style="padding:6px 8px">緑NEW = collect.pyが自動収集しているショップ（SUMMARY内）</td></tr>',
+    '    <tr><td style="padding:6px 8px"><span style="background:#fff3e0;color:#e65100;border-radius:4px;padding:2px 8px;font-size:12px;font-weight:bold">NEW</span></td>',
+    '        <td style="padding:6px 8px">オレンジNEW = 候補ショップから手動で追加したショップ</td></tr>',
+    '  </table>',
+    '</div>',
+    '<div style="margin-bottom:18px">',
+    '  <strong>日別ログの列の意味</strong>',
+    '  <table style="width:100%;border-collapse:collapse;margin-top:8px">',
+    '    <tr style="background:#f5f5f5"><th style="padding:6px 8px;text-align:left">列名</th><th style="padding:6px 8px;text-align:left">意味</th></tr>',
+    '    <tr><td style="padding:6px 8px;font-weight:bold">日付</td><td style="padding:6px 8px">Actionsが実行された日</td></tr>',
+    '    <tr style="background:#fafafa"><td style="padding:6px 8px;font-weight:bold">ショップ</td><td style="padding:6px 8px">ショップ一覧のショップ数</td></tr>',
+    '    <tr><td style="padding:6px 8px;font-weight:bold">商品</td><td style="padding:6px 8px">収集した商品数の合計</td></tr>',
+    '    <tr style="background:#fafafa"><td style="padding:6px 8px;font-weight:bold">チェック前</td><td style="padding:6px 8px">未確認の商品数（まだ変更穏の商品）</td></tr>',
+    '    <tr><td style="padding:6px 8px;font-weight:bold">候補</td><td style="padding:6px 8px">ランキングで発見したショップ追加候補数</td></tr>',
+    '  </table>',
+    '</div>',
+    '<button onclick="document.getElementById(\'rw-legend-modal\').remove()" style="background:#1a1a2e;color:#fff;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:14px">閉じる</button>',
+  ].join("");
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+// 日別ログボタンの左に「表示説明」ボタンを挿入
+setTimeout(function() {
+  var logBtn = Array.from(document.querySelectorAll(".tab, [onclick*='showDailyLog']")).find(function(el){ return el.textContent.includes("日別ログ"); });
+  if (!logBtn || logBtn.parentElement.querySelector(".rw-legend-btn")) return;
+  var btn = document.createElement("div");
+  btn.className = "tab rw-legend-btn";
+  btn.textContent = "❓ 表示説明";
+  btn.onclick = _showLegend;
+  btn.style.cssText = "cursor:pointer;opacity:0.75;font-size:12px";
+  logBtn.parentElement.insertBefore(btn, logBtn);
+}, 1000);
 </script>
 </body>
 </html>
