@@ -2839,6 +2839,13 @@ async function _applyCandItemImages() {
       });
     });
   } catch(e) {}
+  // rw_candidate_shopsのimage_urlもimageMapに追加（上書きなし）
+  try {
+    var storedCands = JSON.parse(localStorage.getItem("rw_candidate_shops")||"[]");
+    storedCands.forEach(function(s) {
+      if (s.image_url && !imageMap[s.sid]) imageMap[s.sid] = s.image_url;
+    });
+  } catch(e2) {}
   // 各行の代表商品セル（セル2）に画像を追加
   inner.querySelectorAll("tbody tr").forEach(function(row) {
     var addBtn = row.querySelector("[data-sid]");
