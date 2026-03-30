@@ -3026,5 +3026,26 @@ window.deleteRankingConfig = function(idx) {
   setTimeout(_fixRankingBadge, 4000);
 })();
 </script>
+
+<script>
+// renderRankingList実行前にsavedRankings.labelをlocalStorageで強制同期
+(function(){
+  var _rrl = window.renderRankingList;
+  if(!_rrl) return;
+  window.renderRankingList = async function(){
+    // localStorageのlabelでsavedRankingsを上書き
+    if(typeof loadRankingConfigs==="function"){
+      var lc=loadRankingConfigs();
+      lc.forEach(function(cfg){
+        if(!window.savedRankings)window.savedRankings=[];
+        var sr=window.savedRankings.find(function(s){return s.url===cfg.url;});
+        if(sr&&sr.label!==cfg.label)sr.label=cfg.label;
+        else if(!sr)window.savedRankings.push(cfg);
+      });
+    }
+    return _rrl.apply(this,arguments);
+  };
+})();
+</script>
 </body>
 </html>
