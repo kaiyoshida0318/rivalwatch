@@ -3082,8 +3082,10 @@ async function _applyRankingUpdateDates() {
       span.className = "rw-update-date";
       span.textContent = " ｜ " + dateMap[url];
       span.style.cssText = "font-size:11px;color:#888;margin-left:6px;font-weight:normal;white-space:nowrap";
-      // ランキング名の内容を整理してspanを名前の後ろに追加
-      cell.appendChild(span);
+      // <a>タグ（ランキング名）の直後に挿入
+      var aTag = cell.querySelector("a");
+      if (aTag && aTag.nextSibling) { cell.insertBefore(span, aTag.nextSibling); }
+      else { cell.appendChild(span); }
     });
   } catch(e) {}
 }
