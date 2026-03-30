@@ -2867,5 +2867,42 @@ async function _applyCandItemImages() {
   };
 })();
 </script>
+
+<script>
+// 最終上書き: _applyCandItemImagesに必ずstoredを参照する正しいバージョンを適用
+window._applyCandItemImages = async function() {
+  var inner = document.getElementById("candidatesInner");
+  if (!inner) return;
+  var imageMap = {};
+  try {
+    var stored = JSON.parse(localStorage.getItem("rw_candidate_shops")||"[]");
+    stored.forEach(function(s){ if (s.image_url) imageMap[s.sid] = s.image_url; });
+  } catch(e) {}
+  try {
+    var rr = await fetch("data/ranking_results.json?" + Date.now());
+    var d = await rr.json();
+    (d.rankings||[]).forEach(function(r) {
+      (r.items||[]).forEach(function(item) {
+        if (item.shop_sid && item.image_url && !imageMap[item.shop_sid])
+          imageMap[item.shop_sid] = item.image_url;
+      });
+    });
+  } catch(e) {}
+  inner.querySelectorAll("tbody tr").forEach(function(row) {
+    var btn = row.querySelector("[data-sid]");
+    if (!btn) return;
+    var url = imageMap[btn.dataset.sid];
+    if (!url) return;
+    var cell = row.cells[2];
+    if (!cell || cell.querySelector("img")) return;
+    var img = document.createElement("img");
+    img.src = url;
+    img.style.cssText = "width:48px;height:48px;object-fit:cover;border-radius:4px;margin-right:8px;vertical-align:middle;flex-shrink:0";
+    img.onerror = function(){ this.style.display="none"; };
+    cell.style.cssText += ";display:flex;align-items:center";
+    cell.insertBefore(img, cell.firstChild);
+  });
+};
+</script>
 </body>
 </html>
