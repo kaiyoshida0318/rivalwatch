@@ -2772,5 +2772,45 @@ function _filterRankingRows() {
 setTimeout(_filterRankingRows, 5000);
 </script>
 
+
+<script>
+// savedRankingsの初期化時にCSS日本語不局を除去＋削除したランキングの復活防止
+(function() {
+  // 起動時: localStoragを正としてsavedRankingsを強制上書き
+  function _syncSavedRankings() {
+    if (typeof loadRankingConfigs !== "function") return;
+    var local = loadRankingConfigs();
+    var localUrls = local.map(function(r){ return r.url; });
+    if (!savedRankings) return;
+    // localUrlsにないURLをsavedRankingsから除去
+    for (var i = savedRankings.length - 1; i >= 0; i--) {
+      if (localUrls.indexOf(savedRankings[i].url) < 0) {
+        savedRankings.splice(i, 1);
+      }
+    }
+  }
+  // 起動時に実行
+  setTimeout(_syncSavedRankings, 3000);
+  // loadFromGitHub後にも実行
+  var _origLFG2 = window.loadFromGitHub;
+  if (_origLFG2) {
+    window.loadFromGitHub = async function() {
+      await _origLFG2.apply(this, arguments);
+      _syncSavedRankings();
+    };
+  }
+  // deleteRankingConfigラッパー: 削除後にGitHubのranking_configs.jsonも更新
+  var _origDRC = window.deleteRankingConfig;
+  if (_origDRC) {
+    window.deleteRankingConfig = function(idx) {
+      _origDRC.apply(this, arguments);
+      // GitHubのranking_configs.jsonも更新
+      setTimeout(function() {
+        if (typeof writeRankingConfigsToGitHub === "function") writeRankingConfigsToGitHub();
+      }, 1000);
+    };
+  }
+})();
+</script>
 </body>
 </html>
