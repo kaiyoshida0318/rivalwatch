@@ -2991,5 +2991,18 @@ window.deleteRankingConfig = function(idx) {
   })();
 };
 </script>
+
+<script>
+// fetchRankingsを最終上書き: 登録後に必ずlocal+GitHubに保存
+(function(){
+  var _orig = window.fetchRankings;
+  if(!_orig) return;
+  window.fetchRankings = async function() {
+    await _orig.apply(this, arguments);
+    if(typeof saveRankingConfigs==="function") saveRankingConfigs(savedRankings);
+    if(typeof writeRankingConfigsToGitHub==="function") setTimeout(writeRankingConfigsToGitHub, 500);
+  };
+})();
+</script>
 </body>
 </html>
