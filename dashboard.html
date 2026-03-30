@@ -1780,6 +1780,9 @@ async function fetchRankings(){
   renderRankingRows();
   // ランキング一覧タブに自動切り替え
   if(addedCount > 0){
+  // 登録後ぬ即時保存: localStorage + GitHubに同期
+  if(typeof saveRankingConfigs==="function") saveRankingConfigs(savedRankings);
+  if(typeof writeRankingConfigsToGitHub==="function") setTimeout(writeRankingConfigsToGitHub, 500);
     const rankTab = document.querySelector("[onclick*=\"switchTab('rankings'\"]");
     if(rankTab) switchTab('rankings', rankTab);
     else switchTab('rankings'); await renderRankingList();
