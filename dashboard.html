@@ -1783,6 +1783,8 @@ async function fetchRankings(){
   // 登録後ぬ即時保存: localStorage + GitHubに同期
   if(typeof saveRankingConfigs==="function") saveRankingConfigs(savedRankings);
   if(typeof writeRankingConfigsToGitHub==="function") setTimeout(writeRankingConfigsToGitHub, 500);
+  if(typeof saveRankingConfigs==="function") saveRankingConfigs(savedRankings);
+  if(typeof writeRankingConfigsToGitHub==="function") setTimeout(writeRankingConfigsToGitHub,500);
     const rankTab = document.querySelector("[onclick*=\"switchTab('rankings'\"]");
     if(rankTab) switchTab('rankings', rankTab);
     else switchTab('rankings'); await renderRankingList();
