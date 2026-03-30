@@ -2822,46 +2822,41 @@ setTimeout(_filterRankingRows, 5000);
 </script>
 
 <script>
-// 候補ショップの代表商品に画像を表示
+// 候補ショップの代表商品に画像を表示（rw_candidate_shopsのimage_urlを優先）
 async function _applyCandItemImages() {
   var inner = document.getElementById("candidatesInner");
   if (!inner) return;
-  // ranking_results.jsonからshopsid→image_urlマップを作成
   var imageMap = {};
+  // 候補ショップのimage_urlを優先参照
+  try {
+    var stored = JSON.parse(localStorage.getItem("rw_candidate_shops")||"[]");
+    stored.forEach(function(s){ if (s.image_url) imageMap[s.sid] = s.image_url; });
+  } catch(e) {}
+  // ranking_results.jsonからも補完
   try {
     var rr = await fetch("data/ranking_results.json?" + Date.now());
     var d = await rr.json();
     (d.rankings||[]).forEach(function(r) {
       (r.items||[]).forEach(function(item) {
-        if (item.shop_sid && item.image_url && !imageMap[item.shop_sid]) {
+        if (item.shop_sid && item.image_url && !imageMap[item.shop_sid])
           imageMap[item.shop_sid] = item.image_url;
-        }
       });
     });
   } catch(e) {}
-  // rw_candidate_shopsのimage_urlもimageMapに追加（上書きなし）
-  try {
-    var storedCands = JSON.parse(localStorage.getItem("rw_candidate_shops")||"[]");
-    storedCands.forEach(function(s) {
-      if (s.image_url && !imageMap[s.sid]) imageMap[s.sid] = s.image_url;
-    });
-  } catch(e2) {}
-  // 各行の代表商品セル（セル2）に画像を追加
+  // 各行のセル2に画像を挿入
   inner.querySelectorAll("tbody tr").forEach(function(row) {
-    var addBtn = row.querySelector("[data-sid]");
-    if (!addBtn) return;
-    var sid = addBtn.dataset.sid;
-    var imageUrl = imageMap[sid];
-    if (!imageUrl) return;
-    var itemCell = row.cells[2];
-    if (!itemCell || itemCell.querySelector("img")) return;
+    var btn = row.querySelector("[data-sid]");
+    if (!btn) return;
+    var url = imageMap[btn.dataset.sid];
+    if (!url) return;
+    var cell = row.cells[2];
+    if (!cell || cell.querySelector("img")) return;
     var img = document.createElement("img");
-    img.src = imageUrl;
+    img.src = url;
     img.style.cssText = "width:48px;height:48px;object-fit:cover;border-radius:4px;margin-right:8px;vertical-align:middle;flex-shrink:0";
     img.onerror = function(){ this.style.display="none"; };
-    // セル内をflexにして画像+テキストの横並びに
-    itemCell.style.cssText += ";display:flex;align-items:center";
-    itemCell.insertBefore(img, itemCell.firstChild);
+    cell.style.cssText += ";display:flex;align-items:center";
+    cell.insertBefore(img, cell.firstChild);
   });
 }
 // _loadCandidates実行後に画像を適用
