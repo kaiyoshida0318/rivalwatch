@@ -40,7 +40,10 @@ async function scrapeRankingPage(browser,url,topN){
       // ランキング名: h1
       const h1 = document.querySelector('h1');
       const rankingTitle = h1 ? h1.innerText.trim() : '';
-      return {breadcrumb, categoryName, rankingTitle};
+      // 更新日・集計期間を取得
+                const updateDateEl = document.getElementById("rnkGenreRanking_updateDate");
+                const updateDate = updateDateEl ? updateDateEl.textContent.trim().replace(/\s+/g," ") : "";
+                return {breadcrumb, categoryName, rankingTitle, updateDate};
     });
     // 期間タイプ: URLから判定
     const periodType = url.includes('/weekly/') ? 'Weekly' : url.includes('/monthly/') ? 'Monthly' : url.includes('/realtime/') ? 'Realtime' : 'Daily';
@@ -101,6 +104,7 @@ async function main(){
           rankingTitle: pageMeta.rankingTitle, // 接着・補修用品ランキング
           breadcrumb:   pageMeta.breadcrumb,   // 楽天市場トップ > ... > 接着・補修用品
           categoryName: pageMeta.categoryName, // 接着・補修用品
+      updateDate: pageMeta.updateDate, // 2026年3月25日(水)更新 (集計日：3月16日～3月22日)
           items: enriched
         });
         await sleep(2000);
