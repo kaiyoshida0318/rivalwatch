@@ -2,7 +2,7 @@ name: 週次ライバル観測
 
 on:
   schedule:
-    - cron: "0 18 * * 0"
+    - cron: "0 19 * * 0"
   workflow_dispatch:
 
 jobs:
