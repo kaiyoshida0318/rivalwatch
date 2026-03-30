@@ -2904,5 +2904,61 @@ window._applyCandItemImages = async function() {
   });
 };
 </script>
+
+<script>
+// deleteRankingConfigを完全上書き：山ocalStorage+GitHub configs+GitHub resultsの3つ全てから削除
+window.deleteRankingConfig = function(idx) {
+  if (!confirm("このランキングを削除しますか？")) return;
+  // 削除対象のURLを取得
+  var cfg = loadRankingConfigs ? loadRankingConfigs() : [];
+  if (idx < 0 || idx >= cfg.length) return;
+  var deletedUrl = cfg[idx].url;
+  // ① localStorageから削除
+  cfg.splice(idx, 1);
+  if (saveRankingConfigs) saveRankingConfigs(cfg);
+  if (savedRankings) {
+    for (var i = savedRankings.length - 1; i >= 0; i--) {
+      if (savedRankings[i].url === deletedUrl) savedRankings.splice(i, 1);
+    }
+  }
+  // ② 画面を即時更新
+  if (typeof renderRankingList === "function") renderRankingList();
+  if (typeof updateBadges === "function") setTimeout(updateBadges, 300);
+  // ③ GitHubのranking_configs.jsonからも削除
+  var pat = localStorage.getItem("rw_pat") || "";
+  if (!pat) return;
+  (async function() {
+    try {
+      // ranking_configs.jsonを更新
+      var cfgRes = await fetch("https://api.github.com/repos/kaiyoshida0318/rivalwatch/contents/data/ranking_configs.json", { headers: { "Authorization": "token " + pat } });
+      var cfgD = await cfgRes.json();
+      var cfgBytes = Uint8Array.from(atob(cfgD.content.replace(/\n/g,"")), function(c){ return c.charCodeAt(0); });
+      var cfgContent = JSON.parse(new TextDecoder("utf-8").decode(cfgBytes));
+      cfgContent = cfgContent.filter(function(r){ return r.url !== deletedUrl; });
+      var cfgStr = JSON.stringify(cfgContent, null, 2);
+      var cfgUtf = new TextEncoder().encode(cfgStr);
+      var cfgB64 = ""; for (var i=0;i<cfgUtf.length;i+=8192) cfgB64 += String.fromCharCode.apply(null, cfgUtf.slice(i,i+8192));
+      await fetch("https://api.github.com/repos/kaiyoshida0318/rivalwatch/contents/data/ranking_configs.json", {
+        method: "PUT", headers: { "Authorization": "token " + pat, "Content-Type": "application/json" },
+        body: JSON.stringify({ message: "ランキング削除: " + deletedUrl, content: btoa(cfgB64), sha: cfgD.sha, branch: "main" })
+      });
+      // ranking_results.jsonからも削除
+      var rrRes = await fetch("https://api.github.com/repos/kaiyoshida0318/rivalwatch/contents/data/ranking_results.json", { headers: { "Authorization": "token " + pat } });
+      var rrD = await rrRes.json();
+      var rrBytes = Uint8Array.from(atob(rrD.content.replace(/\n/g,"")), function(c){ return c.charCodeAt(0); });
+      var rrContent = JSON.parse(new TextDecoder("utf-8").decode(rrBytes));
+      if (rrContent.rankings) rrContent.rankings = rrContent.rankings.filter(function(r){ return r.url !== deletedUrl; });
+      var rrStr = JSON.stringify(rrContent, null, 2);
+      var rrUtf = new TextEncoder().encode(rrStr);
+      var rrB64 = ""; for (var j=0;j<rrUtf.length;j+=8192) rrB64 += String.fromCharCode.apply(null, rrUtf.slice(j,j+8192));
+      await fetch("https://api.github.com/repos/kaiyoshida0318/rivalwatch/contents/data/ranking_results.json", {
+        method: "PUT", headers: { "Authorization": "token " + pat, "Content-Type": "application/json" },
+        body: JSON.stringify({ message: "ランキング削除results: " + deletedUrl, content: btoa(rrB64), sha: rrD.sha, branch: "main" })
+      });
+      console.log("[rivalwatch] ランキングをGitHubから完全削除:", deletedUrl);
+    } catch(e) { console.error("[rivalwatch] 削除エラー:", e); }
+  })();
+};
+</script>
 </body>
 </html>
