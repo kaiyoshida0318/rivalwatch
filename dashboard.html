@@ -595,7 +595,7 @@ const BASE_SHOPS = [
 
 // ── ローカルストレージ ────────────────────────────────
 function loadExtra() { try{return JSON.parse(localStorage.getItem('rw_extra_shops')||'[]')}catch{return[]} }
-function saveExtra(arr) { try{localStorage.setItem('rw_extra_shops',JSON.stringify(arr));syncToGitHub()}catch{} }
+function saveExtra(arr) { try{localStorage.setItem('rw_extra_shops',JSON.stringify(arr));setTimeout(syncToGitHub,0);}catch{} }
 function loadGood() { try{return JSON.parse(localStorage.getItem('rw_good')||'{}')}catch{return{}} }
 function saveGood(o) { try{localStorage.setItem('rw_good',JSON.stringify(o));syncToGitHub()}catch{} }
 function loadBad() { try{return JSON.parse(localStorage.getItem('rw_bad')||'{}')}catch{return{}} }
