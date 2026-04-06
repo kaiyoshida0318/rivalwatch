@@ -2347,7 +2347,7 @@ window._loadCandidates = async function() {
     var _summarySids = new Set();
     if (typeof SUMMARY !== 'undefined' && SUMMARY && SUMMARY.shops) { SUMMARY.shops.forEach(function(s){ if(s.sid) _summarySids.add(s.sid); }); }
     var _extraSids = new Set((loadExtra ? loadExtra() : []).map(function(s){ return s.shopCode||s.sid||''; }));
-    _storedCands = _storedCands.filter(function(c){ return !_summarySids.has(c.sid) && !_extraSids.has(c.sid); });
+    _storedCands = _storedCands.filter(function(c){ return !_summarySids.has(c.sid) && !_extraSids.has(c.sid) && !(worthless[c.sid]); });
     // 発見日数の降順（新しい順）
     _storedCands.sort(function(a,b){ return new Date(b.discoveredAt||0) - new Date(a.discoveredAt||0); });
   var _storedUrls = _storedCands.map(function(s){return s.sid;});
