@@ -2343,7 +2343,12 @@ window._loadCandidates = async function() {
   var cands = Object.values(shops).filter(function(s){ return known.indexOf(s.sid) < 0; });
   // localStorageの永続候補とマージ（新規候補のみ追加）
   var _storedCands = JSON.parse(localStorage.getItem('rw_candidate_shops')||'[]');
-    // 発見日数の降順（discoveredAtが古い順）
+    // SUMMARY内・extra内・価値なしのショップを候補から除外
+    var _summarySids = new Set();
+    if (typeof SUMMARY !== 'undefined' && SUMMARY && SUMMARY.shops) { SUMMARY.shops.forEach(function(s){ if(s.sid) _summarySids.add(s.sid); }); }
+    var _extraSids = new Set((loadExtra ? loadExtra() : []).map(function(s){ return s.shopCode||s.sid||''; }));
+    _storedCands = _storedCands.filter(function(c){ return !_summarySids.has(c.sid) && !_extraSids.has(c.sid); });
+    // 発見日数の降順（新しい順）
     _storedCands.sort(function(a,b){ return new Date(b.discoveredAt||0) - new Date(a.discoveredAt||0); });
   var _storedUrls = _storedCands.map(function(s){return s.sid;});
   cands.forEach(function(s){
