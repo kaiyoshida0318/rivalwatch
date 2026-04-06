@@ -2344,7 +2344,7 @@ window._loadCandidates = async function() {
   // localStorageの永続候補とマージ（新規候補のみ追加）
   var _storedCands = JSON.parse(localStorage.getItem('rw_candidate_shops')||'[]');
     // 発見日数の降順（discoveredAtが古い順）
-    _storedCands.sort(function(a,b){ return new Date(a.discoveredAt||0) - new Date(b.discoveredAt||0); });
+    _storedCands.sort(function(a,b){ return new Date(b.discoveredAt||0) - new Date(a.discoveredAt||0); });
   var _storedUrls = _storedCands.map(function(s){return s.sid;});
   cands.forEach(function(s){
     if (_storedUrls.indexOf(s.sid) < 0) { s.discoveredAt = new Date().toISOString(); _storedCands.push(s); }
