@@ -3152,49 +3152,27 @@ setTimeout(function() {
 }, 1000);
 </script>
 
+
+
 <script>
-// saveExtraにバリデーションを追加（weekly/monthly/dailyやSUMMARY重複を除去）
-(function(){
-  var _origSaveExtra = window.saveExtra;
-  if (!_origSaveExtra) return;
-  var INVALID_SIDS = ["weekly","monthly","daily","realtime"];
-  window.saveExtra = function(arr) {
-    // SUMMARYのsid一覧を取得
-    var summarySids = new Set();
-    if (typeof SUMMARY !== "undefined" && SUMMARY && SUMMARY.shops) {
-      SUMMARY.shops.forEach(function(s){ if(s.sid) summarySids.add(s.sid); });
-    }
-    // バリデーション：weekly等・SUMMARY重複を除去
-    var cleaned = (arr||[]).filter(function(s) {
-      var sid = s.shopCode || s.sid || "";
-      if (!sid) return false;
-      if (INVALID_SIDS.indexOf(sid) >= 0) { console.warn("[rivalwatch] saveExtra: invalid sid rejected:", sid); return false; }
-      if (summarySids.has(sid)) return false;
-      return true;
-    });
-    return _origSaveExtra.call(this, cleaned);
-  };
-})();
-// 起動時にもクリーンアップ
+// 起動時にextra_shopsの軽量クリーンアップ（ネットワークアクセスなし）
 setTimeout(function(){
-  if (typeof loadExtra !== "function" || typeof saveExtra !== "function") return;
-  var extra = loadExtra();
+  var INVALID = ['weekly','monthly','daily','realtime'];
+  var extra = JSON.parse(localStorage.getItem('rw_extra_shops')||'[]');
   var summarySids = new Set();
-  if (typeof SUMMARY !== "undefined" && SUMMARY && SUMMARY.shops) {
+  if (typeof SUMMARY !== 'undefined' && SUMMARY && SUMMARY.shops) {
     SUMMARY.shops.forEach(function(s){ if(s.sid) summarySids.add(s.sid); });
   }
-  var INVALID_SIDS = ["weekly","monthly","daily","realtime"];
   var cleaned = extra.filter(function(s){
-    var sid = s.shopCode || s.sid || "";
-    return sid && INVALID_SIDS.indexOf(sid) < 0 && !summarySids.has(sid);
+    var sid = s.shopCode || s.sid || '';
+    return sid && INVALID.indexOf(sid) < 0 && !summarySids.has(sid);
   });
   if (cleaned.length !== extra.length) {
-    saveExtra(cleaned);
-    if (typeof _updateShopsBadge === "function") _updateShopsBadge();
-    console.log("[rivalwatch] 起動時クリーンアップ:", extra.length, "->", cleaned.length);
+    localStorage.setItem('rw_extra_shops', JSON.stringify(cleaned));
+    setTimeout(function(){ if(typeof _updateShopsBadge==='function') _updateShopsBadge(); }, 100);
+    console.log('[rivalwatch] クリーンアップ:', extra.length, '->', cleaned.length);
   }
-}, 5000);
+}, 3000);
 </script>
-
 </body>
 </html>
