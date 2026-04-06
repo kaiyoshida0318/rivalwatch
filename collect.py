@@ -420,6 +420,7 @@ def main():
     # 日別ログをuser_state.jsonに自動保存
     try:
         state = load_json(USER_STATE_FILE, {})
+        # 日別ログは必ず既存の値を引き継ぎ（ダッシュボードの上書きで消えないよう）
         daily_log = state.get("daily_log", [])
         today_str = now.strftime("%Y-%m-%d")
         # 今日のエントリがなければ追加
