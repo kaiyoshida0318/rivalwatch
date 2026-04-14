@@ -144,7 +144,7 @@ tr:last-child td{border-bottom:none}
   <div class="hdr-meta">
     <span><span class="live"></span>商品単位 観測中</span>
     <span id="hdrDate"></span>
-    <span style="font-family:var(--mono);font-size:10px;color:#555;background:#111;border:1px solid #333;border-radius:4px;padding:2px 7px;letter-spacing:.05em">v1.0.2</span>
+    <span style="font-family:var(--mono);font-size:10px;color:#555;background:#111;border:1px solid #333;border-radius:4px;padding:2px 7px;letter-spacing:.05em">v1.0.3</span>
     <span id="syncStatus" style="font-size:11px;font-family:var(--mono)"></span>
     <button onclick="openPATModal()" style="padding:4px 10px;background:transparent;color:#888;border:1px solid #444;border-radius:5px;font-size:10px;font-family:var(--mono);cursor:pointer" title="GitHub同期設定">⚙ 同期</button>
     <div id="pendingBar" style="display:none;align-items:center;gap:6px;background:#1a1a2e;border:1px solid #5b8ef0;border-radius:6px;padding:5px 10px">
@@ -1603,7 +1603,6 @@ function updateBadges(){
   const worthlessCount=Object.keys(worthlessShops).length;
   (document.getElementById('kpiGood')||{}).textContent=goodCount;
   (document.getElementById('kpiItems')||{}).textContent=all.length.toLocaleString();
-  (document.getElementById('kpiShops')||{}).textContent=getAllShops().length;
   document.getElementById('allBadge').innerHTML=`<span style="background:var(--muted);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${all.length}</span>`;
   document.getElementById('uncheckedBadge').innerHTML=`<span style="background:var(--warn);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${unchecked}</span>`;
   document.getElementById('goodBadge').innerHTML=goodCount>0?`<span style="background:var(--up);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-family:var(--mono)">${goodCount}</span>`:'';
@@ -2557,16 +2556,12 @@ window.showDailyLog = function() {
 function _updateShopsBadge() {
   var el = document.getElementById('shopsBadge');
   if (!el) return;
-  // SUMMARY.shopsのsidとextraのsidを合わせたユニークsetでカウント
-  var sids = new Set();
-  if (typeof SUMMARY !== "undefined" && SUMMARY && SUMMARY.shops) {
-    SUMMARY.shops.forEach(function(s){ sids.add(s.sid||s.shopCode||""); });
-  }
-  if (typeof loadExtra === "function") {
-    loadExtra().forEach(function(s){ sids.add(s.shopCode||s.sid||""); });
-  }
-  sids.delete("");
-  el.textContent = sids.size > 0 ? " " + sids.size : "";
+  // getAllShops()に統一してkpiShops・cntLabelと一致させる
+  var cnt = (typeof getAllShops === 'function') ? getAllShops().length : 0;
+  el.textContent = cnt > 0 ? " " + cnt : "";
+  // kpiShopsも同時に更新して二重書き込みによるズレを防ぐ
+  var kpi = document.getElementById('kpiShops');
+  if (kpi) kpi.textContent = cnt;
 }
 // updateBadgesにフック
 (function() {
