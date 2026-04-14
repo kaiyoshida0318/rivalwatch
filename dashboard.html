@@ -144,7 +144,7 @@ tr:last-child td{border-bottom:none}
   <div class="hdr-meta">
     <span><span class="live"></span>商品単位 観測中</span>
     <span id="hdrDate"></span>
-    <span style="font-family:var(--mono);font-size:10px;color:#555;background:#111;border:1px solid #333;border-radius:4px;padding:2px 7px;letter-spacing:.05em">v1.0.3</span>
+    <span style="font-family:var(--mono);font-size:10px;color:#555;background:#111;border:1px solid #333;border-radius:4px;padding:2px 7px;letter-spacing:.05em">v1.0.4</span>
     <span id="syncStatus" style="font-size:11px;font-family:var(--mono)"></span>
     <button onclick="openPATModal()" style="padding:4px 10px;background:transparent;color:#888;border:1px solid #444;border-radius:5px;font-size:10px;font-family:var(--mono);cursor:pointer" title="GitHub同期設定">⚙ 同期</button>
     <div id="pendingBar" style="display:none;align-items:center;gap:6px;background:#1a1a2e;border:1px solid #5b8ef0;border-radius:6px;padding:5px 10px">
@@ -2095,6 +2095,8 @@ function bulkAdd(){
   updateBadges();
   buildUrlInputs();
   initRankingRows();
+  // 全データ揃い後にログ保存（DOM依存なしで確実に記録）
+  setTimeout(_rw_logSave, 1500);
 })();
     window.triggerRankingUpdate = async function(btn) {
       const pat = localStorage.getItem('rw_pat');
@@ -2208,24 +2210,41 @@ function _rw_logSave() {
   var today = new Date().toISOString().slice(0,10);
   var logs = JSON.parse(localStorage.getItem(K)||"[]");
   if (logs.length && logs[logs.length-1].date === today) return;
-  var tabs = ["all-products","unchecked","watch1","stop","good","sizeok","done","bad"];
-  var keys = ["all","unchecked","watch1","stop","good","sizeok","done","bad"];
-  var entry = {date:today};
-  var allCnt = 0;
-  tabs.forEach(function(tab,i){
-    var el = document.querySelector("[onclick*=\"switchTab('"+tab+"'\"]");
-    var m = el ? el.textContent.match(/[0-9]+/) : null;
-    var n = m ? parseInt(m[0]) : 0;
-    entry[keys[i]] = n;
-    if (i===0) allCnt = n;
-  });
+
+  // DOMではなく直接データから取得（描画タイミングに依存しない）
+  var allItems = (typeof getAllItems === 'function') ? getAllItems() : [];
+  var allCnt = allItems.length;
   if (!allCnt) return;
-  // 候補ショップ数をlocalStorageから取得
-  try { var _cands = JSON.parse(localStorage.getItem('rw_candidate_shops')||'[]'); entry['candidates'] = _cands.length; } catch(_e) { entry['candidates'] = 0; }
+
+  var _good   = (typeof goodItems  !=='undefined') ? Object.keys(goodItems).length   : 0;
+  var _bad    = (typeof badItems   !=='undefined') ? Object.keys(badItems).length    : 0;
+  var _watch1 = (typeof watch1Items!=='undefined') ? Object.keys(watch1Items).length : 0;
+  var _sizeok = (typeof sizeokItems!=='undefined') ? Object.keys(sizeokItems).length : 0;
+  var _done   = (typeof doneItems  !=='undefined') ? Object.keys(doneItems).length   : 0;
+  var _stop   = (typeof stopItems  !=='undefined') ? Object.keys(stopItems).length   : 0;
+  var _unc    = allItems.filter(function(it){
+    return !goodItems[it.item_id] && !badItems[it.item_id] && !watch1Items[it.item_id]
+        && !sizeokItems[it.item_id] && !doneItems[it.item_id] && !stopItems[it.item_id];
+  }).length;
+
+  var entry = {
+    date:     today,
+    all:      allCnt,
+    unchecked:_unc,
+    watch1:   _watch1,
+    stop:     _stop,
+    good:     _good,
+    sizeok:   _sizeok,
+    done:     _done,
+    bad:      _bad
+  };
+  try { entry.candidates = JSON.parse(localStorage.getItem('rw_candidate_shops')||'[]').length; } catch(_e) { entry.candidates = 0; }
+
   logs.push(entry);
   if (logs.length > 30) logs = logs.slice(-30);
   localStorage.setItem(K, JSON.stringify(logs));
 }
+// ページ起動時（3秒後にデータが揃ってから）
 setTimeout(_rw_logSave, 3000);
 </script>
 
