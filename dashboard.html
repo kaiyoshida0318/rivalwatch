@@ -144,7 +144,7 @@ tr:last-child td{border-bottom:none}
   <div class="hdr-meta">
     <span><span class="live"></span>商品単位 観測中</span>
     <span id="hdrDate"></span>
-    <span style="font-family:var(--mono);font-size:10px;color:#555;background:#111;border:1px solid #333;border-radius:4px;padding:2px 7px;letter-spacing:.05em">v1.1.5</span>
+    <span style="font-family:var(--mono);font-size:10px;color:#555;background:#111;border:1px solid #333;border-radius:4px;padding:2px 7px;letter-spacing:.05em">v1.1.6</span>
     <span id="syncStatus" style="font-size:11px;font-family:var(--mono)"></span>
     <button onclick="openPATModal()" style="padding:4px 10px;background:transparent;color:#888;border:1px solid #444;border-radius:5px;font-size:10px;font-family:var(--mono);cursor:pointer" title="GitHub同期設定">⚙ 同期</button>
     <div id="pendingBar" style="display:none;align-items:center;gap:6px;background:#1a1a2e;border:1px solid #5b8ef0;border-radius:6px;padding:5px 10px">
@@ -2213,34 +2213,40 @@ window.showDailyLog = function() {
     content.innerHTML = "<p style='color:var(--muted);padding:8px 0;font-size:0.9em'>まだログがありません。ページを開くたびに自動記録されます。</p>";
     modal.style.display = "flex"; return;
   }
-  var CATS = [
-    ["all","商品全体"],["unchecked","チェック前"],
-    ["watch1","🔥すぐやる"],["stop","❌中止"],
-    ["good","⭐ 70点"],["sizeok","size微妙"],
-    ["done","✅やってる"],["bad","👎微妙"],
-    ["shops","🏪ショップ"],["worthless","🚫価値なし"],["candidates","🎯候補"]
+  // 商品系・ショップ系を2グループに分けてコンパクト表示
+  var CATS1 = [
+    ["unchecked","未確認"],["watch1","🔥"],["stop","❌"],
+    ["good","⭐"],["sizeok","📐"],["done","✅"],["bad","👎"]
+  ];
+  var CATS2 = [
+    ["all","商品"],["shops","ショップ"],["candidates","候補"],["worthless","価値なし"]
   ];
   var rev = logs.slice().reverse();
-  var TH = "padding:7px 12px;font-size:0.8em;font-weight:600;color:var(--muted);white-space:nowrap;border-bottom:2px solid var(--border)";
+  var TH = "padding:5px 8px;font-size:0.75em;font-weight:600;color:var(--muted);white-space:nowrap;border-bottom:2px solid var(--border);text-align:right";
   var th = "<tr><th style='" + TH + ";text-align:left'>日付</th>";
-  CATS.forEach(function(c) { th += "<th style='" + TH + ";text-align:right'>" + c[1] + "</th>"; });
+  CATS1.forEach(function(c){ th += "<th style='" + TH + "'>" + c[1] + "</th>"; });
+  th += "<th style='padding:5px 4px;border-bottom:2px solid var(--border);background:#f0ede8'></th>";
+  CATS2.forEach(function(c){ th += "<th style='" + TH + ";background:#f0ede8'>" + c[1] + "</th>"; });
   th += "</tr>";
   var tbody = rev.map(function(log, i) {
     var prev = rev[i+1];
     var isToday = (i === 0);
     var rowBg = isToday ? "background:var(--bg)" : "";
-    var dateTd = "<td style='padding:7px 12px;font-size:0.85em;color:var(--text);white-space:nowrap;border-top:1px solid var(--border);font-weight:" + (isToday?"700":"400") + "'>" + log.date.slice(5).replace("-","/") + (isToday ? " <span style='font-size:0.75em;color:var(--warn)'>今日</span>" : "") + "</td>";
-    var cells = CATS.map(function(c) {
-      var v = log[c[0]] || 0;
-      var d = prev != null ? v - (prev[c[0]] || 0) : null;
-      var dh = "";
-      if (d !== null && d !== 0) {
-        var col = d > 0 ? "#16a34a" : "#dc2626";
-        dh = "<span style='font-size:0.72em;color:" + col + ";margin-left:3px;font-weight:500'>" + (d > 0 ? "+" : "") + d + "</span>";
-      }
-      return "<td style='text-align:right;padding:7px 12px;font-size:0.88em;color:var(--text);border-top:1px solid var(--border)'>" + v + dh + "</td>";
-    }).join("");
-    return "<tr style='" + rowBg + "'>" + dateTd + cells + "</tr>";
+    var dateTd = "<td style='padding:5px 8px;font-size:0.82em;color:var(--text);white-space:nowrap;border-top:1px solid var(--border);font-weight:" + (isToday?"700":"400") + "'>" + log.date.slice(5).replace("-","/") + (isToday ? " <span style='font-size:0.72em;color:var(--warn)'>今日</span>" : "") + "</td>";
+    function cell(cats, log, prev, bg) {
+      return cats.map(function(c) {
+        var v = log[c[0]] || 0;
+        var d = prev != null ? v - (prev[c[0]] || 0) : null;
+        var dh = "";
+        if (d !== null && d !== 0) {
+          var col = d > 0 ? "#16a34a" : "#dc2626";
+          dh = "<span style='font-size:0.7em;color:" + col + ";margin-left:2px;font-weight:500'>" + (d > 0 ? "+" : "") + d + "</span>";
+        }
+        return "<td style='text-align:right;padding:5px 8px;font-size:0.85em;color:var(--text);border-top:1px solid var(--border)" + (bg?";background:#faf9f7":"") + "'>" + v + dh + "</td>";
+      }).join("");
+    }
+    var sep = "<td style='padding:5px 2px;border-top:1px solid var(--border);background:#f0ede8'></td>";
+    return "<tr style='" + rowBg + "'>" + dateTd + cell(CATS1,log,prev,false) + sep + cell(CATS2,log,prev,true) + "</tr>";
   }).join("");
   content.innerHTML = "<div style='overflow-x:auto'><table style='width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:8px;overflow:hidden'><thead style='background:var(--bg)'>" + th + "</thead><tbody>" + tbody + "</tbody></table></div>";
   modal.style.display = "flex";
