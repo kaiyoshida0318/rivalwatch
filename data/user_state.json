@@ -1326,7 +1326,18 @@
       "fetchedAt": "2026-03-30T08:24:02.908Z"
     }
   ],
-  "extra_shops": [],
+  "extra_shops": [
+    {
+      "shopCode": "shotr-",
+      "name": "shotr-",
+      "reviews": 0,
+      "topItems": [],
+      "isNew": true,
+      "no": "—",
+      "sid": "shotr-",
+      "addedAt": "2026-04-20T01:35:30.151Z"
+    }
+  ],
   "hidden_shops": [],
   "item_counts": {
     "oobikiyaking": 50,
@@ -1336,5 +1347,5 @@
     "unicona": 50,
     "umiwo": 20
   },
-  "updated_at": "2026-04-20T01:29:48.188Z"
+  "updated_at": "2026-04-20T01:35:32.266Z"
 }
