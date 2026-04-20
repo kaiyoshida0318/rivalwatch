@@ -144,7 +144,7 @@ tr:last-child td{border-bottom:none}
   <div class="hdr-meta">
     <span><span class="live"></span>商品単位 観測中</span>
     <span id="hdrDate"></span>
-    <span style="font-family:var(--mono);font-size:10px;color:#555;background:#111;border:1px solid #333;border-radius:4px;padding:2px 7px;letter-spacing:.05em">v1.0.7</span>
+    <span style="font-family:var(--mono);font-size:10px;color:#555;background:#111;border:1px solid #333;border-radius:4px;padding:2px 7px;letter-spacing:.05em">v1.0.8</span>
     <span id="syncStatus" style="font-size:11px;font-family:var(--mono)"></span>
     <button onclick="openPATModal()" style="padding:4px 10px;background:transparent;color:#888;border:1px solid #444;border-radius:5px;font-size:10px;font-family:var(--mono);cursor:pointer" title="GitHub同期設定">⚙ 同期</button>
     <div id="pendingBar" style="display:none;align-items:center;gap:6px;background:#1a1a2e;border:1px solid #5b8ef0;border-radius:6px;padding:5px 10px">
@@ -2327,7 +2327,11 @@ window._candExecute = function() {
       if (!worthless[sid]) { worthless[sid]={name:name,date:new Date().toLocaleDateString("ja-JP")}; wCount++; }
     }
   });
-  if (saveExtra && addCount) saveExtra(extra);
+  if (saveExtra && addCount) {
+    saveExtra(extra);
+    // グローバル変数も同期（renderShopsが参照するのはextraShops変数）
+    if (typeof extraShops !== 'undefined') extraShops = extra;
+  }
   if (saveWorthlessShops && wCount) saveWorthlessShops(worthless);
   if (renderShops && addCount) renderShops();
   if (typeof _updateCandidatesBadge === "function") _updateCandidatesBadge();
