@@ -144,7 +144,7 @@ tr:last-child td{border-bottom:none}
   <div class="hdr-meta">
     <span><span class="live"></span>商品単位 観測中</span>
     <span id="hdrDate"></span>
-    <span style="font-family:var(--mono);font-size:10px;color:#555;background:#111;border:1px solid #333;border-radius:4px;padding:2px 7px;letter-spacing:.05em">v1.1.9</span>
+    <span style="font-family:var(--mono);font-size:10px;color:#555;background:#111;border:1px solid #333;border-radius:4px;padding:2px 7px;letter-spacing:.05em">v1.2.0</span>
     <span id="syncStatus" style="font-size:11px;font-family:var(--mono)"></span>
     <button onclick="openPATModal()" style="padding:4px 10px;background:transparent;color:#888;border:1px solid #444;border-radius:5px;font-size:10px;font-family:var(--mono);cursor:pointer" title="GitHub同期設定">⚙ 同期</button>
     <div id="pendingBar" style="display:none;align-items:center;gap:6px;background:#1a1a2e;border:1px solid #5b8ef0;border-radius:6px;padding:5px 10px">
@@ -180,7 +180,7 @@ tr:last-child td{border-bottom:none}
     <div class="tab" onclick="switchTab('done',this)">✅ もうやってる <span id="doneBadge"></span></div>
     <div class="tab" onclick="switchTab('bad',this)">👎 微妙商品 <span id="badBadge"></span></div>
 
-    <div class="tab" id="btnDailyLog" onclick="showDailyLog()" style="margin-left:auto">📋 日別ログ</div><div class="tab" onclick="backupData()" style="color:var(--up)">💾 バックアップ</div><div class="tab" onclick="document.getElementById('restoreInput').click()" style="color:var(--warn)">📂 復旧</div><input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(this)">    <div id="tabSelectUI" style="display:none;margin-left:auto;flex-shrink:0;align-items:center;gap:6px;padding:0 10px">
+    <div class="tab" id="btnDailyLog" onclick="showDailyLog()" style="margin-left:auto">📋 日別ログ</div><div class="tab" onclick="showBackupModal()" style="color:var(--up)">💾 バックアップ</div><div class="tab" onclick="document.getElementById('restoreInput').click()" style="color:var(--warn)">📂 復旧</div><input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(this)">    <div id="tabSelectUI" style="display:none;margin-left:auto;flex-shrink:0;align-items:center;gap:6px;padding:0 10px">
     <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;white-space:nowrap;color:var(--muted)">
       <input type="checkbox" id="selectAllChk" onchange="handleSelectAll(currentTab)" style="width:21px;height:21px;accent-color:#5b8ef0;cursor:pointer">
       <span id="selectAllText">全選択</span>
@@ -3178,13 +3178,14 @@ setTimeout(function() {
 
 <script>
 // ── バックアップ・復旧 ────────────────────────────────
-function backupData() {
+// ── バックアップ共通関数 ─────────────────────────────
+function _buildSnapshot() {
   var allShops = (typeof getAllShops === 'function') ? getAllShops().map(function(s){
     return { name: s.name, sid: s.sid, shopCode: s.shopCode, reviews: s.reviews||0 };
   }) : [];
-  var data = {
-    version: '1.0',
-    exported_at: new Date().toISOString(),
+  return {
+    version:         '1.0',
+    exported_at:     new Date().toISOString(),
     good:            JSON.parse(localStorage.getItem('rw_good')||'{}'),
     bad:             JSON.parse(localStorage.getItem('rw_bad')||'{}'),
     watch1:          JSON.parse(localStorage.getItem('rw_watch1')||'{}'),
@@ -3197,14 +3198,113 @@ function backupData() {
     daily_log:       JSON.parse(localStorage.getItem('rw_daily_log')||'[]'),
     shops_list:      allShops,
   };
+}
+
+function _downloadJson(data, filename) {
   var blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'rivalwatch_backup_' + new Date().toISOString().slice(0,10) + '.json';
+  a.download = filename;
   a.click();
   URL.revokeObjectURL(a.href);
 }
 
+// ── バックアップモーダル ──────────────────────────────
+function showBackupModal() {
+  var logs = JSON.parse(localStorage.getItem('rw_daily_log')||'[]');
+  var today = new Date().toISOString().slice(0,10);
+
+  // 1週間前・1ヶ月前のログエントリを探す
+  var weekAgo  = new Date(Date.now() - 7  * 86400000).toISOString().slice(0,10);
+  var monthAgo = new Date(Date.now() - 30 * 86400000).toISOString().slice(0,10);
+  function findNearestLog(targetDate) {
+    // targetDate以前で最も近い日のログを返す
+    var candidates = logs.filter(function(l){ return l.date <= targetDate; });
+    return candidates.length ? candidates[candidates.length-1] : null;
+  }
+  var logWeek  = findNearestLog(weekAgo);
+  var logMonth = findNearestLog(monthAgo);
+
+  function snapDesc(log) {
+    if (!log) return '（データなし）';
+    return log.date + ' — 商品' + (log.all||0) + '件 / ショップ' + (log.shops||0) + '件 / 価値なし' + (log.worthless||0) + '件';
+  }
+
+  // モーダルHTML
+  var existing = document.getElementById('backupModal');
+  if (existing) existing.remove();
+  var overlay = document.createElement('div');
+  overlay.id = 'backupModal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;display:flex;align-items:center;justify-content:center';
+  overlay.onclick = function(e){ if(e.target===overlay) overlay.remove(); };
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:var(--surface);border-radius:12px;padding:28px;width:min(520px,94vw);box-shadow:0 8px 32px rgba(0,0,0,0.18)';
+  box.innerHTML = [
+    '<h3 style="margin:0 0 6px;font-size:15px;font-weight:700">💾 バックアップをダウンロード</h3>',
+    '<p style="color:var(--muted);font-size:12px;margin-bottom:20px">3時点のスナップショットをそれぞれDLできます。</p>',
+
+    // 当日
+    '<div style="border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px">',
+    '  <div style="font-size:13px;font-weight:600;margin-bottom:4px">📅 当日（現在の状態）</div>',
+    '  <div style="font-size:11px;color:var(--muted);margin-bottom:10px">' + today + ' — 商品' + (typeof getAllItems==='function'?getAllItems().length:0) + '件 / ショップ' + (typeof getAllShops==='function'?getAllShops().length:0) + '件 / 価値なし' + Object.keys(JSON.parse(localStorage.getItem('rw_worthless_shops')||'{}')).length + '件</div>',
+    '  <button onclick="(function(){_downloadJson(_buildSnapshot(),'rivalwatch_backup_today_' + today + '.json');document.getElementById('backupModal').remove();})()" style="padding:7px 18px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer">ダウンロード</button>',
+    '</div>',
+
+    // 1週間前
+    '<div style="border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px">',
+    '  <div style="font-size:13px;font-weight:600;margin-bottom:4px">📅 約1週間前</div>',
+    '  <div style="font-size:11px;color:var(--muted);margin-bottom:10px">' + snapDesc(logWeek) + '</div>',
+    logWeek
+      ? '  <button onclick="(function(){_downloadJsonFromLog('' + logWeek.date + '');document.getElementById('backupModal').remove();})()" style="padding:7px 18px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer">ダウンロード</button>'
+      : '  <button disabled style="padding:7px 18px;background:#ccc;color:#fff;border:none;border-radius:6px;font-size:12px;cursor:not-allowed">データなし</button>',
+    '</div>',
+
+    // 1ヶ月前
+    '<div style="border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:20px">',
+    '  <div style="font-size:13px;font-weight:600;margin-bottom:4px">📅 約1ヶ月前</div>',
+    '  <div style="font-size:11px;color:var(--muted);margin-bottom:10px">' + snapDesc(logMonth) + '</div>',
+    logMonth
+      ? '  <button onclick="(function(){_downloadJsonFromLog('' + logMonth.date + '');document.getElementById('backupModal').remove();})()" style="padding:7px 18px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer">ダウンロード</button>'
+      : '  <button disabled style="padding:7px 18px;background:#ccc;color:#fff;border:none;border-radius:6px;font-size:12px;cursor:not-allowed">データなし</button>',
+    '</div>',
+
+    '<div style="text-align:right"><button onclick="document.getElementById('backupModal').remove()" style="padding:7px 16px;border:1px solid var(--border);border-radius:6px;background:transparent;font-size:12px;cursor:pointer">閉じる</button></div>',
+  ].join('');
+
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+
+// 日別ログのスナップショットからJSONを生成してDL
+function _downloadJsonFromLog(date) {
+  var logs = JSON.parse(localStorage.getItem('rw_daily_log')||'[]');
+  var log = logs.find(function(l){ return l.date === date; });
+  if (!log) { alert('該当日のデータが見つかりません'); return; }
+
+  var data = {
+    version:         '1.0',
+    exported_at:     date + 'T00:00:00.000Z',
+    note:            '日別ログより復元 (' + date + ')',
+    shops_list:      log.shops_snapshot      || [],
+    worthless_shops: log.worthless_snapshot  || {},
+    extra_shops:     (log.shops_snapshot||[]).filter(function(s){
+      return !BASE_SHOPS.find(function(b){ return b.name===s.name; });
+    }),
+    // 商品評価はスナップショット時点のものがないため現在値を使用
+    good:            JSON.parse(localStorage.getItem('rw_good')||'{}'),
+    bad:             JSON.parse(localStorage.getItem('rw_bad')||'{}'),
+    watch1:          JSON.parse(localStorage.getItem('rw_watch1')||'{}'),
+    sizeok:          JSON.parse(localStorage.getItem('rw_sizeok')||'{}'),
+    done:            JSON.parse(localStorage.getItem('rw_done')||'{}'),
+    stop:            JSON.parse(localStorage.getItem('rw_stop')||'{}'),
+    ranking_configs: JSON.parse(localStorage.getItem('rw_ranking_configs')||'[]'),
+    daily_log:       JSON.parse(localStorage.getItem('rw_daily_log')||'[]'),
+  };
+  _downloadJson(data, 'rivalwatch_backup_' + date + '.json');
+}
+
+// ── 復旧 ─────────────────────────────────────────────
 function restoreData(input) {
   var file = input.files[0];
   if (!file) return;
@@ -3214,31 +3314,37 @@ function restoreData(input) {
       var data = JSON.parse(e.target.result);
       if (!data.version) { alert('有効なバックアップファイルではありません'); return; }
 
-      var msg = '以下のデータを復旧します：\n';
-      msg += '・商品評価（good/bad/watch1/sizeok/done/stop）\n';
-      msg += '・ショップ一覧: ' + (data.shops_list||[]).length + '件\n';
-      msg += '・追加ショップ: ' + (data.extra_shops||[]).length + '件\n';
-      msg += '・価値なしショップ: ' + Object.keys(data.worthless_shops||{}).length + '件\n';
-      msg += '・登録ランキング: ' + (data.ranking_configs||[]).length + '件\n';
-      msg += '・日別ログ: ' + (data.daily_log||[]).length + '件\n\n';
-      msg += '現在のデータは上書きされます。続けますか？';
+      var exportedAt = data.exported_at ? data.exported_at.slice(0,10) : '不明';
+      var msg = '【 ' + exportedAt + ' 時点のデータを復旧します 】\n\n';
+      msg += '・ショップ一覧:       ' + (data.shops_list||[]).length        + ' 件\n';
+      msg += '・追加ショップ:       ' + (data.extra_shops||[]).length        + ' 件\n';
+      msg += '・価値なしショップ:   ' + Object.keys(data.worthless_shops||{}).length + ' 件\n';
+      msg += '・⭐ 70点:            ' + Object.keys(data.good||{}).length    + ' 件\n';
+      msg += '・🔥 すぐやる:        ' + Object.keys(data.watch1||{}).length  + ' 件\n';
+      msg += '・❌ 中止:            ' + Object.keys(data.stop||{}).length    + ' 件\n';
+      msg += '・📐 sizeOK:          ' + Object.keys(data.sizeok||{}).length  + ' 件\n';
+      msg += '・✅ やってる:        ' + Object.keys(data.done||{}).length    + ' 件\n';
+      msg += '・👎 微妙:            ' + Object.keys(data.bad||{}).length     + ' 件\n';
+      msg += '・登録ランキング:     ' + (data.ranking_configs||[]).length     + ' 件\n';
+      msg += '・日別ログ:           ' + (data.daily_log||[]).length           + ' 件\n\n';
+      msg += '現在のデータは上書きされます。この内容で復旧しますか？';
+
       if (!confirm(msg)) { input.value = ''; return; }
 
-      if (data.good)            { goodItems    = data.good;    localStorage.setItem('rw_good',    JSON.stringify(goodItems)); }
-      if (data.bad)             { badItems     = data.bad;     localStorage.setItem('rw_bad',     JSON.stringify(badItems)); }
-      if (data.watch1)          { watch1Items  = data.watch1;  localStorage.setItem('rw_watch1',  JSON.stringify(watch1Items)); }
-      if (data.sizeok)          { sizeokItems  = data.sizeok;  localStorage.setItem('rw_sizeok',  JSON.stringify(sizeokItems)); }
-      if (data.done)            { doneItems    = data.done;    localStorage.setItem('rw_done',    JSON.stringify(doneItems)); }
-      if (data.stop)            { stopItems    = data.stop;    localStorage.setItem('rw_stop',    JSON.stringify(stopItems)); }
-      if (data.extra_shops)     { extraShops   = data.extra_shops;     localStorage.setItem('rw_extra_shops',     JSON.stringify(extraShops)); }
+      if (data.good)            { goodItems      = data.good;            localStorage.setItem('rw_good',            JSON.stringify(goodItems)); }
+      if (data.bad)             { badItems       = data.bad;             localStorage.setItem('rw_bad',             JSON.stringify(badItems)); }
+      if (data.watch1)          { watch1Items    = data.watch1;          localStorage.setItem('rw_watch1',          JSON.stringify(watch1Items)); }
+      if (data.sizeok)          { sizeokItems    = data.sizeok;          localStorage.setItem('rw_sizeok',          JSON.stringify(sizeokItems)); }
+      if (data.done)            { doneItems      = data.done;            localStorage.setItem('rw_done',            JSON.stringify(doneItems)); }
+      if (data.stop)            { stopItems      = data.stop;            localStorage.setItem('rw_stop',            JSON.stringify(stopItems)); }
+      if (data.extra_shops)     { extraShops     = data.extra_shops;     localStorage.setItem('rw_extra_shops',     JSON.stringify(extraShops)); }
       if (data.worthless_shops) { worthlessShops = data.worthless_shops; localStorage.setItem('rw_worthless_shops', JSON.stringify(worthlessShops)); }
-      if (data.ranking_configs) { localStorage.setItem('rw_ranking_configs', JSON.stringify(data.ranking_configs)); savedRankings = data.ranking_configs; }
-      if (data.daily_log)       { localStorage.setItem('rw_daily_log', JSON.stringify(data.daily_log)); }
+      if (data.ranking_configs) { savedRankings  = data.ranking_configs; localStorage.setItem('rw_ranking_configs', JSON.stringify(savedRankings)); }
+      if (data.daily_log)       { localStorage.setItem('rw_daily_log',   JSON.stringify(data.daily_log)); }
 
-      // 描画更新
-      if (typeof renderShops    === 'function') renderShops();
-      if (typeof updateBadges   === 'function') updateBadges();
-      if (typeof renderWorthless=== 'function') renderWorthless();
+      if (typeof renderShops     === 'function') renderShops();
+      if (typeof updateBadges    === 'function') updateBadges();
+      if (typeof renderWorthless === 'function') renderWorthless();
 
       input.value = '';
       alert('✅ 復旧完了しました！');
