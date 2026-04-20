@@ -144,7 +144,7 @@ tr:last-child td{border-bottom:none}
   <div class="hdr-meta">
     <span><span class="live"></span>商品単位 観測中</span>
     <span id="hdrDate"></span>
-    <span style="font-family:var(--mono);font-size:10px;color:#555;background:#111;border:1px solid #333;border-radius:4px;padding:2px 7px;letter-spacing:.05em">v1.1.8</span>
+    <span style="font-family:var(--mono);font-size:10px;color:#555;background:#111;border:1px solid #333;border-radius:4px;padding:2px 7px;letter-spacing:.05em">v1.1.9</span>
     <span id="syncStatus" style="font-size:11px;font-family:var(--mono)"></span>
     <button onclick="openPATModal()" style="padding:4px 10px;background:transparent;color:#888;border:1px solid #444;border-radius:5px;font-size:10px;font-family:var(--mono);cursor:pointer" title="GitHub同期設定">⚙ 同期</button>
     <div id="pendingBar" style="display:none;align-items:center;gap:6px;background:#1a1a2e;border:1px solid #5b8ef0;border-radius:6px;padding:5px 10px">
@@ -180,7 +180,7 @@ tr:last-child td{border-bottom:none}
     <div class="tab" onclick="switchTab('done',this)">✅ もうやってる <span id="doneBadge"></span></div>
     <div class="tab" onclick="switchTab('bad',this)">👎 微妙商品 <span id="badBadge"></span></div>
 
-    <div class="tab" id="btnDailyLog" onclick="showDailyLog()" style="margin-left:auto">📋 日別ログ</div>    <div id="tabSelectUI" style="display:none;margin-left:auto;flex-shrink:0;align-items:center;gap:6px;padding:0 10px">
+    <div class="tab" id="btnDailyLog" onclick="showDailyLog()" style="margin-left:auto">📋 日別ログ</div><div class="tab" onclick="backupData()" style="color:var(--up)">💾 バックアップ</div><div class="tab" onclick="document.getElementById('restoreInput').click()" style="color:var(--warn)">📂 復旧</div><input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(this)">    <div id="tabSelectUI" style="display:none;margin-left:auto;flex-shrink:0;align-items:center;gap:6px;padding:0 10px">
     <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;white-space:nowrap;color:var(--muted)">
       <input type="checkbox" id="selectAllChk" onchange="handleSelectAll(currentTab)" style="width:21px;height:21px;accent-color:#5b8ef0;cursor:pointer">
       <span id="selectAllText">全選択</span>
@@ -3175,5 +3175,80 @@ setTimeout(function() {
 
 
 
+
+<script>
+// ── バックアップ・復旧 ────────────────────────────────
+function backupData() {
+  var allShops = (typeof getAllShops === 'function') ? getAllShops().map(function(s){
+    return { name: s.name, sid: s.sid, shopCode: s.shopCode, reviews: s.reviews||0 };
+  }) : [];
+  var data = {
+    version: '1.0',
+    exported_at: new Date().toISOString(),
+    good:            JSON.parse(localStorage.getItem('rw_good')||'{}'),
+    bad:             JSON.parse(localStorage.getItem('rw_bad')||'{}'),
+    watch1:          JSON.parse(localStorage.getItem('rw_watch1')||'{}'),
+    sizeok:          JSON.parse(localStorage.getItem('rw_sizeok')||'{}'),
+    done:            JSON.parse(localStorage.getItem('rw_done')||'{}'),
+    stop:            JSON.parse(localStorage.getItem('rw_stop')||'{}'),
+    extra_shops:     JSON.parse(localStorage.getItem('rw_extra_shops')||'[]'),
+    worthless_shops: JSON.parse(localStorage.getItem('rw_worthless_shops')||'{}'),
+    ranking_configs: JSON.parse(localStorage.getItem('rw_ranking_configs')||'[]'),
+    daily_log:       JSON.parse(localStorage.getItem('rw_daily_log')||'[]'),
+    shops_list:      allShops,
+  };
+  var blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'rivalwatch_backup_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function restoreData(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var data = JSON.parse(e.target.result);
+      if (!data.version) { alert('有効なバックアップファイルではありません'); return; }
+
+      var msg = '以下のデータを復旧します：\n';
+      msg += '・商品評価（good/bad/watch1/sizeok/done/stop）\n';
+      msg += '・ショップ一覧: ' + (data.shops_list||[]).length + '件\n';
+      msg += '・追加ショップ: ' + (data.extra_shops||[]).length + '件\n';
+      msg += '・価値なしショップ: ' + Object.keys(data.worthless_shops||{}).length + '件\n';
+      msg += '・登録ランキング: ' + (data.ranking_configs||[]).length + '件\n';
+      msg += '・日別ログ: ' + (data.daily_log||[]).length + '件\n\n';
+      msg += '現在のデータは上書きされます。続けますか？';
+      if (!confirm(msg)) { input.value = ''; return; }
+
+      if (data.good)            { goodItems    = data.good;    localStorage.setItem('rw_good',    JSON.stringify(goodItems)); }
+      if (data.bad)             { badItems     = data.bad;     localStorage.setItem('rw_bad',     JSON.stringify(badItems)); }
+      if (data.watch1)          { watch1Items  = data.watch1;  localStorage.setItem('rw_watch1',  JSON.stringify(watch1Items)); }
+      if (data.sizeok)          { sizeokItems  = data.sizeok;  localStorage.setItem('rw_sizeok',  JSON.stringify(sizeokItems)); }
+      if (data.done)            { doneItems    = data.done;    localStorage.setItem('rw_done',    JSON.stringify(doneItems)); }
+      if (data.stop)            { stopItems    = data.stop;    localStorage.setItem('rw_stop',    JSON.stringify(stopItems)); }
+      if (data.extra_shops)     { extraShops   = data.extra_shops;     localStorage.setItem('rw_extra_shops',     JSON.stringify(extraShops)); }
+      if (data.worthless_shops) { worthlessShops = data.worthless_shops; localStorage.setItem('rw_worthless_shops', JSON.stringify(worthlessShops)); }
+      if (data.ranking_configs) { localStorage.setItem('rw_ranking_configs', JSON.stringify(data.ranking_configs)); savedRankings = data.ranking_configs; }
+      if (data.daily_log)       { localStorage.setItem('rw_daily_log', JSON.stringify(data.daily_log)); }
+
+      // 描画更新
+      if (typeof renderShops    === 'function') renderShops();
+      if (typeof updateBadges   === 'function') updateBadges();
+      if (typeof renderWorthless=== 'function') renderWorthless();
+
+      input.value = '';
+      alert('✅ 復旧完了しました！');
+    } catch(err) {
+      alert('❌ 復旧失敗: ' + err.message);
+      input.value = '';
+    }
+  };
+  reader.readAsText(file);
+}
+</script>
 </body>
 </html>
