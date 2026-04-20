@@ -140,11 +140,10 @@ tr:last-child td{border-bottom:none}
 <body>
 
 <header>
-  <div class="logo" style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 56" height="40" style="display:block"><ellipse cx="28" cy="28" rx="20" ry="12" fill="none" stroke="#e53935" stroke-width="1.8"/><circle cx="28" cy="28" r="7" fill="#e53935"/><circle cx="28" cy="28" r="3" fill="#fff"/><circle cx="30" cy="26" r="1.5" fill="#fff" opacity="0.9"/><line x1="28" y1="13" x2="28" y2="18" stroke="#e53935" stroke-width="1.2" stroke-linecap="round"/><line x1="28" y1="38" x2="28" y2="43" stroke="#e53935" stroke-width="1.2" stroke-linecap="round"/><line x1="5" y1="28" x2="10" y2="28" stroke="#e53935" stroke-width="1.2" stroke-linecap="round"/><line x1="46" y1="28" x2="51" y2="28" stroke="#e53935" stroke-width="1.2" stroke-linecap="round"/><text x="60" y="36" font-family="Arial Black, Arial, sans-serif" font-size="26" font-weight="900" fill="#ffffff" letter-spacing="-1">rival</text><text x="117" y="36" font-family="Arial Black, Arial, sans-serif" font-size="26" font-weight="900" fill="#e53935" letter-spacing="-1">watch</text></svg></div>
+  <div class="logo" style="display:flex;align-items:center;gap:10px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 56" height="40" style="display:block"><ellipse cx="28" cy="28" rx="20" ry="12" fill="none" stroke="#e53935" stroke-width="1.8"/><circle cx="28" cy="28" r="7" fill="#e53935"/><circle cx="28" cy="28" r="3" fill="#fff"/><circle cx="30" cy="26" r="1.5" fill="#fff" opacity="0.9"/><line x1="28" y1="13" x2="28" y2="18" stroke="#e53935" stroke-width="1.2" stroke-linecap="round"/><line x1="28" y1="38" x2="28" y2="43" stroke="#e53935" stroke-width="1.2" stroke-linecap="round"/><line x1="5" y1="28" x2="10" y2="28" stroke="#e53935" stroke-width="1.2" stroke-linecap="round"/><line x1="46" y1="28" x2="51" y2="28" stroke="#e53935" stroke-width="1.2" stroke-linecap="round"/><text x="60" y="36" font-family="Arial Black, Arial, sans-serif" font-size="26" font-weight="900" fill="#ffffff" letter-spacing="-1">rival</text><text x="117" y="36" font-family="Arial Black, Arial, sans-serif" font-size="26" font-weight="900" fill="#e53935" letter-spacing="-1">watch</text></svg><span style="font-family:var(--mono);font-size:11px;color:#fff;opacity:0.9;letter-spacing:.05em">v1.2.2</span></div>
   <div class="hdr-meta">
     <span><span class="live"></span>商品単位 観測中</span>
     <span id="hdrDate"></span>
-    <span style="font-family:var(--mono);font-size:10px;color:#555;background:#111;border:1px solid #333;border-radius:4px;padding:2px 7px;letter-spacing:.05em">v1.2.0</span>
     <span id="syncStatus" style="font-size:11px;font-family:var(--mono)"></span>
     <button onclick="openPATModal()" style="padding:4px 10px;background:transparent;color:#888;border:1px solid #444;border-radius:5px;font-size:10px;font-family:var(--mono);cursor:pointer" title="GitHub同期設定">⚙ 同期</button>
     <div id="pendingBar" style="display:none;align-items:center;gap:6px;background:#1a1a2e;border:1px solid #5b8ef0;border-radius:6px;padding:5px 10px">
@@ -827,9 +826,18 @@ function getAllItems() {
     const items=(s.topItems&&s.topItems.length>0)?s.topItems:makeMockItems(s,20);
     return items.map(it=>({...it,shop_name:s.name,shop_sid:s.sid||s.shopCode}));
   });
-  // ランキング商品プールをマージ（ショップ商品と重複しないもののみ）
+  // ランキング商品プールをマージ（ショップ商品と重複しない、かつ価値なしショップでないもの）
   const shopItemIds = new Set(shopItems.map(it=>it.item_id));
-  const rankingOnly = Object.values(rankingItemPool).filter(it=>it.item_id && !shopItemIds.has(it.item_id));
+  const rankingOnly = Object.values(rankingItemPool).filter(function(it){
+    if (!it.item_id || shopItemIds.has(it.item_id)) return false;
+    // 価値なしショップの商品は除外
+    if (it.shop_sid && worthlessShops[it.shop_sid]) return false;
+    if (it.shop_name) {
+      var ws = Object.values(worthlessShops);
+      if (ws.find(function(w){ return w.name === it.shop_name; })) return false;
+    }
+    return true;
+  });
   return [...shopItems, ...rankingOnly];
 }
 
