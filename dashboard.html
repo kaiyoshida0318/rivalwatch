@@ -144,7 +144,7 @@ tr:last-child td{border-bottom:none}
   <div class="hdr-meta">
     <span><span class="live"></span>商品単位 観測中</span>
     <span id="hdrDate"></span>
-    <span style="font-family:var(--mono);font-size:10px;color:#555;background:#111;border:1px solid #333;border-radius:4px;padding:2px 7px;letter-spacing:.05em">v1.1.1</span>
+    <span style="font-family:var(--mono);font-size:10px;color:#555;background:#111;border:1px solid #333;border-radius:4px;padding:2px 7px;letter-spacing:.05em">v1.1.2</span>
     <span id="syncStatus" style="font-size:11px;font-family:var(--mono)"></span>
     <button onclick="openPATModal()" style="padding:4px 10px;background:transparent;color:#888;border:1px solid #444;border-radius:5px;font-size:10px;font-family:var(--mono);cursor:pointer" title="GitHub同期設定">⚙ 同期</button>
     <div id="pendingBar" style="display:none;align-items:center;gap:6px;background:#1a1a2e;border:1px solid #5b8ef0;border-radius:6px;padding:5px 10px">
@@ -640,9 +640,10 @@ function getUserState() {
     stop:         stopItems,
     rankings:     savedRankings,
     extra_shops:  extraShops,
-    hidden_shops: hiddenShops,
-    item_counts:  itemCounts,
-    updated_at:   new Date().toISOString(),
+    hidden_shops:    hiddenShops,
+    worthless_shops: worthlessShops,
+    item_counts:     itemCounts,
+    updated_at:      new Date().toISOString(),
   };
 }
 
@@ -716,7 +717,8 @@ async function loadFromGitHub() {
     if (state.stop)         { stopItems    = state.stop;         localStorage.setItem('rw_stop',   JSON.stringify(stopItems)); }
     if (state.rankings && state.rankings.length > 0) { savedRankings = (function(gh,local){ var merged=gh.slice(); local.forEach(function(r){ if(!merged.find(function(m){ return m.url===r.url; })) merged.push(r); }); return merged; })(state.rankings, savedRankings); localStorage.setItem('rw_rankings', JSON.stringify(savedRankings)); initRankingPool(); }
     if (state.extra_shops)  { extraShops   = state.extra_shops;  localStorage.setItem('rw_extra_shops', JSON.stringify(extraShops)); }
-    if (state.hidden_shops) { hiddenShops  = state.hidden_shops; saveHiddenShops(hiddenShops); }
+    if (state.hidden_shops)    { hiddenShops    = state.hidden_shops;    saveHiddenShops(hiddenShops); }
+    if (state.worthless_shops) { worthlessShops = state.worthless_shops; localStorage.setItem('rw_worthless_shops', JSON.stringify(worthlessShops)); }
     if (state.item_counts)  { itemCounts   = state.item_counts;  saveItemCounts(itemCounts); }
     // daily_logをGitHubからローカルにマージ（ブラウザを開いていない日も補完）
     if (state.daily_log && state.daily_log.length > 0) {
