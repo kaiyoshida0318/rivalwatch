@@ -144,7 +144,7 @@ tr:last-child td{border-bottom:none}
   <div class="hdr-meta">
     <span><span class="live"></span>商品単位 観測中</span>
     <span id="hdrDate"></span>
-    <span style="font-family:var(--mono);font-size:10px;color:#555;background:#111;border:1px solid #333;border-radius:4px;padding:2px 7px;letter-spacing:.05em">v1.1.6</span>
+    <span style="font-family:var(--mono);font-size:10px;color:#555;background:#111;border:1px solid #333;border-radius:4px;padding:2px 7px;letter-spacing:.05em">v1.1.8</span>
     <span id="syncStatus" style="font-size:11px;font-family:var(--mono)"></span>
     <button onclick="openPATModal()" style="padding:4px 10px;background:transparent;color:#888;border:1px solid #444;border-radius:5px;font-size:10px;font-family:var(--mono);cursor:pointer" title="GitHub同期設定">⚙ 同期</button>
     <div id="pendingBar" style="display:none;align-items:center;gap:6px;background:#1a1a2e;border:1px solid #5b8ef0;border-radius:6px;padding:5px 10px">
@@ -2193,7 +2193,7 @@ window.triggerRankingUpdate = async function(btn) {
 
 
 <div id="logModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:9999;align-items:center;justify-content:justify-content">
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;width:min(780px,96vw);max-height:82vh;overflow-y:auto;margin:auto;margin-top:5vh;box-shadow:0 8px 32px rgba(0,0,0,0.12)">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;width:min(1200px,96vw);max-height:90vh;overflow-y:auto;margin:auto;margin-top:2vh;box-shadow:0 8px 32px rgba(0,0,0,0.12)">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
       <h2 style="color:var(--text);margin:0;font-size:1em;font-weight:700">📋 日別ログ</h2>
       <button onclick="document.getElementById('logModal').style.display='none'" style="background:none;border:none;color:var(--muted);font-size:1.3em;cursor:pointer;line-height:1">&times;</button>
@@ -2215,24 +2215,24 @@ window.showDailyLog = function() {
   }
   // 商品系・ショップ系を2グループに分けてコンパクト表示
   var CATS1 = [
-    ["unchecked","未確認"],["watch1","🔥"],["stop","❌"],
-    ["good","⭐"],["sizeok","📐"],["done","✅"],["bad","👎"]
+    ["unchecked","チェック前"],["watch1","🔥 すぐやる"],["stop","❌ 中止"],
+    ["good","⭐ 70点"],["sizeok","📐 sizeOK"],["done","✅ やってる"],["bad","👎 微妙"]
   ];
   var CATS2 = [
-    ["all","商品"],["shops","ショップ"],["candidates","候補"],["worthless","価値なし"]
+    ["all","商品全体"],["shops","ショップ"],["candidates","🎯 候補"],["worthless","🚫 価値なし"]
   ];
   var rev = logs.slice().reverse();
-  var TH = "padding:5px 8px;font-size:0.75em;font-weight:600;color:var(--muted);white-space:nowrap;border-bottom:2px solid var(--border);text-align:right";
+  var TH = "padding:9px 14px;font-size:0.85em;font-weight:600;color:var(--muted);white-space:nowrap;border-bottom:2px solid var(--border);text-align:right";
   var th = "<tr><th style='" + TH + ";text-align:left'>日付</th>";
   CATS1.forEach(function(c){ th += "<th style='" + TH + "'>" + c[1] + "</th>"; });
-  th += "<th style='padding:5px 4px;border-bottom:2px solid var(--border);background:#f0ede8'></th>";
+  th += "<th style='padding:9px 6px;border-bottom:2px solid var(--border);background:#f0ede8'></th>";
   CATS2.forEach(function(c){ th += "<th style='" + TH + ";background:#f0ede8'>" + c[1] + "</th>"; });
   th += "</tr>";
   var tbody = rev.map(function(log, i) {
     var prev = rev[i+1];
     var isToday = (i === 0);
     var rowBg = isToday ? "background:var(--bg)" : "";
-    var dateTd = "<td style='padding:5px 8px;font-size:0.82em;color:var(--text);white-space:nowrap;border-top:1px solid var(--border);font-weight:" + (isToday?"700":"400") + "'>" + log.date.slice(5).replace("-","/") + (isToday ? " <span style='font-size:0.72em;color:var(--warn)'>今日</span>" : "") + "</td>";
+    var dateTd = "<td style='padding:9px 14px;font-size:0.9em;color:var(--text);white-space:nowrap;border-top:1px solid var(--border);font-weight:" + (isToday?"700":"400") + "'>" + log.date.slice(5).replace("-","/") + (isToday ? " <span style='font-size:0.78em;color:var(--warn)'>今日</span>" : "") + "</td>";
     function cell(cats, log, prev, bg) {
       return cats.map(function(c) {
         var v = log[c[0]] || 0;
@@ -2240,12 +2240,12 @@ window.showDailyLog = function() {
         var dh = "";
         if (d !== null && d !== 0) {
           var col = d > 0 ? "#16a34a" : "#dc2626";
-          dh = "<span style='font-size:0.7em;color:" + col + ";margin-left:2px;font-weight:500'>" + (d > 0 ? "+" : "") + d + "</span>";
+          dh = "<span style='font-size:0.78em;color:" + col + ";margin-left:3px;font-weight:500'>" + (d > 0 ? "+" : "") + d + "</span>";
         }
-        return "<td style='text-align:right;padding:5px 8px;font-size:0.85em;color:var(--text);border-top:1px solid var(--border)" + (bg?";background:#faf9f7":"") + "'>" + v + dh + "</td>";
+        return "<td style='text-align:right;padding:9px 14px;font-size:0.95em;color:var(--text);border-top:1px solid var(--border)" + (bg?";background:#faf9f7":"") + "'>" + v + dh + "</td>";
       }).join("");
     }
-    var sep = "<td style='padding:5px 2px;border-top:1px solid var(--border);background:#f0ede8'></td>";
+    var sep = "<td style='padding:9px 4px;border-top:1px solid var(--border);background:#f0ede8'></td>";
     return "<tr style='" + rowBg + "'>" + dateTd + cell(CATS1,log,prev,false) + sep + cell(CATS2,log,prev,true) + "</tr>";
   }).join("");
   content.innerHTML = "<div style='overflow-x:auto'><table style='width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:8px;overflow:hidden'><thead style='background:var(--bg)'>" + th + "</thead><tbody>" + tbody + "</tbody></table></div>";
@@ -2595,40 +2595,7 @@ setTimeout(_updateCandidatesBadge, 2000);
 </script>
 
 <script>
-// showDailyLogにcandidates列を追加
-var _origShowLog = window.showDailyLog;
-window.showDailyLog = function() {
-  _origShowLog.apply(this, arguments);
-  // テーブルは既に描画済み　candidates列を追加する
-  var content = document.getElementById('logContent');
-  if (!content) return;
-  var table = content.querySelector('table');
-  if (!table) return;
-  var rows = table.querySelectorAll('tr');
-  rows.forEach(function(row, ri) {
-    if (ri === 0) {
-      // ヘッダー行に候補列を追加
-      var th = document.createElement('th');
-      th.style.cssText = 'text-align:right;padding:6px 8px;color:#94a3b8;font-weight:normal;font-size:0.82em;white-space:nowrap';
-      th.textContent = '🎯候補';
-      row.appendChild(th);
-    } else {
-      // データ行に候補数を追加
-      var logs = JSON.parse(localStorage.getItem('rw_daily_log')||'[]');
-      var date = row.cells[0] ? row.cells[0].textContent.trim().replace(' 今日','') : '';
-      // MM/DDから日付を特实
-      var log = logs.find(function(l){
-        var d = l.date.slice(5).replace('-','/');
-        return d === date || date.includes(d);
-      });
-      var val = log ? (log.candidates || 0) : '-';
-      var td = document.createElement('td');
-      td.style.cssText = 'text-align:right;padding:6px 8px;color:#f1f5f9;font-size:0.88em';
-      td.textContent = val;
-      row.appendChild(td);
-    }
-  });
-};
+// candidates列はCATS2に統合済み
 </script>
 
 <script>
