@@ -3719,5 +3719,36 @@
     "detail": {
       "price": 2180
     }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "スリーアール",
+    "week": "W2026-04-23",
+    "message": "新商品：【アウトレット販売★在庫限り】 iring 正規品 スマホリング 薄型 スタンド",
+    "detail": {
+      "price": 800
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "スリーアール",
+    "week": "W2026-04-23",
+    "message": "値下げ -61.7%：【1台2役！】 冷風機 冷風扇 加湿器 卓上 小型 ポータブルクーラー ミストフ",
+    "detail": {
+      "prev": 12990,
+      "curr": 4980
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "便利グッズのお店 AQSHOP",
+    "week": "W2026-04-23",
+    "message": "新商品：＼1780円→1599円 高評価4.69／ やや強め 無地 黒 仕事 着圧1足 ",
+    "detail": {
+      "price": 1599
+    }
   }
 ]
