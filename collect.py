@@ -212,16 +212,9 @@ def scrape_rankings(now):
             print(f"      dispRank: {html.count('rnkRanking_dispRank')}件")
             print(f"      item.rakuten links: {html.count('item.rakuten.co.jp')}件")
 
-            # ── ランキング順に商品URLを抽出 ──────────────
-            # 楽天ランキングページの構造:
-            #   1位: class="rnkRanking_topBgColor"
-            #   2〜3位: class="rnkRanking_top3box"
-            #   4位〜: class="rnkRanking_dispRank" に「N位」テキスト
             items = []
             seen  = set()
 
-            # top3box の出現順で1〜3位を取得（1位=topBgColor、2〜3位=top3box）
-            # HTMLを文字列解析で top3box/topBgColor ブロックを抽出
             top3_pattern = re.compile(
                 r'class="rnkRanking_top(?:BgColor|3box)[^"]*".*?'
                 r'href="(https?://item\.rakuten\.co\.jp/([^/]+)/([^/"?#]+)[^"]*)"',
@@ -243,8 +236,6 @@ def scrape_rankings(now):
                 })
                 if len(items) >= top_n: break
 
-            # 4位以降: rnkRanking_dispRank の数字と直後の item.rakuten リンクを対応付け
-            # 実際のHTML: <div class="rnkRanking_dispRank">4<span class="rnkRanking_dispRankExt">位</span></div>
             rank_block_pattern = re.compile(
                 r'class="rnkRanking_dispRank[^"]*">(\d+)<[^>]*>位.*?'
                 r'href="(https?://item\.rakuten\.co\.jp/([^/]+)/([^/"?#]+)[^"]*)"',
@@ -267,13 +258,11 @@ def scrape_rankings(now):
                     "name":       "", "image_url": "", "price": 0, "review_count": 0,
                 })
 
-            # ランキング順にソート
             items.sort(key=lambda x: x["rank"])
             items = items[:top_n]
 
             print(f"      抽出: {len(items)}商品 (1位:{items[0]['shop_sid'] if items else 'none'})")
 
-            # 楽天APIで商品詳細を補完
             enriched = enrich_ranking_items(items)
             results.append({
                 "genreId":   genre_id,
@@ -333,16 +322,13 @@ def main():
     print("="*56)
 
     # ダッシュボードから追加したショップを読み込む
-    # ① user_state.json の extra_shops
     state = load_json(USER_STATE_FILE, {})
     extra_from_state = state.get("extra_shops", [])
-    # ② data/extra_shops.json（ダッシュボードが直接書き込むファイル）
     extra_from_file = load_json("data/extra_shops.json", [])
 
     all_shops = list(SHOPS)
     base_codes = {s["shopCode"] for s in SHOPS}
     added = 0
-    # 両方のソースをマージ（重複除去）
     for s in extra_from_file + extra_from_state:
         code = s.get("shopCode") or s.get("sid","")
         name = s.get("name", code)
@@ -417,34 +403,58 @@ def main():
 
     # ── ランキングスクレイピング ──────────────────────────
     scrape_rankings(now)
-    # 日別ログをuser_state.jsonに自動保存
+
+    # ── 日別ログをuser_state.jsonに自動保存 ──────────────
     try:
         state = load_json(USER_STATE_FILE, {})
-        # 日別ログは必ず既存の値を引き継ぎ（ダッシュボードの上書きで消えないよう）
         daily_log = state.get("daily_log", [])
         today_str = now.strftime("%Y-%m-%d")
-        # 今日のエントリがなければ追加
         if not any(e.get("date") == today_str for e in daily_log):
-            total_items = sum(len(snapshots.get(s, {}).get("history", [{}])[-1].get("items", [])) for s in snapshots)
-            unchecked = state.get("unchecked_count", 0)
+            # 商品合計: 最新スナップショットの商品数を合計
+            total_items = sum(
+                len(snapshots.get(s, {}).get("history", [{}])[-1].get("items", []))
+                for s in snapshots
+            )
+            # 各評価はdict形式なのでlen(dict)でカウント
+            good_items   = state.get("good",   {})
+            bad_items    = state.get("bad",    {})
+            watch1_items = state.get("watch1", {})
+            sizeok_items = state.get("sizeok", {})
+            done_items   = state.get("done",   {})
+            stop_items   = state.get("stop",   {})
+            # チェック前 = 全商品 - 評価済み（重複なし）
+            checked_ids = set(
+                list(good_items.keys()) + list(bad_items.keys()) +
+                list(watch1_items.keys()) + list(sizeok_items.keys()) +
+                list(done_items.keys()) + list(stop_items.keys())
+            )
+            unchecked = max(0, total_items - len(checked_ids))
+            # ショップ数・価値なし数・候補数
+            shops_count      = len(summary_shops)
+            worthless        = state.get("worthless_shops", {})
+            worthless_count  = len(worthless) if isinstance(worthless, dict) else 0
+            candidates_count = len(state.get("extra_shops", []))
             log_entry = {
-                "date": today_str,
-                "all": total_items,
+                "date":      today_str,
+                "all":       total_items,
                 "unchecked": unchecked,
-                "watch1": len(state.get("watch1", [])),
-                "stop": len(state.get("stop", [])),
-                "good": len(state.get("good", [])),
-                "sizeok": len(state.get("sizeok", [])),
-                "done": len(state.get("done", [])),
-                "bad": len(state.get("bad", [])),
-                "candidates": len(state.get("extra_shops", []))
+                "watch1":    len(watch1_items),
+                "stop":      len(stop_items),
+                "good":      len(good_items),
+                "sizeok":    len(sizeok_items),
+                "done":      len(done_items),
+                "bad":       len(bad_items),
+                "shops":     shops_count,
+                "worthless": worthless_count,
+                "candidates":candidates_count,
             }
             daily_log.append(log_entry)
-            # 約30日分保持
-            daily_log = daily_log[-30:]
+            daily_log = daily_log[-31:]  # 約1ヶ月分保持
             state["daily_log"] = daily_log
             save_json(USER_STATE_FILE, state)
-            print(f"  日別ログ保存: {today_str}")
+            print(f"  日別ログ保存: {today_str} (商品:{total_items} ショップ:{shops_count})")
+        else:
+            print(f"  日別ログ: {today_str} は既に記録済み")
     except Exception as e:
         print(f"  日別ログエラー: {e}")
 
