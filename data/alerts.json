@@ -2,46 +2,6 @@
   {
     "type": "new_item",
     "level": "info",
-    "shop": "UNICONA 楽天市場店",
-    "week": "W2026-03-24",
-    "message": "新商品：【全品20％OFF】マタニティ パンツ レギンス テーパード ウェア マタニティ",
-    "detail": {
-      "price": 1980
-    }
-  },
-  {
-    "type": "new_item",
-    "level": "info",
-    "shop": "UNICONA 楽天市場店",
-    "week": "W2026-03-24",
-    "message": "新商品：【全品20％OFF】ヘルメット 自転車 ヘルメット 帽子型ヘルメット 自転車用ヘ",
-    "detail": {
-      "price": 2980
-    }
-  },
-  {
-    "type": "new_item",
-    "level": "info",
-    "shop": "mitas",
-    "week": "W2026-03-24",
-    "message": "新商品：【楽天1位 mitas公式】シートベルトパッド シートベルトカバー セーフティパ",
-    "detail": {
-      "price": 820
-    }
-  },
-  {
-    "type": "new_item",
-    "level": "info",
-    "shop": "mitas",
-    "week": "W2026-03-24",
-    "message": "新商品：【mitas公式】防水ケース ほぼ全機種対応 iPX8 iPhone スマホ i",
-    "detail": {
-      "price": 1299
-    }
-  },
-  {
-    "type": "new_item",
-    "level": "info",
     "shop": "mitas",
     "week": "W2026-03-24",
     "message": "新商品：【楽天1位 プレゼント付き！】車用ベビーミラー 車内ミラー 補助ミラー ルームミ",
@@ -5264,6 +5224,49 @@
     "message": "新商品：【互換バッテリー★1〜2個セット】 KX-FAN51 互換 電池 パナソニック ",
     "detail": {
       "price": 760
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "motto-motto",
+    "week": "W2026-05-19",
+    "message": "値下げ -13.4%：送料無料 リングストラップ ホールドリング 同色2個セット 携帯ストラップ スマ",
+    "detail": {
+      "prev": 820,
+      "curr": 710
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "motto-motto",
+    "week": "W2026-05-19",
+    "message": "値下げ -7.6%：送料無料 カードケース カード入れ 11枚 コンパクト 大容量 レディース 女性",
+    "detail": {
+      "prev": 790,
+      "curr": 730
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "スリーアール",
+    "week": "W2026-05-19",
+    "message": "値下げ -20.1%：【1台2役！】 冷風機 冷風扇 加湿器 卓上 小型 ポータブルクーラー ミストフ",
+    "detail": {
+      "prev": 4980,
+      "curr": 3980
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "スリーアール",
+    "week": "W2026-05-19",
+    "message": "新商品：【まとめ買いがおトク！】 CR123A 電池 乾電池 2本 4本 10本 リチウ",
+    "detail": {
+      "price": 750
     }
   }
 ]
