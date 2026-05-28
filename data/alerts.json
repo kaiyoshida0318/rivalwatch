@@ -1,47 +1,5 @@
 [
   {
-    "type": "new_item",
-    "level": "info",
-    "shop": "台湾 kawaii shop",
-    "week": "W2026-04-03",
-    "message": "新商品：インソール かかと バイク 厚底 インヒール シークレットインソール シークレッ",
-    "detail": {
-      "price": 1230
-    }
-  },
-  {
-    "type": "new_item",
-    "level": "info",
-    "shop": "台湾 kawaii shop",
-    "week": "W2026-04-03",
-    "message": "新商品：イヤーカフ イヤリング ゴールド パール 大小 2個セット シンプル ゴールド ",
-    "detail": {
-      "price": 500
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-04-03",
-    "message": "値下げ -7.8%：送料無料 自転車 ハンドルグリップ 交換 カバー 交換用パーツ 左右1セット 2",
-    "detail": {
-      "prev": 510,
-      "curr": 470
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-04-03",
-    "message": "値下げ -7.0%：送料無料 バッグチャーム キーホルダー バッグ用アクセサリー タッセル フリンジ",
-    "detail": {
-      "prev": 570,
-      "curr": 530
-    }
-  },
-  {
     "type": "price_drop",
     "level": "danger",
     "shop": "motto-motto",
@@ -5336,6 +5294,49 @@
     "message": "新商品：◆ スーパーセール 半額 【楽天1位 違いが分かる高品質 2枚セット】バッグ 持",
     "detail": {
       "price": 981
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "motto-motto",
+    "week": "W2026-05-29",
+    "message": "値下げ -6.3%：リングストラップ ホールドリング 同色2個セット 携帯ストラップ スマホリング ",
+    "detail": {
+      "prev": 790,
+      "curr": 740
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "motto-motto",
+    "week": "W2026-05-29",
+    "message": "値下げ -6.2%：Airtag用カバー AirTag用 エアタグ用 保護 ケース カラビナ キーホ",
+    "detail": {
+      "prev": 810,
+      "curr": 760
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "スリーアール",
+    "week": "W2026-05-29",
+    "message": "新商品：【互換バッテリー★1〜2個セット】 KX-FAN57 パナソニック panaso",
+    "detail": {
+      "price": 660
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "THTECH",
+    "week": "W2026-05-29",
+    "message": "値下げ -9.3%：iPad Air 11 M3/M2 mini A17 Pro ケース Air 1",
+    "detail": {
+      "prev": 1080,
+      "curr": 980
     }
   }
 ]
