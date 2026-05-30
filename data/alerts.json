@@ -1,27 +1,5 @@
 [
   {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "e-monoplus",
-    "week": "W2026-04-03",
-    "message": "値下げ -35.0%：【今だけの特別価格★4/3 20:00〜23:59】 人気 ランキング1位 帽子",
-    "detail": {
-      "prev": 4500,
-      "curr": 2925
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "roryxtyle",
-    "week": "W2026-04-03",
-    "message": "値下げ -50.0%：＼半額市場★50％OFF／ ブレスレット レディース ジュエリー アクセサリー ",
-    "detail": {
-      "prev": 1080,
-      "curr": 540
-    }
-  },
-  {
     "type": "new_item",
     "level": "info",
     "shop": "across-zakka",
@@ -5336,6 +5314,26 @@
     "message": "新商品：◆ スーパーセール 半額 【楽天10冠1位 保育士監修 x ベビー雑誌掲載】 シ",
     "detail": {
       "price": 1962
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "ddice",
+    "week": "W2026-05-31",
+    "message": "新商品：≪クーポン利用で680円!!≫ iPhone ケース iPhone13 iPho",
+    "detail": {
+      "price": 980
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "スリーアール",
+    "week": "W2026-05-31",
+    "message": "新商品：【互換バッテリー★1〜2個セット】 KX-FAN57 パナソニック panaso",
+    "detail": {
+      "price": 660
     }
   }
 ]
