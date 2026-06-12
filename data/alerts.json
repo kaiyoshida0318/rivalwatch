@@ -1,102 +1,5 @@
 [
   {
-    "type": "new_item",
-    "level": "info",
-    "shop": "便利雑貨ショップ umiwo",
-    "week": "W2026-04-15",
-    "message": "新商品：楽天1位【高評価レビュー4.7点】ピルクラッシャー 錠剤クラッシャー シンプル ",
-    "detail": {
-      "price": 880
-    }
-  },
-  {
-    "type": "new_item",
-    "level": "info",
-    "shop": "便利雑貨ショップ umiwo",
-    "week": "W2026-04-15",
-    "message": "新商品：楽天1位【高評価レビュー4.7点】ブラジャー延長ホック 2段 ホック間長さ1.3",
-    "detail": {
-      "price": 460
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-04-15",
-    "message": "値下げ -7.3%：送料無料 リングストラップ ホールドリング 同色2個セット 携帯ストラップ スマ",
-    "detail": {
-      "prev": 410,
-      "curr": 380
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-04-15",
-    "message": "値下げ -6.2%：送料無料 スマホリング ホールドリング リングスタンド スマホスタンド 落下防止",
-    "detail": {
-      "prev": 650,
-      "curr": 610
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-04-15",
-    "message": "値下げ -6.4%：送料無料 収納ラック ベッドサイドポケット 吊り下げ 収納ボックス 小物整理 防",
-    "detail": {
-      "prev": 1400,
-      "curr": 1310
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-04-15",
-    "message": "値下げ -9.5%：送料無料 カードケース カード入れ 11枚 コンパクト 大容量 レディース 女性",
-    "detail": {
-      "prev": 840,
-      "curr": 760
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "スリーアール",
-    "week": "W2026-04-15",
-    "message": "値下げ -10.0%：【10%OFF】 Bluetooth ヘッドホン ヘッドフォン ワイヤレスヘッド",
-    "detail": {
-      "prev": 2690,
-      "curr": 2420
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "スリーアール",
-    "week": "W2026-04-15",
-    "message": "値下げ -10.1%：【LINEクーポンで300円OFF】 電池チェッカー 電池 バッテリーチェッカー",
-    "detail": {
-      "prev": 1490,
-      "curr": 1340
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "スリーアール",
-    "week": "W2026-04-15",
-    "message": "値下げ -21.0%：【20%OFF★1〜5本★互換電池】 火災報知器 電池 sh384552520 ",
-    "detail": {
-      "prev": 810,
-      "curr": 640
-    }
-  },
-  {
     "type": "price_drop",
     "level": "danger",
     "shop": "スリーアール",
@@ -5345,6 +5248,108 @@
     "detail": {
       "prev": 2200,
       "curr": 2000
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "LASIEM（ラシエム）",
+    "week": "W2026-06-13",
+    "message": "新商品：【楽天1位】 かっさプレート 美顔器 テラヘルツ 美顔 美容 美肌 美人 かっさ",
+    "detail": {
+      "price": 1980
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "KQueenStore",
+    "week": "W2026-06-13",
+    "message": "値下げ -10.4%：ゴミ受け ステンレス ごみ受け 排水口 排水溝 シンク 流し台 キッチン 洗面台",
+    "detail": {
+      "prev": 500,
+      "curr": 448
+    }
+  },
+  {
+    "type": "review_spike",
+    "level": "warn",
+    "shop": "LARUTANオンラインショップ",
+    "week": "W2026-06-13",
+    "message": "レビュー急増 +21件：＼TV「夫が寝たあとに」で紹介／口コミ5300件!!＜レビュー特典＞楽天1位16",
+    "detail": {
+      "delta": 21,
+      "est": {
+        "low": 420,
+        "high": 700,
+        "mid": 525
+      }
+    }
+  },
+  {
+    "type": "review_spike",
+    "level": "warn",
+    "shop": "LARUTANオンラインショップ",
+    "week": "W2026-06-13",
+    "message": "レビュー急増 +21件：＼5種から選べるレビュー特典／＜芸能人愛用＞高評価★楽天1位14冠★助産師推薦 ",
+    "detail": {
+      "delta": 21,
+      "est": {
+        "low": 420,
+        "high": 700,
+        "mid": 525
+      }
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "motto-motto",
+    "week": "W2026-06-13",
+    "message": "値下げ -12.5%：リングストラップ ホールドリング 同色2個セット 携帯ストラップ スマホリング ",
+    "detail": {
+      "prev": 320,
+      "curr": 280
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "スリーアール",
+    "week": "W2026-06-13",
+    "message": "新商品：【まとめ買いがおトク！】 CR123A 電池 乾電池 2本 4本 10本 リチウ",
+    "detail": {
+      "price": 750
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "MILASIC",
+    "week": "W2026-06-13",
+    "message": "新商品：【mitas公式】 意匠登録済！ 温湿度計 デジタル温湿度計 高精度 正確 光る",
+    "detail": {
+      "price": 1699
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "よろず生活雑貨屋レーベンウッド",
+    "week": "W2026-06-13",
+    "message": "新商品：【楽天1位 違いが分かる高品質 2枚セット】バッグ 持ち手カバー ハンドルカバー",
+    "detail": {
+      "price": 1090
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "shotr-",
+    "week": "W2026-06-13",
+    "message": "新商品：【2個入】 イヤーパッド イヤークッション SONY MDR-CD900ST M",
+    "detail": {
+      "price": 1000
     }
   }
 ]
