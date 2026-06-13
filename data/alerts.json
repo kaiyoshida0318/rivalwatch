@@ -2,50 +2,6 @@
   {
     "type": "price_drop",
     "level": "danger",
-    "shop": "スリーアール",
-    "week": "W2026-04-15",
-    "message": "値下げ -5.2%：【5%OFF】 充電池 充電器セット 単4 充電池 単四 950mAh セット ",
-    "detail": {
-      "prev": 2120,
-      "curr": 2010
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "スリーアール",
-    "week": "W2026-04-15",
-    "message": "値下げ -10.1%：【10%OFF】 衣類乾燥機 小型 部屋干し コンパクト 乾燥機 服 乾燥 乾燥",
-    "detail": {
-      "prev": 8899,
-      "curr": 8000
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "スリーアール",
-    "week": "W2026-04-15",
-    "message": "値下げ -5.2%：【5%OFF】 単3 充電池 充電器セット 充電池 単三 充電池充電器セット 2",
-    "detail": {
-      "prev": 2290,
-      "curr": 2170
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "シェリーショップ",
-    "week": "W2026-04-15",
-    "message": "値下げ -23.0%：送料無料 マラソン限定1000円ポッキリ 椅子脚カバー イス脚カバー 椅子脚キャ",
-    "detail": {
-      "prev": 1298,
-      "curr": 1000
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
     "shop": "シェリーショップ",
     "week": "W2026-04-15",
     "message": "値下げ -23.0%：送料無料 マラソン限定1000円ポッキリ 椅子脚カバー イス脚カバー 椅子脚キャ",
@@ -5350,6 +5306,51 @@
     "message": "新商品：【2個入】 イヤーパッド イヤークッション SONY MDR-CD900ST M",
     "detail": {
       "price": 1000
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "grepo 楽天市場店",
+    "week": "W2026-06-14",
+    "message": "新商品：キッズプロテクター 子供用 6点セット 自転車 一輪車 スケボー スケート に ",
+    "detail": {
+      "price": 980
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "grepo 楽天市場店",
+    "week": "W2026-06-14",
+    "message": "新商品：サッカーソックス ジュニア 大人用 子供用 成人用 靴下 フットサル ストッキン",
+    "detail": {
+      "price": 475
+    }
+  },
+  {
+    "type": "review_spike",
+    "level": "warn",
+    "shop": "LARUTANオンラインショップ",
+    "week": "W2026-06-14",
+    "message": "レビュー急増 +26件：＼TV「夫が寝たあとに」で紹介／口コミ5300件!!＜レビュー特典＞楽天1位16",
+    "detail": {
+      "delta": 26,
+      "est": {
+        "low": 520,
+        "high": 867,
+        "mid": 650
+      }
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "ドリームマックス",
+    "week": "W2026-06-14",
+    "message": "新商品：楽天1位 ブルーマジック 550g | アルミ トラック ホイール 磨き バイク",
+    "detail": {
+      "price": 3950
     }
   }
 ]
