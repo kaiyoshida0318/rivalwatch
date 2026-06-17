@@ -1,38 +1,5 @@
 [
   {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-04-17",
-    "message": "値下げ -5.3%：送料無料 スマホリング ホールドリング リングスタンド スマホスタンド 落下防止",
-    "detail": {
-      "prev": 570,
-      "curr": 540
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-04-17",
-    "message": "値下げ -10.1%：送料無料 カードケース カード入れ 11枚 コンパクト 大容量 レディース 女性",
-    "detail": {
-      "prev": 690,
-      "curr": 620
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "スリーアール",
-    "week": "W2026-04-17",
-    "message": "値下げ -11.0%：【20%OFF】 衣類乾燥機 小型 部屋干し コンパクト 乾燥機 服 乾燥 乾燥",
-    "detail": {
-      "prev": 8000,
-      "curr": 7119
-    }
-  },
-  {
     "type": "new_item",
     "level": "info",
     "shop": "ddice",
@@ -5350,6 +5317,37 @@
     "detail": {
       "prev": 1000,
       "curr": 900
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "便利雑貨ショップ umiwo",
+    "week": "W2026-06-18",
+    "message": "新商品：楽天1位【高評価レビュー4.5点】メガネストッパー 丸型 リング 黒 2組セット",
+    "detail": {
+      "price": 430
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "スリーアール",
+    "week": "W2026-06-18",
+    "message": "値下げ -90.4%：【全世界対応！★タビケトル】 折りたたみケトル 海外 対応 タビケトル 旅ケトル",
+    "detail": {
+      "prev": 4980,
+      "curr": 480
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "スリーアール",
+    "week": "W2026-06-18",
+    "message": "新商品：【1台2役！】 冷風機 冷風扇 加湿器 卓上 小型 ポータブルクーラー ミストフ",
+    "detail": {
+      "price": 3680
     }
   }
 ]
