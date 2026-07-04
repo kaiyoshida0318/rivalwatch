@@ -1,80 +1,5 @@
 [
   {
-    "type": "new_item",
-    "level": "info",
-    "shop": "便利雑貨ショップ umiwo",
-    "week": "W2026-05-05",
-    "message": "新商品：楽天1位【高評価レビュー4.4点】外反母趾サポーター 2組セット(4個) プニプ",
-    "detail": {
-      "price": 550
-    }
-  },
-  {
-    "type": "new_item",
-    "level": "info",
-    "shop": "便利雑貨ショップ umiwo",
-    "week": "W2026-05-05",
-    "message": "新商品：楽天1位【高評価レビュー4.7点】ピルクラッシャー 錠剤クラッシャー シンプル ",
-    "detail": {
-      "price": 880
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-05-05",
-    "message": "値下げ -5.3%：送料無料 リングストラップ ホールドリング 同色2個セット 携帯ストラップ スマ",
-    "detail": {
-      "prev": 750,
-      "curr": 710
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-05-05",
-    "message": "値下げ -5.3%：送料無料 自転車 ハンドルグリップ 交換 カバー 交換用パーツ 左右1セット 2",
-    "detail": {
-      "prev": 750,
-      "curr": 710
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-05-05",
-    "message": "値下げ -7.0%：送料無料 バッグチャーム キーホルダー バッグ用アクセサリー タッセル フリンジ",
-    "detail": {
-      "prev": 570,
-      "curr": 530
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-05-05",
-    "message": "値下げ -6.1%：送料無料 Airtag用カバー AirTag用 エアタグ用 保護 ケース カラビ",
-    "detail": {
-      "prev": 980,
-      "curr": 920
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-05-05",
-    "message": "値下げ -5.1%：送料無料 収納ラック ベッドサイドポケット 吊り下げ 収納ボックス 小物整理 防",
-    "detail": {
-      "prev": 1180,
-      "curr": 1120
-    }
-  },
-  {
     "type": "price_drop",
     "level": "danger",
     "shop": "motto-motto",
@@ -5354,6 +5279,79 @@
     "message": "新商品：＼楽天1位！全面 スキミング防止 ／ AQSHOP セキュリティポーチ 旅行 パ",
     "detail": {
       "price": 2480
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "Trade-ABC 楽天市場店",
+    "week": "W2026-07-05",
+    "message": "新商品：＼2,613件レビュー突破！／耳かき カメラ イヤースコープ 耳掻き 耳掃除 耳",
+    "detail": {
+      "price": 1680
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "motto-motto",
+    "week": "W2026-07-05",
+    "message": "値下げ -5.9%：送料無料 便座カバー トイレカバー U型 スナップボタン留め 装着簡単 トイレ用",
+    "detail": {
+      "prev": 1020,
+      "curr": 960
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "motto-motto",
+    "week": "W2026-07-05",
+    "message": "値下げ -8.8%：スマホリング ホールドリング リングスタンド スマホスタンド 落下防止 角度調整",
+    "detail": {
+      "prev": 570,
+      "curr": 520
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "motto-motto",
+    "week": "W2026-07-05",
+    "message": "値下げ -6.7%：腕時計 リストウォッチ レディース 女性 アナログ ゴールドカラー レザー調 シ",
+    "detail": {
+      "prev": 1040,
+      "curr": 970
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "タブレット スマホホルダーecoride",
+    "week": "W2026-07-05",
+    "message": "新商品：1000円ポッキリ 送料無料 PCメガネ メガネ ブルーライトカット 度無し ブ",
+    "detail": {
+      "price": 1000
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "ADXI",
+    "week": "W2026-07-05",
+    "message": "新商品：24新モデル 壁面キャップフック 10個 20個 壁掛け帽子収納ハンガー キャッ",
+    "detail": {
+      "price": 2970
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "ADXI",
+    "week": "W2026-07-05",
+    "message": "新商品：【送料無料】即納 ステッカー50枚セット アウトドア 野外 テント キャンプ 登",
+    "detail": {
+      "price": 605
     }
   }
 ]
