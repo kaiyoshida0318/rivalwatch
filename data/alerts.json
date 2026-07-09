@@ -1,47 +1,5 @@
 [
   {
-    "type": "new_item",
-    "level": "info",
-    "shop": "ドリームマックス",
-    "week": "W2026-05-06",
-    "message": "新商品：楽天1位 カーゴバー ラチェット式 101cm～181cm すべり止めシート付 ",
-    "detail": {
-      "price": 8800
-    }
-  },
-  {
-    "type": "new_item",
-    "level": "info",
-    "shop": "MAPLE517",
-    "week": "W2026-05-07",
-    "message": "新商品：送料無料【足つぼマット 健康ボード】健康器具 足 健康ボード 足ツボ 足つぼマッ",
-    "detail": {
-      "price": 2400
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-05-07",
-    "message": "値下げ -9.1%：送料無料 リングストラップ ホールドリング 同色2個セット 携帯ストラップ スマ",
-    "detail": {
-      "prev": 660,
-      "curr": 600
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-05-07",
-    "message": "値下げ -7.6%：送料無料 自転車 ハンドルグリップ 交換 カバー 交換用パーツ 左右1セット 2",
-    "detail": {
-      "prev": 660,
-      "curr": 610
-    }
-  },
-  {
     "type": "price_drop",
     "level": "danger",
     "shop": "motto-motto",
@@ -5349,6 +5307,50 @@
     "detail": {
       "prev": 760,
       "curr": 550
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "KQueenStore",
+    "week": "W2026-07-10",
+    "message": "値下げ -6.3%：スリーパー 夏用 ガーゼ 夏 新生児 赤ちゃん ベビー キッズ ジュニア おくる",
+    "detail": {
+      "prev": 1580,
+      "curr": 1480
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "motto-motto",
+    "week": "W2026-07-10",
+    "message": "値下げ -16.2%：送料無料 便座カバー トイレカバー U型 スナップボタン留め 装着簡単 トイレ用",
+    "detail": {
+      "prev": 1170,
+      "curr": 980
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "motto-motto",
+    "week": "W2026-07-10",
+    "message": "値下げ -6.8%：送料無料 自転車 ハンドルグリップ 交換 カバー 交換用パーツ 左右1セット 2",
+    "detail": {
+      "prev": 740,
+      "curr": 690
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "motto-motto",
+    "week": "W2026-07-10",
+    "message": "値下げ -7.9%：送料無料 バッグチャーム キーホルダー バッグ用アクセサリー タッセル フリンジ",
+    "detail": {
+      "prev": 630,
+      "curr": 580
     }
   }
 ]
