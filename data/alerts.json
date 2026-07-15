@@ -4,28 +4,6 @@
     "level": "danger",
     "shop": "スリーアール",
     "week": "W2026-05-09",
-    "message": "値下げ -10.0%：【10%OFF】 Bluetooth ヘッドホン ヘッドフォン ワイヤレスヘッド",
-    "detail": {
-      "prev": 2690,
-      "curr": 2420
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "スリーアール",
-    "week": "W2026-05-09",
-    "message": "値下げ -5.0%：【5%OFF】 エネボルト 充電池 単3 単4 セット 16本 ケース付 充電 ",
-    "detail": {
-      "prev": 2980,
-      "curr": 2830
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "スリーアール",
-    "week": "W2026-05-09",
     "message": "値下げ -5.4%：【5%OFF】 電池チェッカー 電池 バッテリーチェッカー 乾電池 電池 単3 ",
     "detail": {
       "prev": 1490,
@@ -5343,6 +5321,31 @@
     "message": "新商品：ヘッドホンカバー イヤーパッド イヤーパッドカバー ヘッドホン 交換用 イヤーク",
     "detail": {
       "price": 880
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "スリーアール",
+    "week": "W2026-07-16",
+    "message": "新商品：【互換バッテリー★1〜2個セット】 KX-FAN57 パナソニック panaso",
+    "detail": {
+      "price": 620
+    }
+  },
+  {
+    "type": "review_spike",
+    "level": "warn",
+    "shop": "UNICONA 楽天市場店",
+    "week": "W2026-07-16",
+    "message": "レビュー急増 +20件：【即日発送】＼★2枚目半額クーポン★／ マリンシューズ アクアシューズ ウォータ",
+    "detail": {
+      "delta": 20,
+      "est": {
+        "low": 400,
+        "high": 667,
+        "mid": 500
+      }
     }
   }
 ]
