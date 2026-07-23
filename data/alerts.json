@@ -3,48 +3,6 @@
     "type": "price_drop",
     "level": "danger",
     "shop": "motto-motto",
-    "week": "W2026-05-15",
-    "message": "値下げ -7.9%：送料無料 腕時計 リストウォッチ レディース 女性 アナログ ゴールドカラー レ",
-    "detail": {
-      "prev": 1010,
-      "curr": 930
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-05-15",
-    "message": "値下げ -15.7%：送料無料 収納ラック ベッドサイドポケット 吊り下げ 収納ボックス 小物整理 防",
-    "detail": {
-      "prev": 1340,
-      "curr": 1130
-    }
-  },
-  {
-    "type": "new_item",
-    "level": "info",
-    "shop": "タブレット スマホホルダーecoride",
-    "week": "W2026-05-15",
-    "message": "新商品：1000円ポッキリ 送料無料 PCメガネ メガネ ブルーライトカット 度無し ブ",
-    "detail": {
-      "price": 1000
-    }
-  },
-  {
-    "type": "new_item",
-    "level": "info",
-    "shop": "スリーアール",
-    "week": "W2026-05-15",
-    "message": "新商品：【5%OFF★1〜2個セット】 KX-FAN51 互換 電池 パナソニック pa",
-    "detail": {
-      "price": 720
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
     "week": "W2026-05-16",
     "message": "値下げ -6.1%：送料無料 カードケース カード入れ 11枚 コンパクト 大容量 レディース 女性",
     "detail": {
@@ -5350,6 +5308,52 @@
     "message": "新商品：【 S M Lセット】 Apple Airpods Pro Pro2 イヤーチッ",
     "detail": {
       "price": 1000
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "MAPLE517",
+    "week": "W2026-07-24",
+    "message": "新商品：送料無料【ボードクッション cosios コシオス】クッション イス 椅子 オフ",
+    "detail": {
+      "price": 4378
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "tempostar",
+    "week": "W2026-07-24",
+    "message": "新商品：お絵描きタブレット 玩具 お絵かき お絵描きボード お絵描き タブレット 電子ボ",
+    "detail": {
+      "price": 650
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "motto-motto",
+    "week": "W2026-07-24",
+    "message": "値下げ -6.4%：送料無料 便座カバー トイレカバー U型 スナップボタン留め 装着簡単 トイレ用",
+    "detail": {
+      "prev": 1100,
+      "curr": 1030
+    }
+  },
+  {
+    "type": "review_spike",
+    "level": "warn",
+    "shop": "UNICONA 楽天市場店",
+    "week": "W2026-07-24",
+    "message": "レビュー急増 +21件：【即日発送】＼★2枚目半額クーポン★／ マリンシューズ アクアシューズ ウォータ",
+    "detail": {
+      "delta": 21,
+      "est": {
+        "low": 420,
+        "high": 700,
+        "mid": 525
+      }
     }
   }
 ]
