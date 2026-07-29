@@ -3,60 +3,6 @@
     "type": "price_drop",
     "level": "danger",
     "shop": "motto-motto",
-    "week": "W2026-05-19",
-    "message": "値下げ -7.6%：送料無料 カードケース カード入れ 11枚 コンパクト 大容量 レディース 女性",
-    "detail": {
-      "prev": 790,
-      "curr": 730
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "スリーアール",
-    "week": "W2026-05-19",
-    "message": "値下げ -20.1%：【1台2役！】 冷風機 冷風扇 加湿器 卓上 小型 ポータブルクーラー ミストフ",
-    "detail": {
-      "prev": 4980,
-      "curr": 3980
-    }
-  },
-  {
-    "type": "new_item",
-    "level": "info",
-    "shop": "スリーアール",
-    "week": "W2026-05-19",
-    "message": "新商品：【まとめ買いがおトク！】 CR123A 電池 乾電池 2本 4本 10本 リチウ",
-    "detail": {
-      "price": 750
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-05-20",
-    "message": "値下げ -7.0%：送料無料 リングストラップ ホールドリング 同色2個セット 携帯ストラップ スマ",
-    "detail": {
-      "prev": 710,
-      "curr": 660
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-05-20",
-    "message": "値下げ -5.3%：送料無料 バッグチャーム キーホルダー バッグ用アクセサリー タッセル フリンジ",
-    "detail": {
-      "prev": 570,
-      "curr": 540
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
     "week": "W2026-05-20",
     "message": "値下げ -5.4%：送料無料 Airtag用カバー AirTag用 エアタグ用 保護 ケース カラビ",
     "detail": {
@@ -5370,6 +5316,62 @@
         "high": 733,
         "mid": 550
       }
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "Barsado",
+    "week": "W2026-07-30",
+    "message": "新商品：帽子 耳あて付 メンズ レディース 冬 秋冬 防寒 防寒帽子 イヤーマフ パイロ",
+    "detail": {
+      "price": 1580
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "便利雑貨ショップ umiwo",
+    "week": "W2026-07-30",
+    "message": "新商品：送料無料【高評価レビュー4.6点】ピルクラッシャー 錠剤クラッシャー すりつぶし",
+    "detail": {
+      "price": 720
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "motto-motto",
+    "week": "W2026-07-30",
+    "message": "値下げ -6.3%：送料無料 カードケース カード入れ 11枚 コンパクト 大容量 レディース 女性",
+    "detail": {
+      "prev": 790,
+      "curr": 740
+    }
+  },
+  {
+    "type": "review_spike",
+    "level": "warn",
+    "shop": "UNICONA 楽天市場店",
+    "week": "W2026-07-30",
+    "message": "レビュー急増 +25件：【即日発送】＼★2枚目半額クーポン★／ マリンシューズ アクアシューズ ウォータ",
+    "detail": {
+      "delta": 25,
+      "est": {
+        "low": 500,
+        "high": 833,
+        "mid": 625
+      }
+    }
+  },
+  {
+    "type": "new_item",
+    "level": "info",
+    "shop": "mitas",
+    "week": "W2026-07-30",
+    "message": "新商品：【mitas公式】集音器 耳かけ 左右両耳 対応 電池付属 ボリュームダイヤル ",
+    "detail": {
+      "price": 1100
     }
   }
 ]
