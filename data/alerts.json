@@ -1,69 +1,5 @@
 [
   {
-    "type": "new_item",
-    "level": "info",
-    "shop": "MAPLE517",
-    "week": "W2026-05-22",
-    "message": "新商品：メール便 送料無料【炭消臭 ベッド下収納袋 グレー】押入れ収納 衣装ケース 衣類",
-    "detail": {
-      "price": 1188
-    }
-  },
-  {
-    "type": "new_item",
-    "level": "info",
-    "shop": "APNショップ",
-    "week": "W2026-05-22",
-    "message": "新商品：【5個セット】マスクブラケットフレーム 夏にも 化粧崩れ防止 呼吸 会話 話しや",
-    "detail": {
-      "price": 980
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-05-22",
-    "message": "値下げ -8.8%：送料無料 リングストラップ ホールドリング 同色2個セット 携帯ストラップ スマ",
-    "detail": {
-      "prev": 680,
-      "curr": 620
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "motto-motto",
-    "week": "W2026-05-22",
-    "message": "値下げ -9.2%：送料無料 カードケース カード入れ 11枚 コンパクト 大容量 レディース 女性",
-    "detail": {
-      "prev": 650,
-      "curr": 590
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "スリーアール",
-    "week": "W2026-05-22",
-    "message": "値下げ -10.0%：【パワーアップ！】 Bluetooth ヘッドホン ヘッドフォン ワイヤレスヘッ",
-    "detail": {
-      "prev": 2690,
-      "curr": 2420
-    }
-  },
-  {
-    "type": "price_drop",
-    "level": "danger",
-    "shop": "スリーアール",
-    "week": "W2026-05-22",
-    "message": "値下げ -10.1%：【LINEクーポンで300円OFF】 電池チェッカー 電池 バッテリーチェッカー",
-    "detail": {
-      "prev": 1490,
-      "curr": 1340
-    }
-  },
-  {
     "type": "price_drop",
     "level": "danger",
     "shop": "スリーアール",
@@ -5372,6 +5308,76 @@
     "detail": {
       "prev": 1450,
       "curr": 1340
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "motto-motto",
+    "week": "W2026-08-02",
+    "message": "値下げ -7.1%：リングストラップ ホールドリング 同色2個セット 携帯ストラップ スマホリング ",
+    "detail": {
+      "prev": 700,
+      "curr": 650
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "motto-motto",
+    "week": "W2026-08-02",
+    "message": "値下げ -27.7%：スマホリング ホールドリング リングスタンド スマホスタンド 落下防止 角度調整",
+    "detail": {
+      "prev": 830,
+      "curr": 600
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "motto-motto",
+    "week": "W2026-08-02",
+    "message": "値下げ -7.2%：送料無料 カードケース カード入れ 11枚 コンパクト 大容量 レディース 女性",
+    "detail": {
+      "prev": 690,
+      "curr": 640
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "motto-motto",
+    "week": "W2026-08-02",
+    "message": "値下げ -6.5%：送料無料 鼻パッド ノーズパッド 2セット4枚入り 同色 めがね メガネ 眼鏡 ",
+    "detail": {
+      "prev": 620,
+      "curr": 580
+    }
+  },
+  {
+    "type": "price_drop",
+    "level": "danger",
+    "shop": "スリーアール",
+    "week": "W2026-08-02",
+    "message": "値下げ -10.8%：【安心の国内メーカー★全世界対応】 折りたたみケトル 海外 対応 海外旅行 持ち",
+    "detail": {
+      "prev": 5580,
+      "curr": 4980
+    }
+  },
+  {
+    "type": "review_spike",
+    "level": "warn",
+    "shop": "UNICONA 楽天市場店",
+    "week": "W2026-08-02",
+    "message": "レビュー急増 +20件：【即日発送】＼★2枚目半額クーポン★／ マリンシューズ アクアシューズ ウォータ",
+    "detail": {
+      "delta": 20,
+      "est": {
+        "low": 400,
+        "high": 667,
+        "mid": 500
+      }
     }
   }
 ]
